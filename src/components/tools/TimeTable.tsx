@@ -37,7 +37,7 @@ export const getCurrentTimeUnit = (): TimeUnit => {
     return timeUnits[0];
   }
 
-  // 其他时辰
+  // 其他时辰1
   const timeMap: { [key: number]: number } = {
     1: 1, 3: 2, 5: 3, 7: 4, 9: 5, 11: 6,
     13: 7, 15: 8, 17: 9, 19: 10, 21: 11, 23: 0
