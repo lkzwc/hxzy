@@ -3,17 +3,9 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 
-// 定义医生详细信息类型
-interface DoctorDetail extends Doctor {
-  education: string[];
-  experience: string[];
-  achievements: string[];
-  outpatientTime: string[];
-  treatableDiseases: string[];
-}
 
 // 示例详细数据
-const doctorDetailData: DoctorDetail = {
+const doctorDetailData = {
   id: 1,
   name: '张三丰',
   title: '主任医师',
@@ -52,7 +44,7 @@ const doctorDetailData: DoctorDetail = {
 };
 
 export default function DoctorDetailPage({ params }: { params: { id: string } }) {
-  const [doctor, setDoctor] = useState<DoctorDetail | null>(null);
+  const [doctor, setDoctor] = useState<any>(null);
 
   useEffect(() => {
     // 这里应该是从API获取数据
@@ -94,7 +86,7 @@ export default function DoctorDetailPage({ params }: { params: { id: string } })
               </div>
               <p className="mt-2 text-lg text-gray-600">{doctor.hospital}</p>
               <div className="mt-4 flex flex-wrap gap-2">
-                {doctor.specialty.map((spec) => (
+                {doctor.specialty.map((spec: any) => (
                   <span key={spec} className="px-3 py-1 bg-background rounded-full text-text">
                     {spec}
                   </span>
@@ -113,7 +105,7 @@ export default function DoctorDetailPage({ params }: { params: { id: string } })
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-bold text-primary border-b border-gray-200 pb-2">教育背景</h2>
               <ul className="mt-4 space-y-2">
-                {doctor.education.map((edu, index) => (
+                {doctor.education.map((edu: any, index: any) => (
                   <li key={index} className="text-gray-600">{edu}</li>
                 ))}
               </ul>
@@ -123,7 +115,7 @@ export default function DoctorDetailPage({ params }: { params: { id: string } })
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-bold text-primary border-b border-gray-200 pb-2">工作经历</h2>
               <ul className="mt-4 space-y-2">
-                {doctor.experience.map((exp, index) => (
+                {doctor.experience.map((exp: any, index: any) => (
                   <li key={index} className="text-gray-600">{exp}</li>
                 ))}
               </ul>
@@ -133,7 +125,7 @@ export default function DoctorDetailPage({ params }: { params: { id: string } })
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-bold text-primary border-b border-gray-200 pb-2">学术成就</h2>
               <ul className="mt-4 space-y-2">
-                {doctor.achievements.map((ach, index) => (
+                {doctor.achievements.map((ach: any, index: any) => (
                   <li key={index} className="text-gray-600">{ach}</li>
                 ))}
               </ul>
@@ -146,7 +138,7 @@ export default function DoctorDetailPage({ params }: { params: { id: string } })
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-bold text-primary border-b border-gray-200 pb-2">出诊时间</h2>
               <ul className="mt-4 space-y-2">
-                {doctor.outpatientTime.map((time, index) => (
+                {doctor.outpatientTime.map((time: any, index: any) => (
                   <li key={index} className="text-gray-600">{time}</li>
                 ))}
               </ul>
@@ -156,7 +148,7 @@ export default function DoctorDetailPage({ params }: { params: { id: string } })
             <div className="bg-white rounded-lg shadow-md p-6">
               <h2 className="text-xl font-bold text-primary border-b border-gray-200 pb-2">擅长疾病</h2>
               <div className="mt-4 flex flex-wrap gap-2">
-                {doctor.treatableDiseases.map((disease, index) => (
+                {doctor.treatableDiseases.map((disease: any, index: any) => (
                   <span key={index} className="px-3 py-1 bg-background rounded-full text-text text-sm">
                     {disease}
                   </span>

@@ -1,37 +1,31 @@
 import { NextResponse } from 'next/server';
 import jwt from 'jsonwebtoken';
 
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+
 export async function POST(request: Request) {
   try {
-    const { phone, code } = await request.json();
+    const { username, password } = await request.json();
 
-    // 1. 验证手机号格式
-    if (!/^1[3-9]\d{9}$/.test(phone)) {
-      return NextResponse.json({ error: '手机号格式错误' }, { status: 400 });
+    // 这里应该添加实际的用户验证逻辑
+    if (username === 'admin' && password === 'password') {
+      const token = jwt.sign(
+        { username, role: 'admin' },
+        JWT_SECRET,
+        { expiresIn: '24h' }
+      );
+
+      return NextResponse.json({ success: true, token });
     }
 
-    // 2. 验证验证码
-    // const savedCode = await redis.get(`verify_code:${phone}`);
-    // if (!savedCode || savedCode !== code) {
-    //   return NextResponse.json({ error: '验证码错误' }, { status: 400 });
-    // }
-
-    // 3. 查找或创建用户
-    // const user = await prisma.user.upsert({
-    //   where: { phone },
-    //   update: {},
-    //   create: { phone }
-    // });
-
-    // 4. 生成 JWT token
-    const token = jwt.sign(
-      { userId: 'test_user_id', phone },
-      process.env.JWT_SECRET || 'your-secret-key',
-      { expiresIn: '7d' }
+    return NextResponse.json(
+      { success: false, message: '用户名或密码错误' },
+      { status: 401 }
     );
-
-    return NextResponse.json({ token });
   } catch (error) {
-    return NextResponse.json({ error: '登录失败' }, { status: 500 });
+    return NextResponse.json(
+      { success: false, message: '服务器错误' },
+      { status: 500 }
+    );
   }
 } 

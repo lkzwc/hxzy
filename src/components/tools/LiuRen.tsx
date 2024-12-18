@@ -118,7 +118,7 @@ export default function LiuRen() {
     let monthIndex = (lunarMonth - 1) % 6;
     let currentPosition = liuRenArray[monthIndex];
     
-    // 2. 从当前位置��续计算日期
+    // 2. 从当前位置续计算日期
     let daySteps = (lunarDay - 1) % 6;
     let dayIndex = (liuRenArray.indexOf(currentPosition) + daySteps) % 6;
     currentPosition = liuRenArray[dayIndex];
@@ -137,9 +137,10 @@ export default function LiuRen() {
     
     // 获取当前农历日期和时辰
     const lunar = Lunar.fromDate(new Date());
-    const month = lunar.getMonth();
-    const day = lunar.getDay();
-    const currentTime = getCurrentTimeUnit().name;  // 需要从TimeTable组件获取
+
+    const month = Number(lunar.getMonthInChinese().replace('月', ''));
+    const day = Number(lunar.getDayInChinese().replace('日', ''));
+    const currentTime = getCurrentTimeUnit().name;
     
     // 模拟计算延迟
     await new Promise(resolve => setTimeout(resolve, 1000));
