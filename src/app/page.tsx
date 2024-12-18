@@ -1,15 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react';
 import { Lunar } from 'lunar-javascript';
-import Link from 'next/link';
-
-// 定义导航菜单项
-const navItems = [
-  { name: '每日养生', path: '/yang-sheng-zhi-dao' },
-  { name: '四季调养', path: '/si-ji-tiao-yang' },
-  { name: '中医典籍', path: '/zhong-yi-dian-ji' },
-  { name: '名医论坛', path: '/doctors' }
-];
+import Sidebar from '@/components/Sidebar';
 
 export default function Home() {
   const [lunarInfo, setLunarInfo] = useState({
@@ -29,26 +21,8 @@ export default function Home() {
 
   return (
     <div className="flex flex-col md:flex-row p-4 gap-4">
-      <div className="w-full md:w-64 bg-white rounded-lg shadow-md p-4">
-        <h2 className="text-primary text-xl font-bold mb-4 pb-2 border-b-2 border-secondary">
-          快速导航
-        </h2>
-        <nav>
-          <ul className="space-y-3">
-            {navItems.map((item) => (
-              <li key={item.name}>
-                <Link 
-                  href={item.path}
-                  className="text-text cursor-pointer hover:text-secondary hover:pl-2 transition-all duration-300 block"
-                >
-                  {item.name}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </div>
-
+      <Sidebar />
+      
       <div className="flex-1 space-y-4">
         <div className="bg-white rounded-lg shadow-md p-4">
           <h2 className="text-primary text-xl font-bold mb-4 pb-2 border-b-2 border-secondary">

@@ -32,10 +32,10 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
 const menuItems = [
   { name: '首页', path: '/', description: '首页' },
   { name: '中医工具', path: '/tools', description: '中医工具' },
-  { name: '养生之道', path: '/yang-sheng-zhi-dao', description: '养生之道' },
+  { name: '中医社区', path: '/community', description: '中医爱好者交流地' },
   { name: '药材图谱', path: '/yao-cai-tu-pu', description: '药材图谱' },
-  { name: '针灸经络', path: '/zhen-jiu-jing-luo', description: '针灸经络' },
   { name: '全国名医', path: '/doctors' },
+  { name: '针灸经络', path: '/zhen-jiu-jing-luo', description: '针灸经络' },
   { name: '关于我们', path: '/about-us' }
 ];
 
