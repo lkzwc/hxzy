@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Layout from "@/components/Layout";
-
+import { SessionProvider } from "next-auth/react"
 export const metadata: Metadata = {
   title: {
     default: "华夏中医 - 传承国粹，弘扬中医文化",
@@ -12,6 +12,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
+  pageProps: { session, ...pageProps },
 }: {
   children: React.ReactNode
 }) {
@@ -19,7 +20,9 @@ export default function RootLayout({
     <html lang="zh-CN" suppressHydrationWarning>
       <body suppressHydrationWarning>
         <Layout>
+          <SessionProvider session={session}>
           {children}
+          </SessionProvider>
         </Layout>
       </body>
     </html>
