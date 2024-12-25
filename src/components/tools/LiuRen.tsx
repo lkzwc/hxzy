@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react';
-import { Lunar } from 'lunar-javascript';
+const {Solar, Lunar, HolidayUtil} = require('lunar-javascript')
 import { motion, AnimatePresence } from 'framer-motion';
 
 // 定义时辰类型

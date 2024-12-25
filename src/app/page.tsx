@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react';
-import { Lunar } from 'lunar-javascript';
+const { Solar, Lunar } = require('lunar-javascript');
 import Sidebar from '@/components/Sidebar';
 
 export default function Home() {

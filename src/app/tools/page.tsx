@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LiuRen from '@/components/tools/LiuRen';
 import TimeTable from '@/components/tools/TimeTable';
+import ZiWei from '@/components/tools/ZiWei';
+import AI from '@/components/tools/AI';
 
 // 工具列表
 const tools = [
@@ -15,6 +17,12 @@ const tools = [
   {
     id: 'ai',
     name: 'AI中医',
+    icon: '🔮',
+    description: '传统预测方法，用于预测事情吉凶'
+  },
+  {
+    id: 'ziwei',
+    name: '紫薇占卜',
     icon: '🔮',
     description: '传统预测方法，用于预测事情吉凶'
   },
@@ -63,21 +71,8 @@ export default function ToolsPage() {
             <div className="">
               <AnimatePresence mode="wait">
                 {activeTool === 'liuren' && <LiuRen />}
-                {activeTool === 'meridian' && (
-                  <motion.div
-                    key="meridian"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                  >
-                    <h2 className="text-xl font-bold text-primary mb-4">
-                      子午流注
-                    </h2>
-                    <p className="text-gray-600">
-                      正在开发中...
-                    </p>
-                  </motion.div>
-                )}
+                {activeTool === 'ai' && <AI />}
+                {activeTool === 'ziwei' && <ZiWei />}
               </AnimatePresence>
             </div>
           </div>
