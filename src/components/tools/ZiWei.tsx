@@ -40,8 +40,8 @@ interface PalaceInfo {
   description?: string;
   position?: { x: number; y: number };
   transformations?: string[];
-  yearlyStars?: string[];
-  flowStars?: string[];
+  yearlyStars?: string[]; // Add type annotation
+  flowStars?: string[]; // Add type annotation
 }
 
 // 星耀解读
@@ -184,6 +184,9 @@ export default function ZiWei() {
     '亥': '21:00-23:00'
   };
 
+  // 定义天干类型
+  type TianGan = '甲' | '乙' | '丙' | '丁' | '戊' | '己' | '庚' | '辛' | '壬' | '癸';
+
   // 计算年干支
   const calculateYearGanZhi = (lunar: any) => {
     return {
@@ -217,9 +220,9 @@ export default function ZiWei() {
   };
 
   // 计算紫微星位置
-  const calculateZiWeiPosition = (lunarDay: number, yearStem: string) => {
+  const calculateZiWeiPosition = (lunarDay: number, yearStem: TianGan) => {
     // 紫微星落宫计算表（简化版，实际应该使用更详细的对照表）
-    const ziWeiTable = {
+    const ziWeiTable: Record<TianGan, number> = {
       甲: 0, 己: 0,  // 第一组
       乙: 1, 庚: 1,  // 第二组
       丙: 2, 辛: 2,  // 第三组
@@ -238,7 +241,7 @@ export default function ZiWei() {
   };
 
   // 计算其他主星
-  const calculateMainStars = (ziWeiPosition: string, tianFuPosition: string, yearStem: string) => {
+  const calculateMainStars = (ziWeiPosition: string, tianFuPosition: string, yearStem: TianGan) => {
     const stars: { [key: string]: string } = {};
     const ziWeiIndex = EARTHLY_BRANCHES.indexOf(ziWeiPosition);
     const tianFuIndex = EARTHLY_BRANCHES.indexOf(tianFuPosition);
@@ -301,7 +304,7 @@ export default function ZiWei() {
   };
 
   // 计算长生十二神
-  const calculateLifeStars = (yearStem: string, gender: 'male' | 'female') => {
+  const calculateLifeStars = (yearStem: TianGan, gender: 'male' | 'female') => {
     const stemIndex = HEAVENLY_STEMS.indexOf(yearStem);
     let baseIndex = 0;
 
@@ -383,7 +386,7 @@ export default function ZiWei() {
   };
 
   // 渲染单个宫位的内容
-  const renderPalace = (palace: PalaceInfo, daxianYears?: number[]) => (
+  const renderPalace = (palace: PalaceInfo, auxiliaryStars: number[]) => (
     <div className={`h-full flex flex-col border ${palace.name === '命宫' ? 'border-red-800 bg-red-50' : 'border-gray-300'} rounded-lg p-2`}>
       <div className={`palace-header flex justify-between items-center pb-1 mb-1 border-b ${palace.name === '命宫' ? 'border-red-300' : 'border-gray-200'}`}>
         <span className={`text-base font-bold ${palace.name === '命宫' ? 'text-red-800' : 'text-gray-800'}`}>
@@ -475,28 +478,24 @@ export default function ZiWei() {
         </div>
 
         {/* 底部：小限和流耀 */}
-        {(palace.yearlyStars?.length > 0 || palace.flowStars?.length > 0) && (
+        {Boolean(palace?.yearlyStars?.length || palace?.flowStars?.length) && (
           <div className="grid grid-cols-2 gap-x-1">
-            {palace.yearlyStars?.length > 0 && (
+            {Boolean(palace?.yearlyStars?.length) && (
               <div className="border border-indigo-100 rounded bg-indigo-50/50">
                 <div className="text-indigo-500 border-b border-indigo-100 px-1 py-0.5">小限</div>
                 <div className="text-indigo-700 leading-normal px-1 py-0.5">
-                  {palace.yearlyStars.map((star, index) => (
-                    <div key={index}>
-                      {star}
-                    </div>
+                  {palace.yearlyStars?.map((star, index) => (
+                    <div key={index}>{star}</div>
                   ))}
                 </div>
               </div>
             )}
-            {palace.flowStars?.length > 0 && (
+            {Boolean(palace?.flowStars?.length) && (
               <div className="border border-teal-100 rounded bg-teal-50/50">
                 <div className="text-teal-500 border-b border-teal-100 px-1 py-0.5">流耀</div>
                 <div className="text-teal-700 leading-normal px-1 py-0.5">
-                  {palace.flowStars.map((star, index) => (
-                    <div key={index}>
-                      {star}
-                    </div>
+                  {palace.flowStars?.map((star, index) => (
+                    <div key={index}>{star}</div>
                   ))}
                 </div>
               </div>
@@ -505,9 +504,9 @@ export default function ZiWei() {
         )}
 
         {/* 大限年份 - 始终显示在最底部 */}
-        {daxianYears && (
+        {auxiliaryStars && (
           <div className="pt-0.5 mt-auto border-t border-gray-200">
-            <div className="text-gray-500">大限：<span className="text-gray-600">{daxianYears[0]}-{daxianYears[9]}</span></div>
+            <div className="text-gray-500">大限：<span className="text-gray-600">{auxiliaryStars[0]}-{auxiliaryStars[9]}</span></div>
           </div>
         )}
       </div>
