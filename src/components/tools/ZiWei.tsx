@@ -240,6 +240,13 @@ export default function ZiWei() {
     return EARTHLY_BRANCHES[(basePosition + adjustment) % 12];
   };
 
+  // 计算天府星位置
+  const calculateTianFuPosition = (ziWeiPosition: string) => {
+    const ziWeiIndex = EARTHLY_BRANCHES.indexOf(ziWeiPosition);
+    // 天府星与紫微星相对位置固定，在地支上相差7位
+    return EARTHLY_BRANCHES[(ziWeiIndex + 7) % 12];
+  };
+
   // 计算其他主星
   const calculateMainStars = (ziWeiPosition: string, tianFuPosition: string, yearStem: TianGan) => {
     const stars: { [key: string]: string } = {};
@@ -769,7 +776,7 @@ export default function ZiWei() {
               </div>
             </div>
 
-            {lunarDate && (
+            {/* {lunarDate && (
               <div className="text-center space-y-2 text-gray-600">
                 <div>
                   农历：{lunarDate.getYearInChinese()}年 {lunarDate.getMonthInChinese()}月 {lunarDate.getDayInChinese()}
@@ -790,7 +797,7 @@ export default function ZiWei() {
                 )}
               </div>
             )}
-            
+             */}
             <button
               type="submit"
               className="w-full py-3 px-4 bg-amber-700 text-white rounded-md hover:bg-amber-800 transition-colors duration-200 font-medium text-lg shadow-md hover:shadow-lg"
