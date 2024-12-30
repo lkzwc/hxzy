@@ -5,6 +5,9 @@ import Link from 'next/link';
 import Footer from './Footer';
 import VerticalTitle from './tools/VerticalTitle';
 
+import { LoginMenu } from './LoginMenu';
+
+
 // 页面标题配置
 const pageTitles: Record<string, { title: string; subtitle: string }> = {
   '/tools': {
@@ -41,6 +44,7 @@ const menuItems = [
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+ 
   const pathname = usePathname();
 
   // 获取当前页面的标题配置
@@ -93,13 +97,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 </Link>
               </li>
             ))}
+            <LoginMenu />
           </ul>
-          <Link 
-            href="/login" 
-            className="ml-8 px-6 py-2 bg-secondary text-white rounded-md hover:bg-secondary/90 transition-colors"
-          >
-            登录
-          </Link>
+          
         </nav>
       </header>
 

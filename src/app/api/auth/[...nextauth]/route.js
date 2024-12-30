@@ -6,14 +6,15 @@ export const authOptions = {
     GithubProvider({
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
+      callbackUrl: "http://localhost:3000/api/auth/callback/github"
     }),
     
     // ...add more providers here
   ],
-  pages: {
-    signIn: '/login',
-    error: '/login', // 错误页面
-  },
+  // pages: {
+  //   signIn: '/login',
+  //   error: '/login', // 错误页面
+  // },
   callbacks: {
     async jwt({ token, user, account }) {
       if (account && user) {
@@ -33,4 +34,6 @@ export const authOptions = {
   },
 }
 
-export default NextAuth(authOptions)
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST };
