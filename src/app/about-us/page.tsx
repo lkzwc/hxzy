@@ -11,7 +11,7 @@ interface ServerStatus {
 
 
 
-export default async function AboutUs() {
+export default function AboutUs() {
   const [activeTab, setActiveTab] = useState<'about'|'donate'|'admin'>('about');
   const [showQRCode, setShowQRCode] = useState<'wechat'|'alipay'|null>(null);
 
