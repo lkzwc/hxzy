@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { Plus } from '@icon-park/react'
+import { Pic } from '@icon-park/react'
 
 interface CreatePostModalProps {
   isOpen: boolean
@@ -113,113 +113,120 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
       <div className="w-full max-w-3xl mx-4" onClick={handleModalClick}>
         <div className="card bg-base-100 shadow-xl">
-          <div className="card-body p-6">
-            <h3 className="card-title text-lg font-medium mb-4">发布文章</h3>
-            
-            <form onSubmit={handleSubmit} className="space-y-4">
-              {/* 标题输入 */}
-              <div className="form-control">
+          <div className="card-body p-0">
+            {/* 顶部标题栏 */}
+            <div className="flex items-center justify-between p-4 border-b">
+              <div className="flex items-center gap-3">
+                <img
+                  src={session?.user?.image || '/images/default-avatar.png'}
+                  alt="avatar"
+                  className="w-8 h-8 rounded-full"
+                />
                 <input
                   type="text"
-                  placeholder="标题"
+                  placeholder="输入标题..."
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="input input-bordered w-full"
-                  required
+                  className="text-lg font-medium bg-transparent border-none focus:outline-none placeholder:text-gray-400 w-full"
                 />
               </div>
+              <button onClick={onClose} className="btn btn-ghost btn-sm btn-circle">×</button>
+            </div>
 
-              {/* 内容输入 */}
-              <div className="form-control">
-                <textarea
-                  placeholder="写下你的想法..."
-                  value={content}
-                  onChange={(e) => setContent(e.target.value)}
-                  className="textarea textarea-bordered min-h-[200px]"
-                  required
-                />
-              </div>
-
-              {/* 标签输入 */}
-              <div className="form-control">
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {tags.map(tag => (
-                    <div
-                      key={tag}
-                      className="badge badge-primary gap-2"
+            {/* 标签选择区 */}
+            <div className="px-4 py-2 border-b bg-base-200/50">
+              <div className="flex flex-wrap gap-2 items-center min-h-[32px]">
+                {tags.length === 0 && (
+                  <span className="text-sm text-gray-400">添加标签，让更多人找到你的文章</span>
+                )}
+                {tags.map(tag => (
+                  <div
+                    key={tag}
+                    className="badge badge-primary gap-1"
+                  >
+                    {tag}
+                    <button
+                      type="button"
+                      className="btn btn-xs btn-ghost btn-circle"
+                      onClick={() => handleRemoveTag(tag)}
                     >
-                      {tag}
-                      <button
-                        type="button"
-                        className="btn btn-xs btn-circle btn-ghost"
-                        onClick={() => handleRemoveTag(tag)}
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
+                      ×
+                    </button>
+                  </div>
+                ))}
                 <input
                   type="text"
-                  placeholder="添加标签（回车确认）"
+                  placeholder="输入标签按回车添加"
                   value={currentTag}
                   onChange={(e) => setCurrentTag(e.target.value)}
                   onKeyDown={handleAddTag}
-                  className="input input-bordered w-full"
+                  className="flex-1 bg-transparent border-none text-sm focus:outline-none min-w-[120px]"
                 />
               </div>
+            </div>
 
-              {/* 图片上传 */}
-              <div className="form-control">
-                <div className="flex flex-wrap gap-4">
+            {/* 内容编辑区 */}
+            <div className="p-4 min-h-[300px]">
+              <textarea
+                placeholder="写下你的想法..."
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                className="w-full h-full min-h-[280px] bg-transparent border-none resize-none focus:outline-none text-base leading-relaxed"
+              />
+            </div>
+
+            {/* 底部操作栏 */}
+            <div className="flex items-center justify-between px-4 py-3 border-t bg-base-200/50">
+              <div className="flex items-center gap-2">
+                <label className="btn btn-ghost btn-sm">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageUpload}
+                    className="hidden"
+                  />
+                  <Pic theme="outline" size="18" className="mr-1" />
+                  添加图片
+                </label>
+                {/* 显示已上传的图片预览 */}
+                <div className="flex gap-2">
                   {images.map((url, index) => (
-                    <div key={index} className="relative w-24 h-24">
+                    <div key={index} className="relative w-12 h-12">
                       <Image
                         src={url}
                         alt={`上传的图片 ${index + 1}`}
                         fill
-                        className="object-cover rounded-lg"
+                        className="object-cover rounded"
                       />
                       <button
                         type="button"
                         onClick={() => setImages(prev => prev.filter((_, i) => i !== index))}
-                        className="btn btn-circle btn-xs absolute -top-2 -right-2"
+                        className="absolute -top-1 -right-1 btn btn-xs btn-circle btn-error"
                       >
                         ×
                       </button>
                     </div>
                   ))}
-                  <label className="w-24 h-24 border-2 border-dashed border-base-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-primary transition-colors">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      onChange={handleImageUpload}
-                      className="hidden"
-                    />
-                    <Plus theme="outline" size="24" className="text-base-300" />
-                  </label>
                 </div>
               </div>
-
-              {/* 操作按钮 */}
-              <div className="card-actions justify-end mt-6 pt-4 border-t">
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  className="btn"
+                  className="btn btn-ghost btn-sm"
                   onClick={onClose}
                 >
                   取消
                 </button>
                 <button
-                  type="submit"
-                  className="btn btn-primary"
+                  onClick={handleSubmit}
+                  className="btn btn-primary btn-sm px-6"
                   disabled={isSubmitting || !title.trim() || !content.trim()}
                 >
                   {isSubmitting ? '发布中...' : '发布'}
                 </button>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       </div>
