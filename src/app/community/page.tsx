@@ -106,8 +106,8 @@ export default function Community() {
     <div className="container mx-auto max-w-7xl px-4 min-h-[500px]">
       <div className="flex flex-col md:flex-row gap-6">
         {/* 左侧筛选区 - 固定位置 */}
-        <div className="w-[200px] shrink-0">
-          <div className="fixed top-[72px] w-[200px]">
+        <div className="w-[100px] shrink-0">
+          <div className="fixed top-[72px] ">
             <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
               <h3 className="text-base font-medium mb-3 pb-2 border-b border-gray-100 flex items-center gap-2">
                 <span className="w-0.5 h-4 bg-primary rounded-full"></span>
@@ -135,7 +135,7 @@ export default function Community() {
         {/* 中间内容区 */}
         <div className="flex-1 min-w-0">
           {/* 固定的顶部搜索栏 */}
-          <div className="fixed top-[72px] left-[240px] right-[300px] z-20">
+          <div className="fixed top-[72px] left-[225px] w-[58%] z-20">
             <div className="bg-white rounded-lg shadow-sm p-2 border border-gray-100">
               <form onSubmit={handleSearch} className="relative flex items-center">
                 <Search className="absolute left-3 text-gray-400" size="18" />
