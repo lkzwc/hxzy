@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { Prisma } from '@prisma/client'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '../auth/[...nextauth]/route'
 
 export async function GET(request: Request) {
   try {
@@ -73,6 +75,60 @@ export async function GET(request: Request) {
     console.error('Error fetching posts:', error)
     return NextResponse.json(
       { error: '获取帖子列表失败' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function POST(request: Request) {
+  try {
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.email) {
+      return NextResponse.json(
+        { error: '请先登录' },
+        { status: 401 }
+      )
+    }
+
+    const { title, content, tags, images } = await request.json()
+
+    // 获取用户信息
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email }
+    })
+
+    if (!user) {
+      return NextResponse.json(
+        { error: '用户不存在' },
+        { status: 404 }
+      )
+    }
+
+    const post = await prisma.post.create({
+      data: {
+        title,
+        content,
+        tags: tags || [],
+        images: images || [],
+        authorId: user.id,
+        published: true,
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          }
+        }
+      }
+    })
+
+    return NextResponse.json(post)
+  } catch (error) {
+    console.error('Error creating post:', error)
+    return NextResponse.json(
+      { error: '创建帖子失败' },
       { status: 500 }
     )
   }

@@ -1,7 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     content: [
-      "./src/**/*.{js,ts,jsx,tsx,mdx}",  // 确保包含所有源文件
+      './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
+      './src/components/**/*.{js,ts,jsx,tsx,mdx}',
+      './src/app/**/*.{js,ts,jsx,tsx,mdx}',
     ],
     theme: {
       extend: {
@@ -16,5 +18,16 @@ module.exports = {
         },
       },
     },
-    plugins: [],
+    plugins: [require("daisyui")],
+    daisyui: {
+      themes: [
+        {
+          light: {
+            ...require("daisyui/src/theming/themes")["light"],
+            primary: "#9B4722",
+            "primary-focus": "#8B3712",
+          },
+        },
+      ],
+    },
   };

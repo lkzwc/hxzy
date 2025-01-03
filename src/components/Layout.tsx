@@ -64,7 +64,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <header className="bg-primary text-background px-4 md:px-8 py-4 flex justify-between items-center shadow-md relative z-50">
+      <header className="fixed top-0 left-0 right-0 bg-primary text-background px-4 md:px-8 py-4 flex justify-between items-center shadow-md z-50">
         <Link href="/" className="text-2xl font-bold">
           华夏中医
         </Link>
@@ -99,11 +99,13 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             ))}
             <LoginMenu />
           </ul>
-          
         </nav>
       </header>
 
-      {/* 移动端菜单 - 使用动画过渡 */}
+      {/* 添加占位元素，防止内容被固定导航栏遮挡 */}
+      <div className="h-[60px]"></div>
+
+      {/* 移动端菜单 */}
       <div 
         className={`fixed inset-0 bg-black transition-opacity duration-300 md:hidden ${
           isMenuOpen ? 'opacity-50 z-40' : 'opacity-0 pointer-events-none'
@@ -156,7 +158,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </div>
 
       <main className="flex-1 relative">
-        {/* 只在配置的页面显示竖直标题 */}
         {currentPageTitle && (
           <VerticalTitle 
             title={currentPageTitle.title}

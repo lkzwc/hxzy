@@ -6,10 +6,9 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
+    const postId = parseInt(params.id)
     const post = await prisma.post.findUnique({
-      where: {
-        id: parseInt(params.id)
-      },
+      where: { id: postId },
       include: {
         author: {
           select: {
@@ -19,6 +18,9 @@ export async function GET(
           }
         },
         comments: {
+          orderBy: {
+            createdAt: 'desc'
+          },
           include: {
             author: {
               select: {
@@ -27,9 +29,6 @@ export async function GET(
                 image: true,
               }
             }
-          },
-          orderBy: {
-            createdAt: 'desc'
           }
         }
       }
@@ -44,7 +43,7 @@ export async function GET(
 
     // 更新浏览量
     await prisma.post.update({
-      where: { id: parseInt(params.id) },
+      where: { id: postId },
       data: { views: { increment: 1 } }
     })
 
@@ -52,7 +51,7 @@ export async function GET(
   } catch (error) {
     console.error('Error fetching post:', error)
     return NextResponse.json(
-      { error: '获取帖子失败' },
+      { error: '获取帖子详情失败' },
       { status: 500 }
     )
   }

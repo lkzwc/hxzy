@@ -30,29 +30,31 @@ model User {
 }
 
 model Post {
-  id          Int       @id @default(autoincrement())
-  title       String
-  content     String    @db.Text
-  published   Boolean   @default(true)
-  author      User      @relation(fields: [authorId], references: [id])
-  authorId    Int
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  views       Int       @default(0)
-  likes       Int       @default(0)
-  comments    Comment[]
-  tags        String[]
+  id        Int      @id @default(autoincrement())
+  title     String
+  content   String?  @db.Text
+  images    String[]
+  published Boolean  @default(true)
+  authorId  Int
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  views     Int      @default(0)
+  likes     Int      @default(0)
+  tags      String[]
+  comments  Comment[]
 }
 
 model Comment {
-  id        Int       @id @default(autoincrement())
-  content   String    @db.Text
-  post      Post      @relation(fields: [postId], references: [id])
+  id        Int      @id @default(autoincrement())
+  content   String   @db.Text
+  images    String[]
   postId    Int
-  author    User      @relation(fields: [authorId], references: [id])
+  post      Post     @relation(fields: [postId], references: [id])
   authorId  Int
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Doctor {

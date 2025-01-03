@@ -1,6 +1,6 @@
 import NextAuth from "next-auth"
 import GithubProvider from "next-auth/providers/github"
-import prisma from '../../../../lib/prisma'
+import prisma from '@/lib/prisma'
 
 export const authOptions = {
   providers: [
@@ -30,6 +30,9 @@ export const authOptions = {
             lastLogin: new Date(),
           },
         });
+
+        // 将数据库用户 ID 添加到 user 对象
+        user.id = dbUser.id;
         
         return true;
       } catch (error) {
@@ -38,20 +41,21 @@ export const authOptions = {
       }
     },
     async jwt({ token, user, account }) {
-      if (account && user) {
-        return {
-          ...token,
-          accessToken: account.access_token,
-          userId: user.id,
-        };
+      if (user) {
+        token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
-      session.user.id = token.userId;
-      session.accessToken = token.accessToken;
+      if (session?.user) {
+        session.user.id = token.id;
+      }
       return session;
     },
+  },
+  pages: {
+    signIn: '/login',
+    error: '/login',
   },
 }
 
