@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@icon-park/react": "^1.4.2",
     "@prisma/client": "6.1.0",
     "framer-motion": "10.16.4",
     "jsonwebtoken": "^9.0.2",

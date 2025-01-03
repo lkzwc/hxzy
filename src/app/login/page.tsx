@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useSession, signIn, signOut } from "next-auth/react"
-import { User, TwoDimensionalCodeOne } from '@icon-park/react'
+import { User, TwoDimensionalCodeOne, Github } from '@icon-park/react'
 
 
 function SocialLogin() {
@@ -10,14 +10,11 @@ function SocialLogin() {
     <div className="mt-6 flex justify-center space-x-4">
       <button
         type="button"
-        className="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-colors duration-200"
+        className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-colors duration-200"
         title="使用 GitHub 登录"
+        onClick={()=>signIn('github')}
       >
-        <img 
-          src="https://img.alicdn.com/imgextra/i3/O1CN01KPSDJmY1h91/third-party-github.png"
-          alt="GitHub"
-          className="w-5 h-5"
-        />
+        <Github theme="outline" size="24" fill="#4a90e2"/>
       </button>
     </div>
   );
