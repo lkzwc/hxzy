@@ -1,6 +1,7 @@
 'use client'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import prisma from '../lib/prisma';
 
 // 定义医生数据类型
 interface Doctor {
@@ -46,6 +47,29 @@ export default function DoctorsPage() {
   const [selectedRegion, setSelectedRegion] = useState('全部');
   const [selectedSpecialty, setSelectedSpecialty] = useState('全部');
   const [searchQuery, setSearchQuery] = useState('');
+  const [doctors, setDoctors] = useState<any>([])
+
+
+  useEffect(() => {
+    async function fetchDoctors() {
+      try {
+        const response = await fetch('/api/doctors');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setDoctors(data);
+        console.log("data",data)
+      } catch (err) {
+        console.error(err);
+      } finally {
+      }
+    }
+
+    fetchDoctors();
+  }, []);
+
+
 
   // 筛选医生
   const filteredDoctors = doctorsData.filter(doctor => {
@@ -119,7 +143,7 @@ export default function DoctorsPage() {
 
         {/* 医生列表 */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredDoctors.map((doctor) => (
+          {doctors.map((doctor) => (
             <div key={doctor.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
               <div className="p-6">
                 <div className="flex items-start space-x-4">
@@ -128,14 +152,14 @@ export default function DoctorsPage() {
                   </div>
                   <div className="flex-1">
                     <h3 className="text-xl font-bold text-primary">{doctor.name}</h3>
-                    <p className="text-secondary">{doctor.title}</p>
-                    <p className="text-gray-600">{doctor.hospital}</p>
+                    <p className="text-secondary">{doctor.ability}</p>
+                    <p className="text-gray-600">{doctor.province}</p>
                     <div className="mt-2 flex flex-wrap gap-2">
-                      {doctor.specialty.map((spec) => (
+                      {/* {doctor.specialty.map((spec) => (
                         <span key={spec} className="px-2 py-1 bg-background rounded-full text-xs text-text">
                           {spec}
                         </span>
-                      ))}
+                      ))} */}
                     </div>
                   </div>
                 </div>

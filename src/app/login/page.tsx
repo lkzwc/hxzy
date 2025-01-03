@@ -4,9 +4,27 @@ import Image from 'next/image';
 import { useSession, signIn, signOut } from "next-auth/react"
 import { User, TwoDimensionalCodeOne } from '@icon-park/react'
 
+
+function SocialLogin() {
+  return (
+    <div className="mt-6 flex justify-center space-x-4">
+      <button
+        type="button"
+        className="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-colors duration-200"
+        title="使用 GitHub 登录"
+      >
+        <img 
+          src="https://img.alicdn.com/imgextra/i3/O1CN01KPSDJmY1h91/third-party-github.png"
+          alt="GitHub"
+          className="w-5 h-5"
+        />
+      </button>
+    </div>
+  );
+}
 export default function Login() {
   const [isQRLogin, setIsQRLogin] = useState(false);
-  const [loginType, setLoginType] = useState('');
+  const [loginType, setLoginType] = useState('sms');
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
   const [isRegister, setIsRegister] = useState(false);
@@ -35,7 +53,7 @@ export default function Login() {
           </div>
 
           <div className="flex-1 px-8 py-6 relative">
-            <div className="absolute right-4 top-3">
+            <div className="absolute right-4 top-2">
               {isQRLogin ? (
                 <button
                   onClick={() => setIsQRLogin(false)}
@@ -70,8 +88,8 @@ export default function Login() {
               <div className="h-full flex flex-col">
                 <div className="flex border-b mb-4">
                   <button
-                    onClick={() => setLoginType('')}
-                    className={`flex-1 py-2 text-sm font-medium ${loginType === '' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
+                    onClick={() => setLoginType('sms')}
+                    className={`flex-1 py-2 text-sm font-medium ${loginType === 'sms' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
                   >
                     短信登录
                   </button>
@@ -83,24 +101,24 @@ export default function Login() {
                   </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="flex flex-col flex-1">
+                <form onSubmit={handleSubmit} className="flex flex-col flex-1 mt-[-10px]">
                   <div className="space-y-1">
                     <input
                       type="tel"
                       placeholder="请输入手机号"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full h-9 px-3 mt-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="w-full h-9 px-3 my-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
-                    
-                    {loginType === '' ? (
-                      <div className="flex gap-2">
+          
+                    {loginType === 'sms' ? (
+                      <div className="flex gap-2 mt-4 ">
                         <input
                           type="text"
                           placeholder="请输入验证码"
                           value={code}
                           onChange={(e) => setCode(e.target.value)}
-                          className="flex-1 h-9 mt-2 px-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                          className="flex-1 h-9 px-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                         <button
                           type="button"
@@ -110,11 +128,13 @@ export default function Login() {
                         </button>
                       </div>
                     ) : (
-                      <input
+                      <div className='mt-4'>
+                        <input
                         type="password"
                         placeholder="请输入密码"
-                        className="w-full h-9 mt-2 px-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full h-9 px-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                       />
+                      </div>
                     )}
                   </div>
 
@@ -135,19 +155,7 @@ export default function Login() {
                           <span className="px-2 text-gray-400 bg-white">其他登录方式</span>
                         </div>
                       </div>
-                      <div className="mt-3">
-                        <button
-                          type="button"
-                          className="w-full flex items-center justify-center gap-2 px-3 h-9 text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-gray-300 transition-colors duration-200 text-sm"
-                        >
-                          <img 
-                            src="https://img.alicdn.com/imgextra/i3/O1CN01KPSDJmY1h91/third-party-github.png"
-                            alt="github"
-                            className="w-4 h-4"
-                          />
-                          GitHub 登录
-                        </button>
-                      </div>
+                      <SocialLogin />
                     </div>
                   </div>
                 </form>
