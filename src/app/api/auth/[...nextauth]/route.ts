@@ -1,19 +1,17 @@
-import NextAuth from "next-auth"
+import NextAuth, { NextAuthOptions } from "next-auth"
 import GithubProvider from "next-auth/providers/github"
 import prisma from '@/app/lib/prisma'
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   providers: [
     GithubProvider({
-      clientId: process.env.GITHUB_CLIENT_ID,
-      clientSecret: process.env.GITHUB_CLIENT_SECRET,
-      callbackUrl: process.env.GITHUB_CALLBACK_URL || "http://localhost:3000/api/auth/callback/github"
+      clientId: process.env.GITHUB_CLIENT_ID!,
+      clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
   session: {
-    strategy: "jwt" as const,
-    maxAge: 30 * 24 * 60 * 60, // 30 days
+    strategy: "jwt",
   },
   callbacks: {
     async signIn({ user, account, profile }) {
@@ -26,18 +24,16 @@ export const authOptions = {
           update: {
             name: user.name,
             image: user.image,
-            lastLogin: new Date(),
           },
           create: {
             email: user.email,
             name: user.name,
             image: user.image,
-            lastLogin: new Date(),
           },
         });
 
         // 将数据库用户 ID 添加到 user 对象
-        user.id = dbUser.id;
+        (user as any).id = dbUser.id;
         
         return true;
       } catch (error) {
@@ -45,15 +41,15 @@ export const authOptions = {
         return false;
       }
     },
-    async jwt({ token, user, account }) {
+    async jwt({ token, user }) {
       if (user) {
-        token.id = user.id;
+        token.id = (user as any).id;
       }
       return token;
     },
     async session({ session, token }) {
       if (session?.user) {
-        session.user.id = token.id;
+        (session.user as any).id = token.id;
       }
       return session;
     },
@@ -66,4 +62,4 @@ export const authOptions = {
 
 const handler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST };
+export { handler as GET, handler as POST }; 

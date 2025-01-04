@@ -1,12 +1,20 @@
-import { NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
+import { NextRequest, NextResponse } from 'next/server'
+import prisma from '@/app/lib/prisma'
 
+// 获取帖子详情
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     const postId = parseInt(params.id)
+    if (isNaN(postId)) {
+      return NextResponse.json(
+        { error: '无效的帖子ID' },
+        { status: 400 }
+      )
+    }
+
     const post = await prisma.post.findUnique({
       where: { id: postId },
       include: {
@@ -15,23 +23,28 @@ export async function GET(
             id: true,
             name: true,
             image: true,
-          }
+          },
+        },
+        likedBy: {
+          select: {
+            userId: true,
+          },
         },
         comments: {
-          orderBy: {
-            createdAt: 'desc'
-          },
           include: {
             author: {
               select: {
                 id: true,
                 name: true,
                 image: true,
-              }
-            }
-          }
-        }
-      }
+              },
+            },
+          },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
+      },
     })
 
     if (!post) {
@@ -41,15 +54,19 @@ export async function GET(
       )
     }
 
-    // 更新浏览量
+    // 增加浏览量
     await prisma.post.update({
       where: { id: postId },
-      data: { views: { increment: 1 } }
+      data: {
+        views: {
+          increment: 1,
+        },
+      },
     })
 
     return NextResponse.json(post)
   } catch (error) {
-    console.error('Error fetching post:', error)
+    console.error('获取帖子详情失败:', error)
     return NextResponse.json(
       { error: '获取帖子详情失败' },
       { status: 500 }

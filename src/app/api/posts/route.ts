@@ -1,78 +1,67 @@
-import { NextResponse } from 'next/server'
-import prisma from '@/lib/prisma'
-import { Prisma } from '@prisma/client'
+import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
-import { authOptions } from '../auth/[...nextauth]/route'
+import { authOptions } from '@/app/api/auth/[...nextauth]/route'
+import prisma from '@/app/lib/prisma'
+import { Prisma } from '@prisma/client'
 
-export async function GET(request: Request) {
+// 获取帖子列表
+export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const page = parseInt(searchParams.get('page') || '1')
-    const pageSize = parseInt(searchParams.get('pageSize') || '10')
-    const tag = searchParams.get('tag')
     const search = searchParams.get('search')
+    const tag = searchParams.get('tag')
+    const page = parseInt(searchParams.get('page') || '1')
+    const limit = parseInt(searchParams.get('limit') || '20')
+    const skip = (page - 1) * limit
 
     // 构建查询条件
     const where: Prisma.PostWhereInput = {
       published: true,
-      ...(tag && { tags: { has: tag } }),
       ...(search && {
         OR: [
-          { title: { contains: search, mode: Prisma.QueryMode.insensitive } },
-          { content: { contains: search, mode: Prisma.QueryMode.insensitive } },
+          { title: { contains: search, mode: 'insensitive' as Prisma.QueryMode } },
+          { content: { contains: search, mode: 'insensitive' as Prisma.QueryMode } },
         ],
       }),
+      ...(tag && { tags: { has: tag } }),
     }
 
-    // 获取总数
-    const total = await prisma.post.count({ where })
-
     // 获取帖子列表
-    const posts = await prisma.$transaction(async (tx) => {
-      const results = await tx.post.findMany({
+    const [posts, total] = await Promise.all([
+      prisma.post.findMany({
         where,
         include: {
-          author: true,
-          comments: true,
+          author: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+          _count: {
+            select: {
+              comments: true,
+              likedBy: true,
+            },
+          },
         },
         orderBy: {
-          createdAt: 'desc',
+          createdAt: 'desc' as Prisma.SortOrder,
         },
-        skip: (page - 1) * pageSize,
-        take: pageSize,
-      })
-
-      // 格式化返回数据
-      return results.map(post => ({
-        id: post.id,
-        title: post.title,
-        content: post.content,
-        createdAt: post.createdAt,
-        views: post.views,
-        likes: post.likes,
-        tags: post.tags,
-        author: {
-          id: post.author.id,
-          name: post.author.name,
-          image: post.author.image,
-        },
-        _count: {
-          comments: post.comments.length
-        }
-      }))
-    })
+        skip,
+        take: limit,
+      }),
+      prisma.post.count({ where }),
+    ])
 
     return NextResponse.json({
       posts,
-      pagination: {
-        total,
-        page,
-        pageSize,
-        totalPages: Math.ceil(total / pageSize)
-      }
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
     })
   } catch (error) {
-    console.error('Error fetching posts:', error)
+    console.error('获取帖子列表失败:', error)
     return NextResponse.json(
       { error: '获取帖子列表失败' },
       { status: 500 }
@@ -80,10 +69,11 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+// 发布帖子
+export async function POST(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session?.user?.email) {
+    if (!session?.user) {
       return NextResponse.json(
         { error: '请先登录' },
         { status: 401 }
@@ -92,9 +82,29 @@ export async function POST(request: Request) {
 
     const { title, content, tags, images } = await request.json()
 
-    // 获取用户信息
+    // 验证数据
+    if (!title?.trim()) {
+      return NextResponse.json(
+        { error: '标题不能为空' },
+        { status: 400 }
+      )
+    }
+    if (!content?.trim()) {
+      return NextResponse.json(
+        { error: '内容不能为空' },
+        { status: 400 }
+      )
+    }
+    if (!Array.isArray(tags) || tags.length === 0) {
+      return NextResponse.json(
+        { error: '请至少选择一个标签' },
+        { status: 400 }
+      )
+    }
+
+    // 查找用户
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email }
+      where: { email: session.user.email! }
     })
 
     if (!user) {
@@ -104,14 +114,14 @@ export async function POST(request: Request) {
       )
     }
 
+    // 创建帖子
     const post = await prisma.post.create({
       data: {
-        title,
-        content,
-        tags: tags || [],
+        title: title.trim(),
+        content: content.trim(),
+        tags: tags as string[],
         images: images || [],
         authorId: user.id,
-        published: true,
       },
       include: {
         author: {
@@ -119,16 +129,22 @@ export async function POST(request: Request) {
             id: true,
             name: true,
             image: true,
-          }
-        }
-      }
+          },
+        },
+        _count: {
+          select: {
+            comments: true,
+            likedBy: true,
+          },
+        },
+      },
     })
 
     return NextResponse.json(post)
   } catch (error) {
-    console.error('Error creating post:', error)
+    console.error('发布帖子失败:', error)
     return NextResponse.json(
-      { error: '创建帖子失败' },
+      { error: '发布帖子失败' },
       { status: 500 }
     )
   }

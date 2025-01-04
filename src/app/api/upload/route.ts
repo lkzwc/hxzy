@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { writeFile } from 'fs/promises'
+import { writeFile, mkdir } from 'fs/promises'
 import { join } from 'path'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '../auth/[...nextauth]/route'
@@ -18,16 +18,32 @@ export async function POST(request: Request) {
     const formData = await request.formData()
     const files = formData.getAll('files') as File[]
 
+    if (!files.length) {
+      return NextResponse.json(
+        { error: '请选择要上传的图片' },
+        { status: 400 }
+      )
+    }
+
+    // 确保上传目录存在
+    const uploadDir = join(process.cwd(), 'public/uploads')
+    try {
+      await mkdir(uploadDir, { recursive: true })
+    } catch (err) {
+      console.error('Error creating upload directory:', err)
+    }
+
     const urls: string[] = []
     for (const file of files) {
       // 生成唯一的文件名
       const bytes = new Uint8Array(8)
       crypto.getRandomValues(bytes)
       const uniqueId = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('')
-      const fileName = `${uniqueId}-${file.name}`
+      const fileName = `${uniqueId}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '')}`
 
       // 确保文件是图片
       if (!file.type.startsWith('image/')) {
+        console.warn(`Skipping non-image file: ${file.name} (${file.type})`)
         continue
       }
 
@@ -35,19 +51,35 @@ export async function POST(request: Request) {
       const bytes2 = await file.arrayBuffer()
       const buffer = Buffer.from(bytes2)
 
-      // 保存文件
-      const path = join(process.cwd(), 'public/uploads', fileName)
-      await writeFile(path, buffer)
+      try {
+        // 保存文件
+        const path = join(uploadDir, fileName)
+        await writeFile(path, buffer)
+        console.log(`File saved successfully: ${path}`)
 
-      // 添加到 URL 列表
-      urls.push(`/uploads/${fileName}`)
+        // 添加到 URL 列表
+        urls.push(`/uploads/${fileName}`)
+      } catch (err) {
+        console.error('Error saving file:', err)
+        return NextResponse.json(
+          { error: '保存文件失败，请重试' },
+          { status: 500 }
+        )
+      }
+    }
+
+    if (urls.length === 0) {
+      return NextResponse.json(
+        { error: '没有成功上传任何图片' },
+        { status: 400 }
+      )
     }
 
     return NextResponse.json({ urls })
   } catch (error) {
     console.error('Error uploading files:', error)
     return NextResponse.json(
-      { error: '上传失败' },
+      { error: '上传失败，请重试' },
       { status: 500 }
     )
   }

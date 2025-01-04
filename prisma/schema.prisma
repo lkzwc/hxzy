@@ -1,9 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,56 +10,91 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 model User {
   id            Int       @id @default(autoincrement())
   name          String?
-  email         String    @unique
+  email         String?   @unique
   image         String?
-  password      String?
-  username      String?   @unique
-  githubId      String?   @unique
-  lastLogin     DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
   posts         Post[]
   comments      Comment[]
+  likedPosts    PostLike[]
+  likedComments CommentLike[]
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
-  title     String
-  content   String?  @db.Text
-  images    String[]
-  published Boolean  @default(true)
-  authorId  Int
-  author    User     @relation(fields: [authorId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  views     Int      @default(0)
-  likes     Int      @default(0)
-  tags      String[]
-  comments  Comment[]
+  id          Int       @id @default(autoincrement())
+  title       String
+  content     String    @db.Text
+  images      String[]
+  published   Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  tags        String[]
+  views       Int       @default(0)
+
+  // 关联
+  author      User      @relation(fields: [authorId], references: [id])
+  authorId    Int
+  comments    Comment[]
+  likedBy     PostLike[]
+
+  @@index([authorId])
+  @@index([createdAt])
+  @@index([views])
 }
 
 model Comment {
   id        Int      @id @default(autoincrement())
-  content   String   @db.Text
+  content   String
   images    String[]
-  postId    Int
-  post      Post     @relation(fields: [postId], references: [id])
-  authorId  Int
-  author    User     @relation(fields: [authorId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // 关联
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    Int
+
+  // 评论的回复
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  parentId  Int?
+  replies   Comment[] @relation("CommentReplies")
+
+  // 点赞
+  likedBy   CommentLike[]
+
+  @@index([postId])
+  @@index([authorId])
+  @@index([parentId])
 }
 
-model Doctor {
-  id          Int       @id @default(autoincrement())
-  name        String
-  ability     String   
-  description String
-  province    String  
-  phoneNumber String?
-  createdAt   DateTime  @default(now())
+model CommentLike {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  // 关联
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId Int
+
+  @@unique([userId, commentId])
+  @@index([userId])
+  @@index([commentId])
+}
+
+model PostLike {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+
+  // 关联
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId    Int
+
+  @@unique([userId, postId])
+  @@index([userId])
+  @@index([postId])
 }

@@ -26,6 +26,11 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
     const files = e.target.files
     if (!files?.length) return
 
+    if (!session?.user) {
+      router.push('/login')
+      return
+    }
+
     const formData = new FormData()
     for (let i = 0; i < files.length; i++) {
       formData.append('files', files[i])
@@ -35,17 +40,22 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
       const response = await fetch('/api/upload', {
         method: 'POST',
         body: formData,
+        credentials: 'include',
+        headers: {
+          'Accept': 'application/json',
+        },
       })
 
       if (!response.ok) {
-        throw new Error('上传失败')
+        const data = await response.json()
+        throw new Error(data.error || '上传失败')
       }
 
       const data = await response.json()
       setImages(prev => [...prev, ...data.urls])
     } catch (error) {
       console.error('Error uploading images:', error)
-      alert('图片上传失败，请重试')
+      alert(error instanceof Error ? error.message : '图片上传失败，请重试')
     }
   }
 
@@ -76,7 +86,9 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Accept': 'application/json',
         },
+        credentials: 'include',
         body: JSON.stringify({
           title,
           content,
@@ -86,18 +98,21 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
       })
 
       if (!response.ok) {
-        throw new Error('发布失败')
+        const data = await response.json()
+        throw new Error(data.error || '发布失败')
       }
 
+      const data = await response.json()
       setTitle('')
       setContent('')
       setTags([])
       setImages([])
       onClose()
       onSuccess?.()
+      router.refresh()
     } catch (error) {
       console.error('Error creating post:', error)
-      alert('发布失败，请重试')
+      alert(error instanceof Error ? error.message : '发布失败，请重试')
     } finally {
       setIsSubmitting(false)
     }

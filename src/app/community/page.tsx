@@ -26,11 +26,11 @@ interface Post {
   content: string
   createdAt: string
   views: number
-  likes: number
   tags: string[]
   author: Author
   _count: {
     comments: number
+    likedBy: number
   }
 }
 
@@ -152,7 +152,15 @@ export default function Community() {
 
           {/* 帖子列表 */}
           <div className="pt-[70px] space-y-3">
-            {posts.length === 0 ? (
+            {isLoading ? (
+              <div className="text-center py-12 text-gray-500">
+                加载中...
+              </div>
+            ) : error ? (
+              <div className="text-center py-12 text-red-500">
+                {error}
+              </div>
+            ) : posts.length === 0 ? (
               <div className="text-center py-12 text-gray-500">
                 暂无帖子，来发布第一篇吧
               </div>
@@ -200,7 +208,7 @@ export default function Community() {
                           </span>
                           <span className="flex items-center gap-1">
                             <Like theme="outline" size="14" />
-                            {post.likes}
+                            {post._count.likedBy}
                           </span>
                           <span className="flex items-center gap-1">
                             <Comment theme="outline" size="14" />
