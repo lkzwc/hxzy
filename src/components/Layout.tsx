@@ -18,9 +18,9 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
     title: '养生之道',
     subtitle: '健康人生'
   },
-  '/yao-cai-tu-pu': {
-    title: '药材图谱',
-    subtitle: '本草精华'
+  '/zydb': {
+    title: '中医数据库',
+    subtitle: '包括药材、经方、医案'
   },
   '/zhen-jiu-jing-luo': {
     title: '针灸经络',
@@ -36,7 +36,7 @@ const menuItems = [
   { name: '首页', path: '/', description: '首页' },
   { name: '中医工具', path: '/tools', description: '中医工具' },
   { name: '中医社区', path: '/community', description: '中医爱好者交流地' },
-  { name: '药材图谱', path: '/yao-cai-tu-pu', description: '药材图谱' },
+  { name: '中医数据库', path: '/yao-cai-tu-pu', description: '中医数据库' },
   { name: '全国名医', path: '/doctors' },
   { name: '针灸经络', path: '/zhen-jiu-jing-luo', description: '针灸经络' },
   { name: '关于我们', path: '/about-us' }

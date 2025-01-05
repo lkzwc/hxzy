@@ -78,10 +78,22 @@ export async function POST(
 ) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session?.user?.id) {
+    if (!session?.user) {
       return NextResponse.json(
         { error: '请先登录' },
         { status: 401 }
+      )
+    }
+
+    // 查找用户
+    const user = await prisma.user.findUnique({
+      where: { email: session.user.email! }
+    })
+
+    if (!user) {
+      return NextResponse.json(
+        { error: '用户不存在' },
+        { status: 404 }
       )
     }
 
@@ -140,7 +152,7 @@ export async function POST(
         content: content.trim(),
         images: images || [],
         postId,
-        authorId: session.user.id,
+        authorId: user.id,
         parentId,
       },
       include: {

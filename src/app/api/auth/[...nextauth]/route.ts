@@ -22,13 +22,13 @@ export const authOptions: NextAuthOptions = {
         const dbUser = await prisma.user.upsert({
           where: { email: user.email },
           update: {
-            name: user.name,
-            image: user.image,
+            name: user.name || null,
+            image: user.image || null,
           },
           create: {
             email: user.email,
-            name: user.name,
-            image: user.image,
+            name: user.name || null,
+            image: user.image || null,
           },
         });
 

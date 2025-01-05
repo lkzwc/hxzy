@@ -34,7 +34,7 @@ export default function MobileLayout({
           <div className="bg-white w-64 h-full">
             <div className="p-4">
               <nav className="space-y-4">
-                {['首页', '中医工具', '养生之道', '药材图谱', '针灸经络', '全国名医', '关于我们'].map((item) => (
+                {['首页', '中医工具', '养生之道', '中医数据库', '针灸经络', '全国名医', '关于我们'].map((item) => (
                   <Link
                     key={item}
                     href={item === '首页' ? '/' : 
