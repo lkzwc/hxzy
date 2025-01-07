@@ -5,6 +5,8 @@ import prisma from '../lib/prisma';
 
 // 定义医生数据类型
 interface Doctor {
+  province: string;
+  ability: string;
   id: number;
   name: string;
   title: string;
@@ -25,7 +27,9 @@ const doctorsData: Doctor[] = [
     region: '北京',
     specialty: ['内科', '肿瘤科'],
     avatar: '/doctors/doctor1.jpg',
-    description: '从医40余年，擅长治疗各种疑难杂症大撒的撒的撒的撒的撒的撒打算.dd..'
+    description: '从医40余年，擅长治疗各种疑难杂症大撒的撒的撒的撒的撒的撒打算.dd..',
+    province: '',
+    ability: ''
   },
   // 添加更多医生数据...
 ];
@@ -142,7 +146,7 @@ export default function DoctorsPage() {
 
         {/* 医生列表 */}
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {doctors.map((doctor) => (
+          {doctors.map((doctor: Doctor) => (
             <div key={doctor.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
               <div className="p-6">
                 <div className="flex items-start space-x-4">

@@ -24,9 +24,7 @@ interface Comment {
   images: string[]
   createdAt: string
   author: Author
-  _count: {
-    commentLikes: number
-  }
+  parentId: number | null
 }
 
 interface Post {
