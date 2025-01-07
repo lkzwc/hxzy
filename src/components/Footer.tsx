@@ -1,4 +1,15 @@
+'use client'
+
+import { usePathname } from 'next/navigation'
+
 export default function Footer() {
+  const pathname = usePathname()
+  
+  // 如果是社区页面则不显示
+  if (pathname?.startsWith('/community')) {
+    return null
+  }
+
   return (
     <footer className="mt-auto bg-primary text-background py-8 md:py-12">
       <div className="max-w-7xl mx-auto px-4 md:px-8">

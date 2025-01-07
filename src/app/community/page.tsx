@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
-import { Search, Eyes, Like, Comment } from '@icon-park/react'
+import { Search, Eyes, Like, Comment, Plus } from '@icon-park/react'
 import CreatePostModal from '@/components/CreatePostModal'
 
 // 配置 dayjs
@@ -93,49 +93,63 @@ export default function Community() {
   }
 
   return (
-    <>
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-10 pt-4">
       {/* 固定的顶部搜索栏 */}
-      <div className="mb-6">
-        <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
-          <form onSubmit={handleSearch} className="relative flex items-center">
-            <Search className="absolute left-4 text-gray-400" size="20" />
-            <input
-              type="text"
-              placeholder="搜索感兴趣的内容..."
-              className="w-full pl-11 pr-4 py-2.5 text-sm bg-gray-50 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all hover:bg-gray-100"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </form>
+      <div className="sticky top-0 z-10 pb-2 bg-gray-50/80 backdrop-blur-sm">
+        <div className="bg-white rounded-xl shadow-sm p-3 sm:p-4 border border-gray-100">
+          {/* 搜索和发帖按钮 */}
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+            <form onSubmit={handleSearch} className="relative flex items-center flex-1 w-full">
+              <Search className="absolute left-4 text-gray-400" size="20" />
+              <input
+                type="text"
+                placeholder="搜索感兴趣的内容..."
+                className="w-full pl-11 pr-4 py-2.5 text-sm bg-gray-50 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all hover:bg-gray-100"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </form>
+            <button
+              onClick={() => session ? setIsModalOpen(true) : router.push('/api/auth/signin')}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors sm:w-auto w-full"
+            >
+              <Plus theme="outline" size="18" />
+              <span>发帖</span>
+            </button>
+          </div>
+
+          {/* 分类导航 */}
+         
         </div>
       </div>
 
       {/* 帖子列表 */}
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4 mt-4 sm:mt-6">
         {posts.length === 0 ? (
-          <div className="text-center py-20 bg-white rounded-lg border border-gray-100">
-            <div className="text-gray-400 mb-2 text-5xl">📝</div>
-            <div className="text-gray-500">暂无帖子，来发布第一篇吧</div>
+          <div className="text-center py-16 sm:py-20 bg-white rounded-xl border border-gray-100">
+            <div className="text-gray-400 mb-2 text-4xl sm:text-5xl">📝</div>
+            <div className="text-gray-500 px-4">暂无帖子，来发布第一篇吧</div>
           </div>
         ) : (
           posts.map(post => (
             <Link
               key={post.id}
               href={`/community/${post.id}`}
-              className="block bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-300
+              className="block bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300
                 border border-gray-100 hover:border-primary/30 group"
             >
-              <div className="p-5">
-                <div className="flex items-start gap-4">
+              <div className="p-4 sm:p-6">
+                <div className="flex items-start gap-3 sm:gap-4">
                   <img
                     src={post.author.image || '/images/default-avatar.png'}
                     alt={post.author.name || '用户'}
-                    className="w-11 h-11 rounded-full shrink-0 border-2 border-white shadow-sm"
+                    className="w-10 h-10 sm:w-11 sm:h-11 rounded-full shrink-0 border-2 border-white shadow-sm
+                      group-hover:ring-2 group-hover:ring-primary/20 transition-all"
                   />
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-start justify-between mb-2.5">
-                      <div className="flex-1 min-w-0 mr-4">
-                        <h2 className="text-lg font-semibold text-gray-900 group-hover:text-primary transition-colors line-clamp-1">
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-2 sm:mb-2.5 gap-2 sm:gap-4">
+                      <div className="flex-1 min-w-0">
+                        <h2 className="text-base sm:text-lg font-semibold text-gray-900 group-hover:text-primary transition-colors line-clamp-1">
                           {post.title}
                         </h2>
                         <div className="flex items-center gap-2 mt-1">
@@ -144,7 +158,7 @@ export default function Community() {
                           <span className="text-xs text-gray-400">{dayjs(post.createdAt).format('MM月DD日 HH:mm')}</span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-5 text-sm text-gray-400/90 shrink-0 italic font-medium">
+                      <div className="flex items-center gap-4 sm:gap-5 text-sm text-gray-400/90 shrink-0">
                         <span className="flex items-center gap-1.5 hover:text-primary/70 transition-colors">
                           <Eyes theme="outline" size="16" />
                           <span>{post.views}</span>
@@ -165,7 +179,8 @@ export default function Community() {
                       {post.tags.map(tag => (
                         <span
                           key={tag}
-                          className="px-2.5 py-1 text-xs bg-primary/5 text-primary rounded-full border border-primary/10"
+                          className="px-2 sm:px-2.5 py-0.5 sm:py-1 text-xs bg-primary/5 text-primary rounded-full border border-primary/10
+                            group-hover:bg-primary/10 transition-colors"
                         >
                           {tag}
                         </span>
@@ -184,6 +199,6 @@ export default function Community() {
         onClose={() => setIsModalOpen(false)}
         onSuccess={fetchPosts}
       />
-    </>
+    </div>
   )
 } 
