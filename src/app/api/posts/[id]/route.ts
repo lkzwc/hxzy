@@ -15,9 +15,19 @@ export async function GET(
       )
     }
 
+    // 获取帖子信息
     const post = await prisma.post.findUnique({
       where: { id: postId },
-      include: {
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        images: true,
+        published: true,
+        createdAt: true,
+        updatedAt: true,
+        tags: true,
+        views: true,
         author: {
           select: {
             id: true,
@@ -25,13 +35,13 @@ export async function GET(
             image: true,
           },
         },
-        likedBy: {
-          select: {
-            userId: true,
-          },
-        },
         comments: {
-          include: {
+          select: {
+            id: true,
+            content: true,
+            images: true,
+            createdAt: true,
+            parentId: true,
             author: {
               select: {
                 id: true,
@@ -54,6 +64,13 @@ export async function GET(
       )
     }
 
+    // 获取点赞数
+    const likesCount = await prisma.postLike.count({
+      where: {
+        postId,
+      },
+    })
+
     // 增加浏览量
     await prisma.post.update({
       where: { id: postId },
@@ -64,11 +81,18 @@ export async function GET(
       },
     })
 
-    return NextResponse.json(post)
+    // 格式化响应数据
+    const formattedPost = {
+      ...post,
+      likes: likesCount,
+    }
+
+    return NextResponse.json(formattedPost)
   } catch (error) {
     console.error('获取帖子详情失败:', error)
+    console.error('错误堆栈:', error instanceof Error ? error.stack : '无堆栈信息')
     return NextResponse.json(
-      { error: '获取帖子详情失败' },
+      { error: error instanceof Error ? error.message : '获取帖子详情失败' },
       { status: 500 }
     )
   }

@@ -31,8 +31,9 @@ export default function Login() {
   useEffect(() => {
     if (session) {
       console.log('登录成功:', session);
+      router.back();
     }
-  }, [session]);
+  }, [session, router]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,7 +41,7 @@ export default function Login() {
   };
 
   const handleClose = () => {
-    router.push('/');
+    router.back();
   };
 
   return (

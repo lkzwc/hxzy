@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
+import { Eyes, Like } from '@icon-park/react'
+import CommentSection from '@/components/CommentSection'
 
 // 配置 dayjs
 dayjs.locale('zh-cn')
@@ -22,6 +24,9 @@ interface Comment {
   images: string[]
   createdAt: string
   author: Author
+  _count: {
+    commentLikes: number
+  }
 }
 
 interface Post {
@@ -145,149 +150,95 @@ export default function PostDetail({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="max-w-4xl mx-auto px-4 py-6">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         {/* 帖子内容 */}
-        <div className="mb-8">
+        <div className="p-6 pb-0">
           <div className="flex items-center gap-4 mb-6">
-            <img
-              src={post.author.image || '/images/default-avatar.png'}
-              alt={post.author.name || '用户'}
-              className="w-10 h-10 rounded-full"
-            />
-            <div>
-              <div className="font-medium">{post.author.name || '匿名用户'}</div>
-              <div className="text-sm text-gray-500">
-                {dayjs(post.createdAt).format('YYYY年MM月DD日 HH:mm')}
+            <div className="relative w-12 h-12">
+              <Image
+                src={post.author.image || '/images/default-avatar.png'}
+                alt={post.author.name || '用户'}
+                fill
+                className="rounded-full object-cover border-2 border-white shadow-sm"
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <div className="font-medium text-gray-900">{post.author.name || '匿名用户'}</div>
+                <span className="inline-block w-1 h-1 bg-gray-300 rounded-full"></span>
+                <div className="text-sm text-gray-500">
+                  {dayjs(post.createdAt).format('YYYY年MM月DD日 HH:mm')}
+                </div>
+              </div>
+              <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
+                <span className="flex items-center gap-1">
+                  <Eyes theme="outline" size="14" />
+                  {post.views} 次浏览
+                </span>
+                <span className="flex items-center gap-1">
+                  <Like theme="outline" size="14" />
+                  {post.likes} 次点赞
+                </span>
               </div>
             </div>
           </div>
 
-          <h1 className="text-2xl font-bold mb-4">{post.title}</h1>
-          <p className="text-gray-700 mb-6 whitespace-pre-wrap">{post.content}</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-4 leading-snug">{post.title}</h1>
+          <article className="prose prose-gray max-w-none mb-6">
+            <p className="text-gray-700 whitespace-pre-wrap leading-relaxed">{post.content}</p>
+          </article>
 
           {post.images?.length > 0 && (
             <div className="grid grid-cols-2 gap-4 mb-6">
               {post.images.map((url, index) => (
-                <div key={index} className="relative aspect-video">
+                <div key={index} className="relative aspect-video rounded-lg overflow-hidden shadow-sm group">
                   <Image
                     src={url}
                     alt={`图片 ${index + 1}`}
                     fill
-                    className="object-cover rounded-lg"
+                    className="object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>
               ))}
             </div>
           )}
 
-          <div className="flex flex-wrap gap-2">
-            {post.tags.map(tag => (
-              <span
-                key={tag}
-                className="px-2.5 py-1 text-sm bg-[#F3E5D7] text-[#B87A56] rounded-full"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
+          {post.tags.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-6 pt-2 border-t border-gray-100">
+              {post.tags.map(tag => (
+                <span
+                  key={tag}
+                  className="px-3 py-1.5 text-sm bg-[#F3E5D7] text-[#B87A56] rounded-full 
+                    hover:bg-[#B87A56] hover:text-white transition-colors cursor-pointer"
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* 评论区 */}
-        <div>
-          <h2 className="text-lg font-semibold mb-6 pb-2 border-b">
-            评论 ({post.comments.length})
-          </h2>
+        <div className="border-t border-gray-100 bg-gray-50/50">
+          <div className="p-6">
+            <h2 className="text-lg font-semibold mb-6 pb-2 border-b border-gray-100 flex items-center gap-2">
+              <span>评论</span>
+              <span className="text-sm font-normal text-gray-500">({post.comments.length})</span>
+            </h2>
 
-          {/* 评论列表 */}
-          <div className="space-y-6 mb-8">
-            {post.comments.map(comment => (
-              <div key={comment.id} className="flex gap-4">
-                <img
-                  src={comment.author.image || '/images/default-avatar.png'}
-                  alt={comment.author.name || '用户'}
-                  className="w-8 h-8 rounded-full shrink-0"
-                />
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="font-medium">{comment.author.name || '匿名用户'}</span>
-                    <span className="text-xs text-gray-500">
-                      {dayjs(comment.createdAt).format('MM-DD HH:mm')}
-                    </span>
-                  </div>
-                  <p className="text-gray-700 mb-2">{comment.content}</p>
-                  {comment.images.length > 0 && (
-                    <div className="flex gap-2">
-                      {comment.images.map((url, index) => (
-                        <div key={index} className="relative w-20 h-20">
-                          <Image
-                            src={url}
-                            alt={`评论图片 ${index + 1}`}
-                            fill
-                            className="object-cover rounded-lg"
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* 评论表单 */}
-          <form onSubmit={handleSubmitComment} className="space-y-4">
-            <textarea
-              placeholder="写下你的评论..."
-              value={comment}
-              onChange={(e) => setComment(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B87A56] min-h-[100px]"
-              required
+            {/* 使用 CommentSection 组件 */}
+            <CommentSection 
+              postId={post.id} 
+              comments={post.comments}
+              onCommentAdded={(newComment) => {
+                setPost(prev => prev ? {
+                  ...prev,
+                  comments: [...prev.comments, newComment]
+                } : null)
+              }}
             />
-
-            {/* 图片上传区域 */}
-            <div>
-              <div className="flex flex-wrap gap-4 mb-4">
-                {commentImages.map((url, index) => (
-                  <div key={index} className="relative w-20 h-20">
-                    <Image
-                      src={url}
-                      alt={`上传的图片 ${index + 1}`}
-                      fill
-                      className="object-cover rounded-lg"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setCommentImages(prev => prev.filter((_, i) => i !== index))}
-                      className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600"
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-                <label className="w-20 h-20 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center cursor-pointer hover:border-[#B87A56] transition-colors">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                  <span className="text-3xl text-gray-400">+</span>
-                </label>
-              </div>
-            </div>
-
-            <div className="flex justify-end">
-              <button
-                type="submit"
-                disabled={isSubmitting || !comment.trim()}
-                className="px-6 py-2 bg-[#B87A56] text-white rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isSubmitting ? '发送中...' : '发送'}
-              </button>
-            </div>
-          </form>
+          </div>
         </div>
       </div>
     </div>

@@ -10,16 +10,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Doctor {
-  id          Int      @id @default(autoincrement())
-  name        String
-  ability     String
-  province    String
-  description String   @db.Text
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
 model User {
   id            Int       @id @default(autoincrement())
   name          String?
@@ -27,8 +17,7 @@ model User {
   image         String?
   posts         Post[]
   comments      Comment[]
-  likedPosts    PostLike[]
-  likedComments CommentLike[]
+  postLikes     PostLike[]
 }
 
 model Post {
@@ -46,7 +35,7 @@ model Post {
   author      User      @relation(fields: [authorId], references: [id])
   authorId    Int
   comments    Comment[]
-  likedBy     PostLike[]
+  postLikes   PostLike[]
 
   @@index([authorId])
   @@index([createdAt])
@@ -71,40 +60,20 @@ model Comment {
   parentId  Int?
   replies   Comment[] @relation("CommentReplies")
 
-  // 点赞
-  likedBy   CommentLike[]
-
   @@index([postId])
   @@index([authorId])
   @@index([parentId])
 }
 
-model CommentLike {
-  id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-
-  // 关联
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    Int
-  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
-  commentId Int
-
-  @@unique([userId, commentId])
-  @@index([userId])
-  @@index([commentId])
-}
-
 model PostLike {
-  id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
-
-  // 关联
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  user      User     @relation(fields: [userId], references: [id])
   userId    Int
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int
 
-  @@unique([userId, postId])
+  @@id([userId, postId])
   @@index([userId])
   @@index([postId])
 }

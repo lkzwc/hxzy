@@ -41,7 +41,7 @@ export async function GET(request: NextRequest) {
           _count: {
             select: {
               comments: true,
-              likedBy: true,
+              postLikes: true,
             },
           },
         },
@@ -134,7 +134,7 @@ export async function POST(request: NextRequest) {
         _count: {
           select: {
             comments: true,
-            likedBy: true,
+            postLikes: true,
           },
         },
       },
