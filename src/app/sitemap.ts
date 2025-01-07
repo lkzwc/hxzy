@@ -9,7 +9,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/tools',
     '/doctors',
     '/yang-sheng-zhi-dao',
-    '/yao-cai-tu-pu',
+    '/zhongyidb',
     '/zhen-jiu-jing-luo',
     '/about-us',
   ].map(route => ({

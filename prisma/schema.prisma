@@ -77,3 +77,97 @@ model PostLike {
   @@index([userId])
   @@index([postId])
 }
+
+model Doctor {
+  id          Int       @id @default(autoincrement())
+  name        String
+  department  String    // 科室
+  hospital    String    // 医院
+  specialty   String    // 专长
+  phone       String    // 联系电话
+  province    String    // 省份
+  introduction String   @db.Text  // 简介
+  avatar      String?   // 头像
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([createdAt])
+}
+
+
+// 中药库
+model ChineseMedicine {
+  id          Int      @id @default(autoincrement())
+  name        String   // 药名
+  pinyin      String   // 拼音
+  category    String   // 分类（如：补虚药）
+  properties  String   // 性味
+  effects     String   @db.Text  // 功效
+  description String?  @db.Text  // 详细描述
+  image       String?  // 图片
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([name])
+  @@index([pinyin])
+}
+
+// 方剂库
+model ClassicalFormula {
+  id          Int      @id @default(autoincrement())
+  name        String   // 方剂名
+  pinyin      String   // 拼音
+  source      String   // 出处
+  composition String   @db.Text  // 组成
+  indications String   @db.Text  // 主治
+  usage       String   // 用法
+  description String?  @db.Text  // 详细描述
+  category    String   // 分类（如：补益剂、解表剂等）
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([name])
+  @@index([pinyin])
+}
+
+// 课程库
+model Course {
+  id          Int      @id @default(autoincrement())
+  title       String   // 课程标题
+  instructor  String   // 讲师
+  description String   @db.Text  // 课程描述
+  coverImage  String   // 封面图片
+  category    String   // 分类（如：理论、临床、养生等）
+  link        String   // 课程链接
+  isVip       Boolean  @default(false) // 是否为VIP课程
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([level])
+  @@index([createdAt])
+}
+
+// 电子书库
+model EBook {
+  id          Int      @id @default(autoincrement())
+  title       String   // 书名
+  pinyin      String   // 拼音
+  author      String   // 作者
+  dynasty     String   // 朝代
+  category    String   // 分类（如：经典、临床等）
+  description String   @db.Text  // 描述
+  coverImage  String   // 封面图片
+  link        String   // 电子书链接
+  isVip       Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([dynasty])
+  @@index([author])
+  @@index([title])
+  @@index([pinyin])
+}

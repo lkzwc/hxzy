@@ -57,9 +57,8 @@ export default function DoctorsPage() {
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        const data = await response.json();
+        const {data} = await response.json();
         setDoctors(data);
-        console.log("data",data)
       } catch (err) {
         console.error(err);
       } finally {

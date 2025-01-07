@@ -39,23 +39,29 @@ CREATE TABLE "Comment" (
 );
 
 -- CreateTable
-CREATE TABLE "CommentLike" (
-    "id" SERIAL NOT NULL,
-    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "userId" INTEGER NOT NULL,
-    "commentId" INTEGER NOT NULL,
-
-    CONSTRAINT "CommentLike_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
 CREATE TABLE "PostLike" (
-    "id" SERIAL NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "userId" INTEGER NOT NULL,
     "postId" INTEGER NOT NULL,
 
-    CONSTRAINT "PostLike_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "PostLike_pkey" PRIMARY KEY ("userId","postId")
+);
+
+-- CreateTable
+CREATE TABLE "Doctor" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "department" TEXT NOT NULL,
+    "hospital" TEXT NOT NULL,
+    "specialty" TEXT NOT NULL,
+    "phone" TEXT NOT NULL,
+    "province" TEXT NOT NULL,
+    "introduction" TEXT NOT NULL,
+    "avatar" TEXT,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "Doctor_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -80,22 +86,13 @@ CREATE INDEX "Comment_authorId_idx" ON "Comment"("authorId");
 CREATE INDEX "Comment_parentId_idx" ON "Comment"("parentId");
 
 -- CreateIndex
-CREATE INDEX "CommentLike_userId_idx" ON "CommentLike"("userId");
-
--- CreateIndex
-CREATE INDEX "CommentLike_commentId_idx" ON "CommentLike"("commentId");
-
--- CreateIndex
-CREATE UNIQUE INDEX "CommentLike_userId_commentId_key" ON "CommentLike"("userId", "commentId");
-
--- CreateIndex
 CREATE INDEX "PostLike_userId_idx" ON "PostLike"("userId");
 
 -- CreateIndex
 CREATE INDEX "PostLike_postId_idx" ON "PostLike"("postId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "PostLike_userId_postId_key" ON "PostLike"("userId", "postId");
+CREATE INDEX "Doctor_createdAt_idx" ON "Doctor"("createdAt");
 
 -- AddForeignKey
 ALTER TABLE "Post" ADD CONSTRAINT "Post_authorId_fkey" FOREIGN KEY ("authorId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -110,13 +107,7 @@ ALTER TABLE "Comment" ADD CONSTRAINT "Comment_postId_fkey" FOREIGN KEY ("postId"
 ALTER TABLE "Comment" ADD CONSTRAINT "Comment_parentId_fkey" FOREIGN KEY ("parentId") REFERENCES "Comment"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "CommentLike" ADD CONSTRAINT "CommentLike_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "CommentLike" ADD CONSTRAINT "CommentLike_commentId_fkey" FOREIGN KEY ("commentId") REFERENCES "Comment"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "PostLike" ADD CONSTRAINT "PostLike_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "PostLike" ADD CONSTRAINT "PostLike_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "PostLike" ADD CONSTRAINT "PostLike_postId_fkey" FOREIGN KEY ("postId") REFERENCES "Post"("id") ON DELETE CASCADE ON UPDATE CASCADE;

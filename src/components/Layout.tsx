@@ -14,21 +14,21 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
     title: '中医工具',
     subtitle: '传统智慧'
   },
-  '/yang-sheng-zhi-dao': {
-    title: '养生之道',
+  '/aboutus': {
+    title: '关于我们',
     subtitle: '健康人生'
   },
-  '/zydb': {
+  '/zhongyidb': {
     title: '中医数据库',
     subtitle: '包括药材、经方、医案'
   },
-  '/zhen-jiu-jing-luo': {
-    title: '针灸经络',
-    subtitle: '经络要诀'
+  '/community': {
+    title: '中医社区',
+    subtitle: '中医爱好者交流地'
   },
   '/doctors': {
     title: '全国名医',
-    subtitle: '医者仁心'
+    subtitle: '中医大家'
   }
 };
 
@@ -36,10 +36,9 @@ const menuItems = [
   { name: '首页', path: '/', description: '首页' },
   { name: '中医工具', path: '/tools', description: '中医工具' },
   { name: '中医社区', path: '/community', description: '中医爱好者交流地' },
-  { name: '中医数据库', path: '/yao-cai-tu-pu', description: '中医数据库' },
-  { name: '全国名医', path: '/doctors' },
-  { name: '针灸经络', path: '/zhen-jiu-jing-luo', description: '针灸经络' },
-  { name: '关于我们', path: '/about-us' }
+  { name: '中医数据库', path: '/zhongyidb', description: '中医数据库' },
+  { name: '全国名医', path: '/doctors' ,description: '中医大家'},
+  { name: '关于我们', path: '/aboutus',description: '关于我们' }
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {

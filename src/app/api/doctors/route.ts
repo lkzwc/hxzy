@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
-import prisma from '@/app/lib/prisma'
+import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const doctors = await prisma.doctor.findMany({
       orderBy: {
@@ -9,10 +9,18 @@ export async function GET(request: NextRequest) {
       }
     })
     
-    return NextResponse.json(doctors)
+    return NextResponse.json({ 
+      success: true,
+      data: doctors 
+    })
   } catch (error) {
+    console.error('获取医生列表失败:', error)
     return NextResponse.json(
-      { error: '获取医生列表失败', details: error instanceof Error ? error.message : String(error) },
+      { 
+        success: false,
+        error: '获取医生列表失败',
+        details: error instanceof Error ? error.message : String(error)
+      },
       { status: 500 }
     )
   }

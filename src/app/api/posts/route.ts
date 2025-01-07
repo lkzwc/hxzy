@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search')
     const tag = searchParams.get('tag')
     const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '20')
+    const limit = parseInt(searchParams.get('limit') || '10')
     const skip = (page - 1) * limit
 
     // 构建查询条件
@@ -26,8 +26,8 @@ export async function GET(request: NextRequest) {
       ...(tag && { tags: { has: tag } }),
     }
 
-    // 获取帖子列表
-    const [posts, total] = await Promise.all([
+    // 获取帖子列表和下一页数据
+    const [posts, nextPagePosts] = await Promise.all([
       prisma.post.findMany({
         where,
         include: {
@@ -45,21 +45,39 @@ export async function GET(request: NextRequest) {
             },
           },
         },
-        orderBy: {
-          createdAt: 'desc' as Prisma.SortOrder,
-        },
+        orderBy: [
+          { createdAt: 'desc' as Prisma.SortOrder },
+          { id: 'desc' as Prisma.SortOrder }, // 确保分页稳定性
+        ],
         skip,
         take: limit,
       }),
-      prisma.post.count({ where }),
+      prisma.post.findMany({
+        where,
+        select: { id: true },
+        orderBy: [
+          { createdAt: 'desc' as Prisma.SortOrder },
+          { id: 'desc' as Prisma.SortOrder },
+        ],
+        skip: skip + limit,
+        take: 1,
+      }),
     ])
 
-    return NextResponse.json({
-      posts,
-      total,
-      page,
-      totalPages: Math.ceil(total / limit),
-    })
+    // 设置缓存控制
+    const headers = new Headers()
+    headers.set('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=59')
+
+    return NextResponse.json(
+      {
+        posts,
+        hasMore: nextPagePosts.length > 0,
+      },
+      {
+        headers,
+        status: 200,
+      }
+    )
   } catch (error) {
     console.error('获取帖子列表失败:', error)
     return NextResponse.json(
@@ -122,6 +140,7 @@ export async function POST(request: NextRequest) {
         tags: tags as string[],
         images: images || [],
         authorId: user.id,
+        published: true,
       },
       include: {
         author: {
@@ -140,7 +159,17 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    return NextResponse.json(post)
+    // 清除缓存
+    const revalidateHeaders = new Headers()
+    revalidateHeaders.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+
+    return NextResponse.json(
+      post,
+      {
+        headers: revalidateHeaders,
+        status: 201,
+      }
+    )
   } catch (error) {
     console.error('发布帖子失败:', error)
     return NextResponse.json(
