@@ -146,7 +146,6 @@ model Course {
   updatedAt   DateTime @updatedAt
 
   @@index([category])
-  @@index([level])
   @@index([createdAt])
 }
 
