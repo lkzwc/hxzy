@@ -36,7 +36,7 @@ export default function ToolsPage() {
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 py-6 relative">
         {/* 主要内容区域 */}
-        <div className="ml-[30px] space-y-6">
+        <div className="sm:ml-[30px] space-y-6">
           {/* 十二时辰对照表 */}
           <TimeTable />
 

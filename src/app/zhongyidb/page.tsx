@@ -233,19 +233,19 @@ export default function ZhongYiDBPage() {
         </div>
 
         {/* 内容区域 */}
-        <div className="grid gap-8">
+        <div className="grid gap-4 sm:gap-8">
           {/* 中药内容 */}
           {activeTab === 'zhongyao' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
               {medicines.map((medicine) => (
-                <div key={medicine.id} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1">
-                  <div className="card-body">
-                    <div className="flex items-center justify-between mb-4">
-                      <h2 className="card-title text-2xl">{medicine.name}</h2>
-                      <span className="text-sm opacity-70">{medicine.pinyin}</span>
+                <div key={medicine.id} className="card bg-base-100 shadow hover:shadow-lg sm:shadow-xl sm:hover:shadow-2xl transition-all hover:-translate-y-1">
+                  <div className="card-body p-4 sm:p-6">
+                    <div className="flex items-center justify-between mb-3 sm:mb-4">
+                      <h2 className="card-title text-lg sm:text-2xl">{medicine.name}</h2>
+                      <span className="text-xs sm:text-sm opacity-70">{medicine.pinyin}</span>
                     </div>
-                    <div className="badge badge-primary badge-lg mb-4">{medicine.category}</div>
-                    <div className="space-y-3 text-base">
+                    <div className="badge badge-primary badge-md sm:badge-lg mb-3 sm:mb-4">{medicine.category}</div>
+                    <div className="space-y-2 sm:space-y-3 text-sm sm:text-base">
                       <p><span className="font-semibold">性味：</span>{medicine.properties}</p>
                       <p><span className="font-semibold">功效：</span>{medicine.effects}</p>
                       <p><span className="font-semibold">用量：</span>{medicine.usage}</p>
@@ -258,15 +258,15 @@ export default function ZhongYiDBPage() {
 
           {/* 经方内容 */}
           {activeTab === 'jingfang' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-8">
               {formulas.map((formula) => (
-                <div key={formula.id} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1">
-                  <div className="card-body">
-                    <div className="flex flex-col mb-4">
-                      <h2 className="card-title text-2xl mb-2">{formula.name}</h2>
-                      <p className="text-sm opacity-70">{formula.source}</p>
+                <div key={formula.id} className="card bg-base-100 shadow hover:shadow-lg sm:shadow-xl sm:hover:shadow-2xl transition-all hover:-translate-y-1">
+                  <div className="card-body p-4 sm:p-6">
+                    <div className="flex flex-col mb-3 sm:mb-4">
+                      <h2 className="card-title text-lg sm:text-2xl mb-1 sm:mb-2">{formula.name}</h2>
+                      <p className="text-xs sm:text-sm opacity-70">{formula.source}</p>
                     </div>
-                    <div className="space-y-3 text-base">
+                    <div className="space-y-2 sm:space-y-3 text-sm sm:text-base">
                       <p><span className="font-semibold">组成：</span>{formula.composition}</p>
                       <p><span className="font-semibold">主治：</span>{formula.indications}</p>
                       <p><span className="font-semibold">用法：</span>{formula.usage}</p>
@@ -279,11 +279,11 @@ export default function ZhongYiDBPage() {
 
           {/* 课程内容 */}
           {activeTab === 'kecheng' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
               {courses.map((course) => (
-                <div key={course.id} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1">
-                  <figure className="px-6 pt-6">
-                    <div className="w-full h-48 bg-base-200 rounded-xl overflow-hidden">
+                <div key={course.id} className="card bg-base-100 shadow hover:shadow-lg sm:shadow-xl sm:hover:shadow-2xl transition-all hover:-translate-y-1">
+                  <figure className="px-4 sm:px-6 pt-4 sm:pt-6">
+                    <div className="w-full h-36 sm:h-48 bg-base-200 rounded-xl overflow-hidden">
                       {course.coverImage && (
                         <Image
                           src={course.coverImage}
@@ -295,18 +295,18 @@ export default function ZhongYiDBPage() {
                       )}
                     </div>
                   </figure>
-                  <div className="card-body">
-                    <h2 className="card-title text-xl">{course.title}</h2>
-                    <div className="flex items-center gap-2 text-sm opacity-70">
+                  <div className="card-body p-4 sm:p-6">
+                    <h2 className="card-title text-lg sm:text-xl">{course.title}</h2>
+                    <div className="flex items-center gap-2 text-xs sm:text-sm opacity-70">
                       <span>{course.instructor}</span>
                       <span>·</span>
                       <span>{course.duration}</span>
                       <span>·</span>
                       <span>{course.level}</span>
                     </div>
-                    <p className="mt-2 text-base">{course.description}</p>
-                    <div className="card-actions justify-end mt-4">
-                      <button className="btn btn-primary btn-wide">查看课程</button>
+                    <p className="mt-2 text-sm sm:text-base">{course.description}</p>
+                    <div className="card-actions justify-end mt-3 sm:mt-4">
+                      <button className="btn btn-primary btn-sm sm:btn-md w-full sm:w-auto sm:btn-wide">查看课程</button>
                     </div>
                   </div>
                 </div>
@@ -316,11 +316,11 @@ export default function ZhongYiDBPage() {
 
           {/* 电子书内容 */}
           {activeTab === 'dianzishu' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
               {ebooks.map((book) => (
-                <div key={book.id} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1">
-                  <figure className="px-6 pt-6">
-                    <div className="w-full h-72 bg-base-200 rounded-xl overflow-hidden">
+                <div key={book.id} className="card bg-base-100 shadow hover:shadow-lg sm:shadow-xl sm:hover:shadow-2xl transition-all hover:-translate-y-1">
+                  <figure className="px-4 sm:px-6 pt-4 sm:pt-6">
+                    <div className="w-full h-56 sm:h-72 bg-base-200 rounded-xl overflow-hidden">
                       {book.coverImage && (
                         <Image
                           src={book.coverImage}
@@ -332,16 +332,16 @@ export default function ZhongYiDBPage() {
                       )}
                     </div>
                   </figure>
-                  <div className="card-body">
-                    <h2 className="card-title text-xl">{book.title}</h2>
-                    <div className="flex items-center gap-2 text-sm opacity-70">
+                  <div className="card-body p-4 sm:p-6">
+                    <h2 className="card-title text-lg sm:text-xl">{book.title}</h2>
+                    <div className="flex items-center gap-2 text-xs sm:text-sm opacity-70">
                       <span>{book.author}</span>
                       <span>·</span>
                       <span>{book.dynasty}</span>
                     </div>
-                    <p className="mt-2 text-base line-clamp-2">{book.description}</p>
-                    <div className="card-actions justify-end mt-4">
-                      <button className="btn btn-outline btn-wide">阅读详情</button>
+                    <p className="mt-2 text-sm sm:text-base line-clamp-2">{book.description}</p>
+                    <div className="card-actions justify-end mt-3 sm:mt-4">
+                      <button className="btn btn-outline btn-sm sm:btn-md w-full sm:w-auto sm:btn-wide">阅读详情</button>
                     </div>
                   </div>
                 </div>
