@@ -2,11 +2,19 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import prisma from '@/app/lib/prisma'
-import { Prisma, Comment, User } from '@prisma/client'
+import { Prisma, User } from '@prisma/client'
 
-type CommentWithDetails = Comment & {
-  author: Pick<User, 'id' | 'name' | 'image'>
-}
+type CommentWithDetails = Prisma.CommentGetPayload<{
+  include: {
+    author: {
+      select: {
+        id: true
+        name: true
+        image: true
+      }
+    }
+  }
+}>
 
 interface CommentResponse {
   id: number
