@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import prisma from '@/app/lib/prisma'
-import { Prisma } from '@prisma/client'
+import { Prisma, PrismaClient } from '@prisma/client'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 
 // 获取帖子列表
 export async function GET(request: NextRequest) {
@@ -19,8 +20,8 @@ export async function GET(request: NextRequest) {
       published: true,
       ...(search && {
         OR: [
-          { title: { contains: search, mode: 'insensitive' as Prisma.QueryMode } },
-          { content: { contains: search, mode: 'insensitive' as Prisma.QueryMode } },
+          { title: { contains: search, mode: Prisma.QueryMode.insensitive } },
+          { content: { contains: search, mode: Prisma.QueryMode.insensitive } },
         ],
       }),
       ...(tag && { tags: { has: tag } }),
@@ -41,13 +42,12 @@ export async function GET(request: NextRequest) {
           _count: {
             select: {
               comments: true,
-              postLikes: true,
             },
           },
         },
         orderBy: [
-          { createdAt: 'desc' as Prisma.SortOrder },
-          { id: 'desc' as Prisma.SortOrder }, // 确保分页稳定性
+          { createdAt: Prisma.SortOrder.desc },
+          { id: Prisma.SortOrder.desc },
         ],
         skip,
         take: limit,
@@ -56,8 +56,8 @@ export async function GET(request: NextRequest) {
         where,
         select: { id: true },
         orderBy: [
-          { createdAt: 'desc' as Prisma.SortOrder },
-          { id: 'desc' as Prisma.SortOrder },
+          { createdAt: Prisma.SortOrder.desc },
+          { id: Prisma.SortOrder.desc },
         ],
         skip: skip + limit,
         take: 1,

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import prisma from '@/app/lib/prisma'
 
 // 获取用户统计信息
 export async function GET(
@@ -15,39 +15,29 @@ export async function GET(
       )
     }
 
-    // 获取用户统计数据
-    const [posts, comments, likes] = await Promise.all([
-      // 发帖数
+    // 获取用户统计信息
+    const [postsCount, commentsCount] = await Promise.all([
       prisma.post.count({
         where: {
           authorId: userId,
+          published: true,
         },
       }),
-      // 评论数
       prisma.comment.count({
         where: {
           authorId: userId,
         },
       }),
-      // 获赞数
-      prisma.postLike.count({
-        where: {
-          post: {
-            authorId: userId,
-          },
-        },
-      }),
     ])
 
     return NextResponse.json({
-      posts,
-      comments,
-      likes,
+      posts: postsCount,
+      comments: commentsCount,
     })
   } catch (error) {
-    console.error('获取用户统计数据失败:', error)
+    console.error('获取用户统计信息失败:', error)
     return NextResponse.json(
-      { error: '获取用户统计数据失败' },
+      { error: '获取用户统计信息失败' },
       { status: 500 }
     )
   }

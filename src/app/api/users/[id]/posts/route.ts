@@ -1,8 +1,8 @@
-import { NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { NextRequest, NextResponse } from 'next/server'
+import prisma from '@/app/lib/prisma'
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
@@ -14,29 +14,31 @@ export async function GET(
       )
     }
 
-    // 获取用户帖子列表
     const posts = await prisma.post.findMany({
       where: {
         authorId: userId,
+        published: true,
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+            image: true,
+          },
+        },
+        _count: {
+          select: {
+            comments: true,
+          },
+        },
       },
       orderBy: {
         createdAt: 'desc',
       },
-      select: {
-        id: true,
-        title: true,
-        content: true,
-        createdAt: true,
-        _count: {
-          select: {
-            comments: true,
-            postLikes: true,
-          },
-        },
-      },
     })
 
-    return NextResponse.json({ posts })
+    return NextResponse.json(posts)
   } catch (error) {
     console.error('获取用户帖子列表失败:', error)
     return NextResponse.json(
