@@ -57,7 +57,7 @@ export async function GET(
     })
 
     return NextResponse.json({
-      likes: likes.map(like => like.post),
+      likes: likes.map((like: any) => like.post),
       total,
       hasMore: skip + limit < total,
     })
