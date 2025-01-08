@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import prisma from '@/app/lib/prisma'
-import { Prisma, User } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 
 type CommentWithDetails = Prisma.CommentGetPayload<{
   include: {
