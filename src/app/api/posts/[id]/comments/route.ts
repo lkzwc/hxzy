@@ -4,17 +4,18 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import prisma from '@/app/lib/prisma'
 import { Prisma } from '@prisma/client'
 
-type CommentWithDetails = Prisma.CommentGetPayload<{
-  include: {
-    author: {
-      select: {
-        id: true
-        name: true
-        image: true
-      }
-    }
+interface CommentWithDetails {
+  id: number
+  content: string
+  images: string[]
+  createdAt: Date
+  parentId: number | null
+  author: {
+    id: number
+    name: string | null
+    image: string | null
   }
-}>
+}
 
 interface CommentResponse {
   id: number
