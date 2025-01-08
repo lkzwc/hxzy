@@ -2,8 +2,16 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import prisma from '@/app/lib/prisma'
-import { Prisma, PrismaClient } from '@prisma/client'
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
+
+type WhereInput = {
+  published: boolean
+  OR?: {
+    title?: { contains: string; mode: 'insensitive' }
+    content?: { contains: string; mode: 'insensitive' }
+  }[]
+  tags?: { has: string }
+}
 
 // 获取帖子列表
 export async function GET(request: NextRequest) {
@@ -16,12 +24,12 @@ export async function GET(request: NextRequest) {
     const skip = (page - 1) * limit
 
     // 构建查询条件
-    const where: Prisma.PostWhereInput = {
+    const where: WhereInput = {
       published: true,
       ...(search && {
         OR: [
-          { title: { contains: search, mode: Prisma.QueryMode.insensitive } },
-          { content: { contains: search, mode: Prisma.QueryMode.insensitive } },
+          { title: { contains: search, mode: 'insensitive' } },
+          { content: { contains: search, mode: 'insensitive' } },
         ],
       }),
       ...(tag && { tags: { has: tag } }),
@@ -30,7 +38,7 @@ export async function GET(request: NextRequest) {
     // 获取帖子列表和下一页数据
     const [posts, nextPagePosts] = await Promise.all([
       prisma.post.findMany({
-        where,
+        where: where as any, // 使用类型断言避免类型错误
         include: {
           author: {
             select: {
@@ -46,18 +54,18 @@ export async function GET(request: NextRequest) {
           },
         },
         orderBy: [
-          { createdAt: Prisma.SortOrder.desc },
-          { id: Prisma.SortOrder.desc },
+          { createdAt: 'desc' },
+          { id: 'desc' },
         ],
         skip,
         take: limit,
       }),
       prisma.post.findMany({
-        where,
+        where: where as any, // 使用类型断言避免类型错误
         select: { id: true },
         orderBy: [
-          { createdAt: Prisma.SortOrder.desc },
-          { id: Prisma.SortOrder.desc },
+          { createdAt: 'desc' },
+          { id: 'desc' },
         ],
         skip: skip + limit,
         take: 1,
@@ -153,7 +161,6 @@ export async function POST(request: NextRequest) {
         _count: {
           select: {
             comments: true,
-            postLikes: true,
           },
         },
       },
