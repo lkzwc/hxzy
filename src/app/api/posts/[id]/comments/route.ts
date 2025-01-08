@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import prisma from '@/app/lib/prisma'
-import { Prisma } from '@prisma/client'
+import { Prisma, PrismaClient } from '@prisma/client'
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 
 interface CommentWithDetails {
   id: number
@@ -293,7 +294,7 @@ export async function POST(
   } catch (error) {
     console.error('发表评论失败:', error)
     // 如果是 Prisma 错误，返回更详细的错误信息
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    if (error instanceof PrismaClientKnownRequestError) {
       console.error('Prisma 错误:', {
         code: error.code,
         message: error.message,
