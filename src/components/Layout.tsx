@@ -14,7 +14,7 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
     title: '中医工具',
     subtitle: '传统智慧'
   },
-  '/aboutus': {
+  '/about': {
     title: '关于我们',
     subtitle: '健康人生'
   },
@@ -38,7 +38,7 @@ const menuItems = [
   { name: '中医社区', path: '/community', description: '中医爱好者交流地' },
   { name: '中医数据库', path: '/zhongyidb', description: '中医数据库' },
   { name: '全国名医', path: '/doctors' ,description: '中医大家'},
-  { name: '关于我们', path: '/aboutus',description: '关于我们' }
+  { name: '关于我们', path: '/about',description: '关于我们' }
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {

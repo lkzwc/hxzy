@@ -12,7 +12,7 @@ export default function VerticalTitle({ title, subtitle }: VerticalTitleProps) {
       initial={{ x: -50, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       transition={{ duration: 0.8, ease: "easeOut" }}
-      className="fixed left-0 w-[15px] z-10"
+      className="fixed left-0 w-[15px] z-10 hidden md:block"
     >
       <div className="relative h-[280px] mt-[20px]">
         <motion.div

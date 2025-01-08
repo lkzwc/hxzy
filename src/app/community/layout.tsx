@@ -13,10 +13,10 @@ export default function CommunityLayout({
 }) {
   return (
     <div className="container mx-auto max-w-7xl">
-      <div className="flex gap-4 m-4">
+      <div className="flex gap-2 mt-4 sm:ml-16">
         {/* 左侧筛选区 - 固定位置 */}
-        <div className="w-[150px] shrink-0">
-          <div className="fixed w-[150px] ml-6">
+        <div className="w-[150px] hidden md:block">
+          <div className="fixed w-[150px]">
             <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
               <h3 className="text-base font-medium mb-3 pb-2 border-b border-gray-100 flex items-center gap-2">
                 <span className="w-0.5 h-4 bg-primary rounded-full"></span>
@@ -43,7 +43,7 @@ export default function CommunityLayout({
         </div>
 
         {/* 右侧边栏 - 固定位置 */}
-        <div className="w-[240px] shrink-0">
+        <div className="w-[240px] hidden lg:block">
           <div className="fixed w-[240px]  space-y-4">
             {/* 热门话题 */}
             <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-100">

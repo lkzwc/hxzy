@@ -11,7 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/yang-sheng-zhi-dao',
     '/zhongyidb',
     '/zhen-jiu-jing-luo',
-    '/about-us',
+    '/about',
   ].map(route => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),

@@ -54,42 +54,42 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-[#FAF6F1]">
       {/* 顶部横幅 */}
-      <div className="relative min-h-[800px] bg-gradient-to-b from-[#F5EDE4] to-[#FAF6F1] overflow-hidden">
+      <div className="relative min-h-[600px] lg:min-h-[800px] bg-gradient-to-b from-[#F5EDE4] to-[#FAF6F1] overflow-hidden">
         {/* 装饰图案 */}
         <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse delay-1000" />
+          <div className="absolute top-1/4 left-1/4 w-48 lg:w-96 h-48 lg:h-96 bg-primary/5 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-48 lg:w-96 h-48 lg:h-96 bg-secondary/5 rounded-full blur-3xl animate-pulse delay-1000" />
           <div className="absolute inset-0 bg-[url('/images/bg-pattern.png')] opacity-5" />
         </div>
 
         <div className="container mx-auto px-4 h-full">
-          <div className="relative grid lg:grid-cols-12 gap-16 items-center py-32">
+          <div className="relative grid lg:grid-cols-12 gap-8 lg:gap-16 items-center py-16 lg:py-32">
             {/* 左侧内容 */}
-            <div className="lg:col-span-5 lg:pl-8">
-              <div className="inline-block px-4 py-2 bg-primary/10 rounded-full text-primary text-sm font-medium mb-8">
+            <div className="lg:col-span-5 lg:pl-8 text-center lg:text-left">
+              <div className="inline-block px-4 py-2 bg-primary/10 rounded-full text-primary text-sm font-medium mb-6 lg:mb-8">
                 中医药文化传承与创新平台
               </div>
-              <h1 className="text-6xl font-bold text-text mb-8 leading-tight">
+              <h1 className="text-4xl lg:text-6xl font-bold text-text mb-6 lg:mb-8 leading-tight">
                 传承千年智慧，
                 <br />
                 守护<span className="text-primary">现代健康</span>
               </h1>
-              <p className="text-xl text-text/70 mb-12 leading-relaxed">
+              <p className="text-lg lg:text-xl text-text/70 mb-8 lg:mb-12 leading-relaxed">
                 探索中医药文化瑰宝，分享养生保健心得，
-                <br />
+                <br className="hidden lg:block" />
                 共同传承和发展中华民族的传统医药文化
               </p>
-              <div className="flex gap-6">
+              <div className="flex flex-col sm:flex-row gap-4 lg:gap-6 justify-center lg:justify-start">
                 <Link 
                   href="/community" 
-                  className="btn btn-primary btn-lg gap-2 min-w-[180px] h-16 text-lg"
+                  className="btn btn-primary gap-2 lg:btn-lg lg:min-w-[180px] lg:h-16 text-base lg:text-lg"
                 >
                   进入社区
-                  <Right theme="outline" size="24" />
+                  <Right theme="outline" size="20" className="hidden sm:block" />
                 </Link>
                 <Link 
                   href="/about" 
-                  className="btn btn-outline btn-lg h-16 text-lg hover:bg-white/50"
+                  className="btn btn-outline lg:btn-lg lg:h-16 text-base lg:text-lg hover:bg-white/50"
                 >
                   了解更多
                 </Link>
@@ -97,7 +97,7 @@ export default function Home() {
             </div>
 
             {/* 右侧特色内容 */}
-            <div className="lg:col-span-7 relative">
+            <div className="lg:col-span-7 relative mt-12 lg:mt-0">
               <div className="aspect-[4/3] relative">
                 {features.map((feature, index) => (
                   <div
@@ -108,7 +108,7 @@ export default function Home() {
                         : 'opacity-0 translate-y-8'
                     }`}
                   >
-                    <div className="relative h-full rounded-3xl overflow-hidden shadow-2xl">
+                    <div className="relative h-full rounded-2xl lg:rounded-3xl overflow-hidden shadow-2xl">
                       <Image
                         src={feature.image}
                         alt={feature.title}
@@ -116,14 +116,14 @@ export default function Home() {
                         className="object-cover"
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                      <div className="absolute bottom-0 left-0 right-0 p-12">
-                        <h3 className="text-3xl font-bold text-white mb-4">{feature.title}</h3>
-                        <p className="text-xl text-white/90 mb-8">{feature.desc}</p>
-                        <div className="grid grid-cols-3 gap-8">
+                      <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-12">
+                        <h3 className="text-2xl lg:text-3xl font-bold text-white mb-2 lg:mb-4">{feature.title}</h3>
+                        <p className="text-base lg:text-xl text-white/90 mb-4 lg:mb-8">{feature.desc}</p>
+                        <div className="grid grid-cols-3 gap-4 lg:gap-8">
                           {feature.stats.map((stat, i) => (
                             <div key={i} className="text-center">
-                              <div className="text-4xl font-bold text-white mb-2">{stat.value}</div>
-                              <div className="text-base text-white/80">{stat.label}</div>
+                              <div className="text-2xl lg:text-4xl font-bold text-white mb-1 lg:mb-2">{stat.value}</div>
+                              <div className="text-sm lg:text-base text-white/80">{stat.label}</div>
                             </div>
                           ))}
                         </div>
@@ -133,13 +133,13 @@ export default function Home() {
                 ))}
               </div>
               {/* 切换指示器 */}
-              <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex gap-3">
+              <div className="absolute -bottom-8 lg:-bottom-12 left-1/2 -translate-x-1/2 flex gap-2 lg:gap-3">
                 {features.map((_, index) => (
                   <button
                     key={index}
-                    className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                    className={`w-2 lg:w-3 h-2 lg:h-3 rounded-full transition-all duration-300 ${
                       index === activeFeature
-                        ? 'w-12 bg-primary'
+                        ? 'w-8 lg:w-12 bg-primary'
                         : 'bg-primary/20 hover:bg-primary/40'
                     }`}
                     onClick={() => setActiveFeature(index)}
@@ -152,27 +152,27 @@ export default function Home() {
       </div>
 
       {/* 特色板块 */}
-      <div className="py-32 bg-white relative overflow-hidden">
+      <div className="py-16 lg:py-32 bg-white relative overflow-hidden">
         {/* 装饰图案 */}
         <div className="absolute inset-0">
-          <div className="absolute top-1/3 right-0 w-[800px] h-[800px] bg-primary/5 rounded-full blur-3xl" />
-          <div className="absolute -bottom-1/4 -left-1/4 w-[800px] h-[800px] bg-secondary/5 rounded-full blur-3xl" />
+          <div className="absolute top-1/3 right-0 w-[400px] lg:w-[800px] h-[400px] lg:h-[800px] bg-primary/5 rounded-full blur-3xl" />
+          <div className="absolute -bottom-1/4 -left-1/4 w-[400px] lg:w-[800px] h-[400px] lg:h-[800px] bg-secondary/5 rounded-full blur-3xl" />
         </div>
 
         <div className="container mx-auto px-4 relative">
-          <div className="text-center max-w-3xl mx-auto mb-24">
-            <div className="inline-block px-4 py-2 bg-primary/10 rounded-full text-primary text-sm font-medium mb-6">
+          <div className="text-center max-w-3xl mx-auto mb-16 lg:mb-24">
+            <div className="inline-block px-4 py-2 bg-primary/10 rounded-full text-primary text-sm font-medium mb-4 lg:mb-6">
               四大核心板块
             </div>
-            <h2 className="text-4xl font-bold text-text mb-6">
+            <h2 className="text-3xl lg:text-4xl font-bold text-text mb-4 lg:mb-6">
               探索传统医药智慧
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-lg lg:text-xl text-gray-600">
               汇集中医药领域精华，助力传统医学发展创新
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
             {[
               {
                 icon: Book,
@@ -197,16 +197,16 @@ export default function Home() {
             ].map((item, index) => (
               <div 
                 key={index} 
-                className="group relative bg-white rounded-2xl p-8 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+                className="group relative bg-white rounded-xl lg:rounded-2xl p-6 lg:p-8 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
               >
-                <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
-                  <item.icon theme="outline" size="40" className="text-primary" />
+                <div className="w-16 lg:w-20 h-16 lg:h-20 rounded-xl lg:rounded-2xl bg-primary/10 flex items-center justify-center mb-4 lg:mb-6 group-hover:bg-primary/20 transition-colors">
+                  <item.icon theme="outline" size="32" className="text-primary" />
                 </div>
-                <h3 className="text-2xl font-bold mb-4">{item.title}</h3>
-                <p className="text-gray-600 text-base mb-6">{item.desc}</p>
+                <h3 className="text-xl lg:text-2xl font-bold mb-3 lg:mb-4">{item.title}</h3>
+                <p className="text-gray-600 text-sm lg:text-base mb-4 lg:mb-6">{item.desc}</p>
                 <Link 
                   href="/community" 
-                  className="inline-flex items-center text-primary hover:text-primary-focus text-lg font-medium gap-2 group-hover:gap-4 transition-all"
+                  className="inline-flex items-center text-primary hover:text-primary-focus text-base lg:text-lg font-medium gap-2 group-hover:gap-4 transition-all"
                 >
                   了解更多
                   <Right theme="outline" size="20" />
@@ -218,21 +218,21 @@ export default function Home() {
       </div>
 
       {/* 热门讨论 */}
-      <div className="py-32 bg-[#FAF6F1]">
+      <div className="py-16 lg:py-32 bg-[#FAF6F1]">
         <div className="container mx-auto px-4">
-          <div className="text-center max-w-3xl mx-auto mb-24">
-            <div className="inline-block px-4 py-2 bg-primary/10 rounded-full text-primary text-sm font-medium mb-6">
+          <div className="text-center max-w-3xl mx-auto mb-16 lg:mb-24">
+            <div className="inline-block px-4 py-2 bg-primary/10 rounded-full text-primary text-sm font-medium mb-4 lg:mb-6">
               社区精选
             </div>
-            <h2 className="text-4xl font-bold text-text mb-6">
+            <h2 className="text-3xl lg:text-4xl font-bold text-text mb-4 lg:mb-6">
               热门讨论
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-lg lg:text-xl text-gray-600">
               发现优质内容，参与专业讨论
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-12">
             {[
               {
                 title: '浅谈《伤寒论》太阳病篇的现代临床应用',
@@ -252,65 +252,53 @@ export default function Home() {
                 likes: 96,
                 comments: 24,
                 author: {
-                  name: '李时珍',
+                  name: '李四',
                   avatar: '/images/avatar-2.jpg'
                 }
               }
             ].map((post, index) => (
-              <Link
+              <div 
                 key={index}
-                href={`/community/${index + 1}`}
-                className="group bg-white rounded-2xl p-8 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
+                className="bg-white rounded-xl lg:rounded-2xl p-6 lg:p-8 hover:shadow-xl transition-shadow"
               >
-                <div className="flex items-center gap-4 mb-6">
-                  <Image
-                    src={post.author.avatar}
-                    alt={post.author.name}
-                    width={48}
-                    height={48}
-                    className="rounded-full"
-                  />
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="relative w-10 h-10 lg:w-12 lg:h-12">
+                    <Image
+                      src={post.author.avatar}
+                      alt={post.author.name}
+                      fill
+                      className="rounded-full object-cover"
+                    />
+                  </div>
                   <div>
-                    <div className="font-bold text-lg">{post.author.name}</div>
+                    <div className="font-medium text-gray-900">{post.author.name}</div>
                     <div className="text-sm text-gray-500">中医师</div>
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold mb-4 group-hover:text-primary transition-colors">{post.title}</h3>
-                <p className="text-gray-600 text-base mb-6 line-clamp-2">{post.content}</p>
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-wrap gap-2">
-                    {post.tags.map(tag => (
-                      <span
-                        key={tag}
-                        className="px-3 py-1 text-sm bg-primary/10 text-primary rounded-full"
-                      >
-                        {tag}
-                      </span>
-                    ))}
+                <h3 className="text-xl lg:text-2xl font-bold mb-3 line-clamp-2">{post.title}</h3>
+                <p className="text-gray-600 text-sm lg:text-base mb-4 line-clamp-2">{post.content}</p>
+                <div className="flex flex-wrap gap-2 mb-6">
+                  {post.tags.map((tag, i) => (
+                    <span
+                      key={i}
+                      className="px-3 py-1 text-sm bg-primary/10 text-primary rounded-full"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <div className="flex items-center gap-6 text-gray-500 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Like theme="outline" size="16" />
+                    <span>{post.likes}</span>
                   </div>
-                  <div className="flex items-center gap-6 text-gray-500">
-                    <span className="flex items-center gap-2">
-                      <Like theme="outline" size="18" />
-                      {post.likes}
-                    </span>
-                    <span className="flex items-center gap-2">
-                      <Comment theme="outline" size="18" />
-                      {post.comments}
-                    </span>
+                  <div className="flex items-center gap-2">
+                    <Comment theme="outline" size="16" />
+                    <span>{post.comments}</span>
                   </div>
                 </div>
-              </Link>
+              </div>
             ))}
-          </div>
-
-          <div className="text-center mt-16">
-            <Link 
-              href="/community" 
-              className="btn btn-outline btn-lg gap-2 min-w-[240px] h-16 text-lg hover:bg-white/50"
-            >
-              查看更多讨论
-              <Right theme="outline" size="20" />
-            </Link>
           </div>
         </div>
       </div>

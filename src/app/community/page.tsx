@@ -53,7 +53,6 @@ export default function Community() {
   const [searchInput, setSearchInput] = useState(""); // 用于输入框的值
   const [searchQuery, setSearchQuery] = useState(""); // 用于实际搜索的值
   const [activeCategory, setActiveCategory] = useState("全部");
-  const [page, setPage] = useState(1);
   const loadingRef = useRef<HTMLDivElement>(null);
   const { data: session } = useSession();
   const router = useRouter();
@@ -85,34 +84,65 @@ export default function Community() {
   const hasMore = data ? data[data.length - 1]?.hasMore : true;
   const isLoadingMore = isLoading || (size > 0 && data && typeof data[size - 1] === "undefined");
 
-  useEffect(() => {
-    const tag = searchParams.get("tag");
-    const search = searchParams.get("search");
-    setActiveCategory(tag || "全部");
-    if (search) {
-      setSearchInput(search);
-      setSearchQuery(search);
+  // 处理搜索和分类筛选
+  const handleSearch = () => {
+    const trimmedInput = searchInput.trim();
+    setSearchQuery(trimmedInput);
+    
+    // 更新 URL 参数
+    const params = new URLSearchParams();
+    if (trimmedInput) {
+      params.set("search", trimmedInput);
     }
-  }, [searchParams]);
-
-  useEffect(() => {
-    setSize(1); // 重置到第一页
-  }, [activeCategory, searchQuery, setSize]);
-
-  // 处理搜索
-  const triggerSearch = () => {
-    if (searchInput.trim() !== searchQuery) {
-      setSearchQuery(searchInput.trim());
+    if (activeCategory !== "全部") {
+      params.set("tag", activeCategory);
     }
+    const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
+    window.history.pushState({}, '', newUrl);
+    
+    // 重置页码并重新获取数据
+    setSize(1);
+  };
+
+  // 处理分类切换
+  const handleCategoryChange = (category: string) => {
+    setActiveCategory(category);
+    setSearchInput(""); // 清空搜索框
+    setSearchQuery(""); // 清空搜索查询
+    
+    // 更新 URL 参数
+    const params = new URLSearchParams();
+    if (category !== "全部") {
+      params.set("tag", category);
+    }
+    const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
+    window.history.pushState({}, '', newUrl);
+    
+    // 重置页码并重新获取数据
+    setSize(1);
   };
 
   // 处理回车搜索
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      triggerSearch();
+      handleSearch();
     }
   };
+
+  // 初始化搜索和分类参数
+  useEffect(() => {
+    const tag = searchParams.get("tag");
+    const search = searchParams.get("search");
+    if (tag) {
+      setSearchInput("");
+      setActiveCategory(tag);
+    }
+    if (search) {
+      setSearchInput(search);
+      setSearchQuery(search);
+    }
+  }, []);
 
   // 监听滚动加载
   useEffect(() => {
@@ -144,50 +174,69 @@ export default function Community() {
   }
 
   return (
-    <div className="max-w-6xl mx-6 pb-10">
+    <div className="max-w-6xl mx-auto px-2 sm:px-4 pb-4 sm:pb-10">
       {/* 固定的顶部搜索栏 */}
-      <div className="sticky top-0 z-10 bg-gray-50/80 backdrop-blur-sm">
-        <div className="bg-white rounded-xl shadow-sm p-2 sm:p-4 border border-gray-100">
+      <div className="sticky top-14 z-10 bg-gray-50/80 backdrop-blur-sm py-2">
+        <div className="bg-white rounded-lg sm:rounded-xl shadow-sm p-2 sm:p-4 border border-gray-100">
           {/* 搜索和发帖按钮 */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-            <input
-              type="text"
-              placeholder="搜索感兴趣的内容..."
-              className="flex-1 pl-2 py-1 text-sm bg-gray-50 rounded-lg focus:outline-none focus:ring-1 focus:ring-primary/20 transition-all hover:bg-gray-100"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              onKeyPress={handleKeyPress}
-            />
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="flex-1 flex items-center gap-2">
+              <div className="flex-1 flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-primary/20 hover:bg-gray-100 transition-all">
+                <Search theme="outline" size="18" className="text-gray-400 flex-shrink-0" />
+                <input
+                  type="text"
+                  placeholder="搜索感兴趣的内容..."
+                  className="flex-1 text-sm sm:text-base bg-transparent focus:outline-none min-w-0"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                />
+              </div>
+              <button
+                onClick={handleSearch}
+                className="flex-shrink-0 px-3 sm:px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-sm sm:text-base"
+              >
+                搜索
+              </button>
+            </div>
             <button
-              type="button"
-              className="p-2 text-primary hover:text-primary/70 transition-colors"
-              onClick={triggerSearch}
+              onClick={() => session ? setIsModalOpen(true) : router.push('/api/auth/signin')}
+              className="flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
             >
-              <Search theme="outline" size="24" />
+              <Plus theme="outline" size="18" className="flex-shrink-0" />
+              <span className="text-sm sm:text-base">发帖</span>
             </button>
-            <button
-              onClick={() =>
-                session ? setIsModalOpen(true) : router.push("/api/auth/signin")
-              }
-              className="flex items-center justify-center gap-2 px-4 py-2.5 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors sm:w-auto w-full"
-            >
-              <Plus theme="outline" size="18" />
-              <span>发帖</span>
-            </button>
+          </div>
+
+          {/* 分类标签 */}
+          <div className="flex items-center gap-2 mt-2 sm:mt-3 overflow-x-auto pb-1 hide-scrollbar">
+            {['全部', '经方', '养生', '针灸', '中药', '诊断', '心得'].map((category) => (
+              <button
+                key={category}
+                onClick={() => handleCategoryChange(category)}
+                className={`flex-shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-sm sm:text-base whitespace-nowrap transition-colors ${
+                  activeCategory === category
+                    ? 'bg-primary text-white'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+              >
+                {category}
+              </button>
+            ))}
           </div>
         </div>
       </div>
 
       {/* 帖子列表 */}
-      <div className="space-y-2 mt-4">
+      <div className="space-y-2 sm:space-y-4 mt-3">
         {!data && isLoading ? (
           <div className="flex justify-center items-center min-h-[200px]">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+            <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-2 sm:border-3 border-primary border-t-transparent"></div>
           </div>
         ) : posts.length === 0 ? (
-          <div className="text-center py-16 sm:py-20 bg-white rounded-xl border border-gray-100">
-            <div className="text-gray-400 mb-2 text-4xl sm:text-5xl">📝</div>
-            <div className="text-gray-500 px-4">暂无帖子，来发布第一篇吧</div>
+          <div className="text-center py-12 sm:py-16 bg-white rounded-lg sm:rounded-xl border border-gray-100">
+            <div className="text-gray-400 mb-2 text-3xl sm:text-4xl">📝</div>
+            <div className="text-gray-500 px-4 text-sm sm:text-base">暂无帖子，来发布第一篇吧</div>
           </div>
         ) : (
           <>
@@ -195,57 +244,58 @@ export default function Community() {
               <Link
                 key={post.id}
                 href={`/community/${post.id}`}
-                className="block bg-white rounded-xl shadow-sm hover:shadow-md transition-all duration-300
+                className="block bg-white rounded-lg sm:rounded-xl shadow-sm hover:shadow-md transition-all duration-300
                   border border-gray-100 hover:border-primary/30 group"
               >
-                <div className="p-4 sm:p-6">
-                  <div className="flex items-start gap-3 sm:gap-4">
+                <div className="p-3 sm:p-4">
+                  <div className="flex items-start gap-2 sm:gap-4">
                     <img
-                      src={post.author.image || "/images/default-avatar.png"}
-                      alt={post.author.name || "用户"}
-                      className="w-10 h-10 sm:w-11 sm:h-11 rounded-full shrink-0 border-2 border-white shadow-sm
+                      src={post.author.image || '/images/default-avatar.png'}
+                      alt={post.author.name || '用户'}
+                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-full shrink-0 border-2 border-white shadow-sm
                         group-hover:ring-2 group-hover:ring-primary/20 transition-all"
                     />
                     <div className="flex-1 min-w-0">
-                      <div className="flex flex-col sm:flex-row sm:items-start justify-between mb-2 sm:mb-2.5 gap-2 sm:gap-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-4 mb-2">
                         <div className="flex-1 min-w-0">
-                          <h2 className="text-base sm:text-lg font-semibold text-gray-900 group-hover:text-primary transition-colors line-clamp-1">
+                          <h2 className="text-base sm:text-lg font-medium text-gray-900 group-hover:text-primary 
+                            transition-colors line-clamp-1 mb-1"
+                          >
                             {post.title}
                           </h2>
-                          <div className="flex items-center gap-2 mt-1">
-                            <span className="text-sm font-medium text-primary/90">
-                              {post.author.name || "匿名用户"}
+                          <div className="flex items-center gap-2 text-xs sm:text-sm">
+                            <span className="font-medium text-primary/90">
+                              {post.author.name || '匿名用户'}
                             </span>
                             <span className="inline-block w-1 h-1 bg-gray-300 rounded-full"></span>
-                            <span className="text-xs text-gray-400">
-                              {dayjs(post.createdAt).format("MM月DD日 HH:mm")}
+                            <span className="text-gray-400">
+                              {dayjs(post.createdAt).format('MM月DD日 HH:mm')}
                             </span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-4 sm:gap-5 text-sm text-gray-400/90 shrink-0">
-                          <span className="flex items-center gap-1.5 hover:text-primary/70 transition-colors">
-                            <Eyes theme="outline" size="16" />
+                        <div className="flex items-center gap-4 text-xs sm:text-sm text-gray-400/90 shrink-0">
+                          <span className="flex items-center gap-1">
+                            <Eyes theme="outline" size="16" className="flex-shrink-0" />
                             <span>{post.views}</span>
                           </span>
-                          <span className="flex items-center gap-1.5 hover:text-primary/70 transition-colors">
-                            <Like theme="outline" size="16" />
+                          <span className="flex items-center gap-1">
+                            <Like theme="outline" size="16" className="flex-shrink-0" />
                             <span>{post._count.postLikes}</span>
                           </span>
-                          <span className="flex items-center gap-1.5 hover:text-primary/70 transition-colors">
-                            <Comment theme="outline" size="16" />
+                          <span className="flex items-center gap-1">
+                            <Comment theme="outline" size="16" className="flex-shrink-0" />
                             <span>{post._count.comments}</span>
                           </span>
                         </div>
                       </div>
-                      <p className="text-gray-600 mb-3 line-clamp-2 text-sm leading-relaxed">
+                      <p className="text-gray-600 mb-2 line-clamp-2 text-sm sm:text-base leading-relaxed">
                         {post.content}
                       </p>
-
-                      <div className="flex items-center gap-2 flex-wrap">
+                      <div className="flex flex-wrap gap-1.5">
                         {post.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="px-2 sm:px-2.5 py-0.5 sm:py-1 text-xs bg-primary/5 text-primary rounded-full border border-primary/10
+                            className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-primary/5 text-primary rounded-full border border-primary/10
                               group-hover:bg-primary/10 transition-colors"
                           >
                             {tag}
@@ -257,31 +307,51 @@ export default function Community() {
                 </div>
               </Link>
             ))}
-
-            {/* 加载更多指示器 */}
-            <div ref={loadingRef} className="py-4 text-center">
-              {isLoadingMore ? (
-                <div className="flex justify-center items-center h-8">
-                  <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-primary"></div>
-                </div>
-              ) : hasMore ? (
-                <span className="text-sm text-gray-500">下拉加载更多</span>
-              ) : (
-                <span className="text-sm text-gray-500">已经到底啦 ~</span>
-              )}
-            </div>
           </>
+        )}
+
+        {/* 加载更多指示器 */}
+        {hasMore && (
+          <div
+            ref={loadingRef}
+            className="flex justify-center items-center py-4 sm:py-6"
+          >
+            <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-2 sm:border-3 border-primary border-t-transparent"></div>
+          </div>
         )}
       </div>
 
+      {/* 创建帖子模态框 */}
       <CreatePostModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSuccess={() => {
-          setSize(1); // 重置到第一页
+          setIsModalOpen(false);
           mutate();
         }}
       />
+
+      {/* 返回顶部按钮 */}
+      <button
+        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 p-2 sm:p-3 bg-white rounded-full shadow-lg hover:shadow-xl
+          border border-gray-200 hover:border-primary/30 transition-all group z-50"
+      >
+        <svg
+          className="w-4 h-4 sm:w-5 sm:h-5 text-gray-400 group-hover:text-primary transition-colors"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M5 10l7-7m0 0l7 7m-7-7v18"
+          />
+        </svg>
+      </button>
     </div>
-  );
+  )
 }
+

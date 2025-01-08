@@ -44,9 +44,22 @@ interface EBook {
   coverImage: string
 }
 
+interface Tab {
+  id: string;
+  name: string;
+}
+
+const tabs: Tab[] = [
+  { id: 'zhongyao', name: '中药' },
+  { id: 'jingfang', name: '经方' },
+  { id: 'kecheng', name: '课程' },
+  { id: 'dianzishu', name: '电子书' },
+];
+
 export default function ZhongYiDBPage() {
   const [searchQuery, setSearchQuery] = useState('')
-  const [activeTab, setActiveTab] = useState('medicines')
+  const [activeTab, setActiveTab] = useState('zhongyao')
+  const [searchInput, setSearchInput] = useState('')
 
   // 添加搜索处理函数
   const handleSearch = () => {
@@ -165,12 +178,12 @@ export default function ZhongYiDBPage() {
               <input
                 type="text"
                 placeholder="搜索中药、经方、课程或电子书..."
-                className="flex-1 bg-transparent border-none focus:outline-none text-gray-800 placeholder:text-gray-500 text-lg px-8 py-4"
+                className="flex-1 bg-transparent border-none focus:outline-none text-gray-800 placeholder:text-gray-500 text-sm sm:text-lg px-6 sm:px-8 py-3 sm:py-4"
                 value={searchQuery}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value)}
                 onKeyPress={handleKeyPress}
               />
-              <div className="px-3">
+              <div className="px-2 sm:px-3">
                 <button 
                   className="btn btn-primary btn-circle"
                   onClick={handleSearch}
@@ -186,34 +199,34 @@ export default function ZhongYiDBPage() {
       {/* 主要内容区域 */}
       <div className="container mx-auto px-4 -mt-8">
         {/* 标签页导航 */}
-        <div className="flex justify-center mb-12">
-          <div className="join bg-base-100 shadow-lg rounded-full p-2">
+        <div className="flex justify-center mb-12 overflow-x-auto hide-scrollbar">
+          <div className="join bg-base-100 shadow-lg rounded-full p-2 flex-nowrap">
             <button 
-              className={`join-item btn btn-lg gap-2 rounded-full min-w-[160px] ${activeTab === 'medicines' ? 'btn-primary' : 'btn-ghost'}`}
-              onClick={() => setActiveTab('medicines')}
+              className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[100px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'zhongyao' ? 'btn-primary' : 'btn-ghost'}`}
+              onClick={() => setActiveTab('zhongyao')}
             >
-              <MedicineBottle theme="outline" size="24" fill={activeTab === 'medicines' ? 'currentColor' : '#666'} />
+              <MedicineBottle theme="outline" size={16} className="sm:w-5 sm:h-5" fill={activeTab === 'zhongyao' ? 'currentColor' : '#666'} />
               中药
             </button>
             <button 
-              className={`join-item btn btn-lg gap-2 rounded-full min-w-[160px] ${activeTab === 'formulas' ? 'btn-primary' : 'btn-ghost'}`}
-              onClick={() => setActiveTab('formulas')}
+              className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[100px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'jingfang' ? 'btn-primary' : 'btn-ghost'}`}
+              onClick={() => setActiveTab('jingfang')}
             >
-              <Prescription theme="outline" size="24" fill={activeTab === 'formulas' ? 'currentColor' : '#666'} />
+              <Prescription theme="outline" size={16} className="sm:w-5 sm:h-5" fill={activeTab === 'jingfang' ? 'currentColor' : '#666'} />
               经方
             </button>
             <button 
-              className={`join-item btn btn-lg gap-2 rounded-full min-w-[160px] ${activeTab === 'courses' ? 'btn-primary' : 'btn-ghost'}`}
-              onClick={() => setActiveTab('courses')}
+              className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[100px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'kecheng' ? 'btn-primary' : 'btn-ghost'}`}
+              onClick={() => setActiveTab('kecheng')}
             >
-              <VideoOne theme="outline" size="24" fill={activeTab === 'courses' ? 'currentColor' : '#666'} />
+              <VideoOne theme="outline" size={16} className="sm:w-5 sm:h-5" fill={activeTab === 'kecheng' ? 'currentColor' : '#666'} />
               课程
             </button>
             <button 
-              className={`join-item btn btn-lg gap-2 rounded-full min-w-[160px] ${activeTab === 'ebooks' ? 'btn-primary' : 'btn-ghost'}`}
-              onClick={() => setActiveTab('ebooks')}
+              className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[100px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'dianzishu' ? 'btn-primary' : 'btn-ghost'}`}
+              onClick={() => setActiveTab('dianzishu')}
             >
-              <BookOne theme="outline" size="24" fill={activeTab === 'ebooks' ? 'currentColor' : '#666'} />
+              <BookOne theme="outline" size={16} className="sm:w-5 sm:h-5" fill={activeTab === 'dianzishu' ? 'currentColor' : '#666'} />
               电子书
             </button>
           </div>
@@ -222,7 +235,7 @@ export default function ZhongYiDBPage() {
         {/* 内容区域 */}
         <div className="grid gap-8">
           {/* 中药内容 */}
-          {activeTab === 'medicines' && (
+          {activeTab === 'zhongyao' && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {medicines.map((medicine) => (
                 <div key={medicine.id} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1">
@@ -244,7 +257,7 @@ export default function ZhongYiDBPage() {
           )}
 
           {/* 经方内容 */}
-          {activeTab === 'formulas' && (
+          {activeTab === 'jingfang' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {formulas.map((formula) => (
                 <div key={formula.id} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1">
@@ -265,7 +278,7 @@ export default function ZhongYiDBPage() {
           )}
 
           {/* 课程内容 */}
-          {activeTab === 'courses' && (
+          {activeTab === 'kecheng' && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {courses.map((course) => (
                 <div key={course.id} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1">
@@ -302,7 +315,7 @@ export default function ZhongYiDBPage() {
           )}
 
           {/* 电子书内容 */}
-          {activeTab === 'ebooks' && (
+          {activeTab === 'dianzishu' && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {ebooks.map((book) => (
                 <div key={book.id} className="card bg-base-100 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1">
