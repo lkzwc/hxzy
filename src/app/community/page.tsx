@@ -6,13 +6,17 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
-import { Search, Eyes, Like, Comment, Plus } from "@icon-park/react";
+import relativeTime from "dayjs/plugin/relativeTime";
+import { Search, Eyes, Comment, Plus } from "@icon-park/react";
 import CreatePostModal from "@/components/CreatePostModal";
+import LikeButton from "@/components/LikeButton";
 import useSWR from "swr";
 import useSWRInfinite from "swr/infinite";
+import { categories } from "@/util/common";
 
 // 配置 dayjs
 dayjs.locale("zh-cn");
+dayjs.extend(relativeTime);
 
 interface Author {
   id: number;
@@ -210,7 +214,7 @@ export default function Community() {
 
           {/* 分类标签 */}
           <div className="flex items-center gap-2 mt-2 sm:mt-3 overflow-x-auto pb-1 hide-scrollbar">
-            {['全部', '经方', '养生', '针灸', '中药', '诊断', '心得'].map((category) => (
+            {categories.map((category) => (
               <button
                 key={category}
                 onClick={() => handleCategoryChange(category)}
@@ -248,59 +252,49 @@ export default function Community() {
                   border border-gray-100 hover:border-primary/30 group"
               >
                 <div className="p-3 sm:p-4">
-                  <div className="flex items-start gap-2 sm:gap-4">
-                    <img
-                      src={post.author.image || '/images/default-avatar.png'}
-                      alt={post.author.name || '用户'}
-                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-full shrink-0 border-2 border-white shadow-sm
-                        group-hover:ring-2 group-hover:ring-primary/20 transition-all"
-                    />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-4 mb-2">
-                        <div className="flex-1 min-w-0">
-                          <h2 className="text-base sm:text-lg font-medium text-gray-900 group-hover:text-primary 
-                            transition-colors line-clamp-1 mb-1"
-                          >
-                            {post.title}
-                          </h2>
-                          <div className="flex items-center gap-2 text-xs sm:text-sm">
-                            <span className="font-medium text-primary/90">
-                              {post.author.name || '匿名用户'}
-                            </span>
-                            <span className="inline-block w-1 h-1 bg-gray-300 rounded-full"></span>
-                            <span className="text-gray-400">
-                              {dayjs(post.createdAt).format('MM月DD日 HH:mm')}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-4 text-xs sm:text-sm text-gray-400/90 shrink-0">
-                          <span className="flex items-center gap-1">
-                            <Eyes theme="outline" size="16" className="flex-shrink-0" />
-                            <span>{post.views}</span>
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Like theme="outline" size="16" className="flex-shrink-0" />
-                            <span>{post._count.postLikes}</span>
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <Comment theme="outline" size="16" className="flex-shrink-0" />
-                            <span>{post._count.comments}</span>
-                          </span>
-                        </div>
-                      </div>
-                      <p className="text-gray-600 mb-2 line-clamp-2 text-sm sm:text-base leading-relaxed">
-                        {post.content}
-                      </p>
-                      <div className="flex flex-wrap gap-1.5">
+                  <h2 className="text-base sm:text-lg font-medium text-gray-900 group-hover:text-primary transition-colors line-clamp-1">
+                    {post.title}
+                  </h2>
+                  <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 line-clamp-2">
+                    {post.content}
+                  </p>
+                  <div className="mt-2 sm:mt-3 flex items-center gap-3 sm:gap-4 text-gray-500">
+                    <div className="flex items-center gap-1.5">
+                      {post.author.image ? (
+                        <img
+                          src={post.author.image}
+                          alt={post.author.name || "用户头像"}
+                          className="w-5 h-5 sm:w-6 sm:h-6 rounded-full"
+                        />
+                      ) : (
+                        <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-gray-200" />
+                      )}
+                      <span className="text-sm sm:text-base">{post.author.name || "匿名用户"}</span>
+                    </div>
+                    <span className="text-sm sm:text-base">
+                      {dayjs(post.createdAt).fromNow()}
+                    </span>
+                    {post.tags && post.tags.length > 0 && (
+                      <div className="hidden sm:flex items-center gap-1.5">
                         {post.tags.map((tag) => (
                           <span
                             key={tag}
-                            className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-primary/5 text-primary rounded-full border border-primary/10
-                              group-hover:bg-primary/10 transition-colors"
+                            className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-sm"
                           >
                             {tag}
                           </span>
                         ))}
+                      </div>
+                    )}
+                    <div className="flex items-center gap-3 sm:gap-4 ml-auto">
+                      <div className="flex items-center gap-1.5">
+                        <Eyes theme="outline" size="18" className="flex-shrink-0" />
+                        <span className="text-sm">{post.views}</span>
+                      </div>
+                      <LikeButton postId={post.id} initialLikes={post._count.postLikes} />
+                      <div className="flex items-center gap-1.5">
+                        <Comment theme="outline" size="18" className="flex-shrink-0" />
+                        <span className="text-sm">{post._count.comments}</span>
                       </div>
                     </div>
                   </div>

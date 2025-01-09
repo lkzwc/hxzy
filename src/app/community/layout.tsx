@@ -3,8 +3,8 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { Right } from '@icon-park/react'
+import { categories } from '@/util/common'
 
-const categories = ['全部', '经方', '养生', '针灸', '中药', '诊断', '心得']
 
 export default function CommunityLayout({
   children,

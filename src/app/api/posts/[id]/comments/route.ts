@@ -223,14 +223,6 @@ export async function POST(
       }
     }
 
-    console.log('开始创建评论:', {
-      content: content.trim(),
-      postId,
-      authorId: user.id,
-      parentId,
-      images,
-    })
-
     // 创建评论
     const comment = await prisma.comment.create({
       data: {
@@ -256,7 +248,6 @@ export async function POST(
       },
     })
 
-    console.log('评论创建成功:', comment)
 
     const response: CommentResponse = {
       id: comment.id,

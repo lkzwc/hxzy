@@ -6,11 +6,14 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
-import { Eyes, Like } from '@icon-park/react'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import { Eyes } from '@icon-park/react'
 import CommentSection from '@/components/CommentSection'
+import LikeButton from '@/components/LikeButton'
 
 // 配置 dayjs
 dayjs.locale('zh-cn')
+dayjs.extend(relativeTime)
 
 interface Author {
   id: number
@@ -34,7 +37,10 @@ interface Post {
   images: string[]
   createdAt: string
   views: number
-  likes: number
+  _count: {
+    postLikes: number
+    comments: number
+  }
   tags: string[]
   author: Author
   comments: Comment[]
@@ -61,7 +67,17 @@ export default function PostDetail({ params }: { params: { id: string } }) {
         throw new Error('获取帖子详情失败')
       }
       const data = await response.json()
-      setPost(data)
+      
+      // 确保数据结构符合接口定义
+      const formattedPost: Post = {
+        ...data,
+        _count: {
+          postLikes: data._count?.postLikes || 0,
+          comments: data._count?.comments || 0
+        }
+      }
+      
+      setPost(formattedPost)
     } catch (err) {
       setError(err instanceof Error ? err.message : '未知错误')
     } finally {
@@ -158,6 +174,8 @@ export default function PostDetail({ params }: { params: { id: string } }) {
                 src={post.author.image || '/images/default-avatar.png'}
                 alt={post.author.name || '用户'}
                 fill
+                sizes="(max-width: 48px) 100vw, 48px"
+                priority
                 className="rounded-full object-cover border-2 border-white shadow-sm"
               />
             </div>
@@ -174,10 +192,7 @@ export default function PostDetail({ params }: { params: { id: string } }) {
                   <Eyes theme="outline" size="14" />
                   {post.views} 次浏览
                 </span>
-                <span className="flex items-center gap-1">
-                  <Like theme="outline" size="14" />
-                  {post.likes} 次点赞
-                </span>
+                <LikeButton postId={post.id} initialLikes={post._count.postLikes} className="!gap-1" />
               </div>
             </div>
           </div>
@@ -195,6 +210,7 @@ export default function PostDetail({ params }: { params: { id: string } }) {
                     src={url}
                     alt={`图片 ${index + 1}`}
                     fill
+                    sizes="(max-width: 768px) 50vw, 33vw"
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>

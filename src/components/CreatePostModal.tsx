@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Pic } from '@icon-park/react'
+import { motion } from 'framer-motion'
 
 interface CreatePostModalProps {
   isOpen: boolean
@@ -15,12 +16,41 @@ interface CreatePostModalProps {
 export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePostModalProps) {
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
-  const [tags, setTags] = useState<string[]>([])
+  const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [currentTag, setCurrentTag] = useState('')
   const [images, setImages] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [currentTag, setCurrentTag] = useState('')
+  const tagInputRef = useRef<HTMLInputElement>(null)
   const { data: session } = useSession()
   const router = useRouter()
+
+  const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' && currentTag.trim()) {
+      e.preventDefault()
+      const newTag = currentTag.trim()
+      // 标签长度限制
+      if (newTag.length > 20) {
+        alert('标签长度不能超过20个字符')
+        return
+      }
+      // 标签数量限制
+      if (selectedTags.length >= 5) {
+        alert('最多只能添加5个标签')
+        return
+      }
+      // 避免重复标签
+      if (selectedTags.includes(newTag)) {
+        alert('该标签已存在')
+        return
+      }
+      setSelectedTags(prev => [...prev, newTag])
+      setCurrentTag('')
+    }
+  }
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    setSelectedTags(prev => prev.filter(tag => tag !== tagToRemove))
+  }
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -59,24 +89,15 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
     }
   }
 
-  const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && currentTag.trim()) {
-      e.preventDefault()
-      if (!tags.includes(currentTag.trim())) {
-        setTags(prev => [...prev, currentTag.trim()])
-      }
-      setCurrentTag('')
-    }
-  }
-
-  const handleRemoveTag = (tagToRemove: string) => {
-    setTags(prev => prev.filter(tag => tag !== tagToRemove))
-  }
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!session?.user) {
       router.push('/login')
+      return
+    }
+
+    if (selectedTags.length === 0) {
+      alert('请至少选择一个标签')
       return
     }
 
@@ -92,7 +113,7 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
         body: JSON.stringify({
           title,
           content,
-          tags,
+          tags: selectedTags,
           images,
         }),
       })
@@ -105,7 +126,7 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
       const data = await response.json()
       setTitle('')
       setContent('')
-      setTags([])
+      setSelectedTags([])
       setImages([])
       onClose()
       onSuccess?.()
@@ -120,15 +141,11 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
 
   if (!isOpen) return null
 
-  const handleModalClick = (e: React.MouseEvent) => {
-    e.stopPropagation()
-  }
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
-      <div className="w-full max-w-3xl mx-4" onClick={handleModalClick}>
-        <div className="card bg-base-100 shadow-xl">
-          <div className="card-body p-0">
+      <div className="w-full max-w-3xl mx-4" onClick={e => e.stopPropagation()}>
+        <div className="bg-white rounded-xl shadow-xl">
+          <div className="p-0">
             {/* 顶部标题栏 */}
             <div className="flex items-center justify-between p-4 border-b">
               <div className="flex items-center gap-3">
@@ -145,37 +162,38 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
                   className="text-lg font-medium bg-transparent border-none focus:outline-none placeholder:text-gray-400 w-full"
                 />
               </div>
-              <button onClick={onClose} className="btn btn-ghost btn-sm btn-circle">×</button>
+              <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors">
+                <span className="text-xl text-gray-500">×</span>
+              </button>
             </div>
 
-            {/* 标签选择区 */}
-            <div className="px-4 py-2 border-b bg-base-200/50">
+            {/* 标签输入区 */}
+            <div className="relative px-4 py-2 border-b bg-gray-50/80">
               <div className="flex flex-wrap gap-2 items-center min-h-[32px]">
-                {tags.length === 0 && (
-                  <span className="text-sm text-gray-400">添加标签，让更多人找到你的文章</span>
-                )}
-                {tags.map(tag => (
-                  <div
+                {selectedTags.map(tag => (
+                  <span
                     key={tag}
-                    className="badge badge-primary gap-1"
+                    className="inline-flex items-center gap-1 px-2 py-1 bg-primary/10 text-primary rounded-lg text-sm"
                   >
                     {tag}
                     <button
                       type="button"
-                      className="btn btn-xs btn-ghost btn-circle"
+                      className="w-4 h-4 flex items-center justify-center hover:bg-primary/20 rounded-full transition-colors"
                       onClick={() => handleRemoveTag(tag)}
                     >
                       ×
                     </button>
-                  </div>
+                  </span>
                 ))}
                 <input
+                  ref={tagInputRef}
                   type="text"
-                  placeholder="输入标签按回车添加"
+                  placeholder={selectedTags.length === 0 ? "添加标签以便他人快速找到，输入标签回车（最多5个）" : "继续添加标签..."}
                   value={currentTag}
                   onChange={(e) => setCurrentTag(e.target.value)}
                   onKeyDown={handleAddTag}
                   className="flex-1 bg-transparent border-none text-sm focus:outline-none min-w-[120px]"
+                  disabled={selectedTags.length >= 5}
                 />
               </div>
             </div>
@@ -191,9 +209,9 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
             </div>
 
             {/* 底部操作栏 */}
-            <div className="flex items-center justify-between px-4 py-3 border-t bg-base-200/50">
+            <div className="flex items-center justify-between px-4 py-3 border-t bg-gray-50/80">
               <div className="flex items-center gap-2">
-                <label className="btn btn-ghost btn-sm">
+                <label className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors">
                   <input
                     type="file"
                     accept="image/*"
@@ -201,7 +219,7 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
                     onChange={handleImageUpload}
                     className="hidden"
                   />
-                  <Pic theme="outline" size="18" className="mr-1" />
+                  <Pic theme="outline" size="18" />
                   添加图片
                 </label>
                 {/* 显示已上传的图片预览 */}
@@ -212,12 +230,13 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
                         src={url}
                         alt={`上传的图片 ${index + 1}`}
                         fill
-                        className="object-cover rounded"
+                        sizes="48px"
+                        className="object-cover rounded-lg"
                       />
                       <button
                         type="button"
                         onClick={() => setImages(prev => prev.filter((_, i) => i !== index))}
-                        className="absolute -top-1 -right-1 btn btn-xs btn-circle btn-error"
+                        className="absolute -top-1 -right-1 w-4 h-4 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center text-xs transition-colors"
                       >
                         ×
                       </button>
@@ -228,15 +247,15 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
               <div className="flex items-center gap-2">
                 <button
                   type="button"
-                  className="btn btn-ghost btn-sm"
+                  className="px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
                   onClick={onClose}
                 >
                   取消
                 </button>
                 <button
                   onClick={handleSubmit}
-                  className="btn btn-primary btn-sm px-6"
-                  disabled={isSubmitting || !title.trim() || !content.trim()}
+                  disabled={isSubmitting || !title.trim() || !content.trim() || selectedTags.length === 0}
+                  className="px-6 py-1.5 text-sm bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                 >
                   {isSubmitting ? '发布中...' : '发布'}
                 </button>

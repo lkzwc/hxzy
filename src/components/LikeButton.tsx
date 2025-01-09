@@ -2,46 +2,60 @@
 
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 import { Like } from '@icon-park/react'
+import useSWR from 'swr'
 
 interface LikeButtonProps {
-  type: 'post' | 'comment'
-  itemId: number
-  initialLikes: number
+  postId: number
+  initialLikes?: number
+  className?: string
 }
 
-export default function LikeButton({
-  type,
-  itemId,
-  initialLikes,
-}: LikeButtonProps) {
+const fetcher = async (url: string) => {
+  const res = await fetch(url)
+  if (!res.ok) throw new Error('Failed to fetch')
+  return res.json()
+}
+
+export default function LikeButton({ postId, initialLikes = 0, className = '' }: LikeButtonProps) {
   const { data: session } = useSession()
-  const [likes, setLikes] = useState(initialLikes)
-  const [isLiked, setIsLiked] = useState(false)
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
 
-  // 点赞
-  const handleLike = async () => {
-    if (!session) return
+  // 获取点赞状态
+  const { data, mutate } = useSWR(
+    session ? `/api/posts/${postId}/like` : null,
+    fetcher,
+    {
+      revalidateOnFocus: false,
+    }
+  )
+
+  const likes = data?.likes ?? initialLikes
+  const isLiked = data?.isLiked ?? false
+
+  const handleLike = async (e: React.MouseEvent) => {
+    e.preventDefault() // 阻止链接跳转
+    e.stopPropagation() // 阻止事件冒泡
+
+    if (!session) {
+      router.push('/api/auth/signin')
+      return
+    }
+
     if (isLoading) return
 
-    setIsLoading(true)
     try {
-      const endpoint = type === 'post'
-        ? `/api/posts/${itemId}/like`
-        : `/api/comments/${itemId}/like`
-
-      const res = await fetch(endpoint, {
+      setIsLoading(true)
+      const res = await fetch(`/api/posts/${postId}/like`, {
         method: 'POST',
       })
 
-      if (!res.ok) {
-        throw new Error('点赞失败')
-      }
+      if (!res.ok) throw new Error('Failed to like')
 
-      const data = await res.json()
-      setLikes(data.likes)
-      setIsLiked(data.isLiked)
+      // 更新本地状态
+      mutate()
     } catch (error) {
       console.error('点赞失败:', error)
     } finally {
@@ -52,13 +66,17 @@ export default function LikeButton({
   return (
     <button
       onClick={handleLike}
-      disabled={isLoading || !session}
-      className={`flex items-center gap-1 transition-colors ${
-        isLiked ? 'text-primary' : 'text-gray-500 hover:text-primary'
-      }`}
+      disabled={isLoading}
+      className={`group flex items-center gap-1.5 text-gray-500 hover:text-primary transition-colors ${className}`}
     >
-      <Like theme="outline" size="16" />
-      {likes > 0 && likes}
+      <Like
+        theme={isLiked ? 'filled' : 'outline'}
+        size='18'
+        className={`flex-shrink-0 transition-colors ${
+          isLiked ? 'text-primary' : 'group-hover:text-primary'
+        }`}
+      />
+      <span className='text-sm'>{likes}</span>
     </button>
   )
 } 
