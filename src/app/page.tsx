@@ -53,7 +53,7 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-[#FAF6F1]">
-      {/* 顶部横幅 */}
+      {/* Section 1: 顶部横幅 */}
       <div className="relative min-h-[600px] lg:min-h-[800px] bg-gradient-to-b from-[#F5EDE4] to-[#FAF6F1] overflow-hidden">
         {/* 装饰图案 */}
         <div className="absolute inset-0">
@@ -151,7 +151,519 @@ export default function Home() {
         </div>
       </div>
 
-      {/* 特色板块 */}
+      {/* Section 2: 五行罗盘部分 */}
+      <div className="relative min-h-screen bg-gradient-to-b from-[#F5EDE4] via-[#FAF6F1] to-[#F5EDE4] overflow-hidden">
+        {/* 星云背景效果 */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-radial from-transparent via-mystic-200/10 to-transparent animate-pulse-slow" />
+          <div className="absolute inset-0 bg-[url('/images/noise.png')] opacity-[0.08] mix-blend-overlay" />
+          <div className="absolute inset-0">
+            {Array.from({ length: 30 }).map((_, i) => (
+              <div
+                key={i}
+                className="absolute animate-glow"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                  width: `${Math.random() * 3}px`,
+                  height: `${Math.random() * 3}px`,
+                  backgroundColor: '#D4B886',
+                  borderRadius: '50%',
+                  animationDelay: `${Math.random() * 2}s`,
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="container mx-auto px-4 py-24 lg:py-32 relative">
+          <div className="text-center mb-24">
+            <div className="inline-block px-6 py-3 bg-mystic-200/20 backdrop-blur-sm rounded-full text-mystic-900 text-sm font-medium mb-6 shadow-neon animate-float">
+              中医文化精髓
+            </div>
+            <h2 className="text-3xl lg:text-5xl font-bold text-mystic-900 mb-6 drop-shadow-neon">
+              五行八卦 · 天人合一
+            </h2>
+            <p className="text-xl text-mystic-800/90 max-w-2xl mx-auto leading-relaxed">
+              探索中医文化的核心智慧，感受传统哲学的深邃魅力
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 max-w-7xl mx-auto">
+            {/* 五行图 */}
+            <div className="relative aspect-square">
+              <div className="absolute inset-0 animate-morph bg-gradient-to-br from-mystic-200/10 to-mystic-200/5 rounded-[60%_40%_30%_70%/60%_30%_70%_40%] backdrop-blur-sm" />
+              <div className="relative w-full h-full transform-gpu hover:scale-105 transition-transform duration-1000">
+                <div className="absolute inset-0 transform hover:rotate-30 transition-transform duration-1000">
+                  <svg viewBox="0 0 100 100" className="w-full h-full filter drop-shadow-neon-strong">
+                    <defs>
+                      <radialGradient id="elementGlow" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" stopColor="#D4B886" stopOpacity="0.4" />
+                        <stop offset="100%" stopColor="#D4B886" stopOpacity="0" />
+                      </radialGradient>
+                      <filter id="elementNeonGlow">
+                        <feFlood floodColor="#D4B886" floodOpacity="1" />
+                        <feComposite in2="SourceAlpha" operator="in" />
+                        <feGaussianBlur stdDeviation="2" />
+                        <feComponentTransfer>
+                          <feFuncA type="linear" slope="3" intercept="0" />
+                        </feComponentTransfer>
+                        <feBlend in="SourceGraphic" />
+                      </filter>
+                      <linearGradient id="elementLine" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#D4B886" stopOpacity="0.2" />
+                        <stop offset="50%" stopColor="#D4B886" stopOpacity="0.8" />
+                        <stop offset="100%" stopColor="#D4B886" stopOpacity="0.2" />
+                      </linearGradient>
+                    </defs>
+
+                    {/* 五行底层光效 */}
+                    <g className="animate-pulse-slow">
+                      <path
+                        d="M50 10 L85 35 L75 80 L25 80 L15 35 Z"
+                        fill="url(#elementGlow)"
+                        className="opacity-40"
+                      />
+                    </g>
+
+                    {/* 动态连线 */}
+                    {[
+                      'M50 10 Q67.5 22.5 85 35',
+                      'M85 35 Q80 57.5 75 80',
+                      'M75 80 Q50 80 25 80',
+                      'M25 80 Q20 57.5 15 35',
+                      'M15 35 Q32.5 22.5 50 10'
+                    ].map((d, i) => (
+                      <g key={i} className="animate-dash">
+                        <path
+                          d={d}
+                          fill="none"
+                          stroke="url(#elementLine)"
+                          strokeWidth="0.8"
+                          strokeDasharray="4,4"
+                          className="opacity-80"
+                        >
+                          <animate
+                            attributeName="stroke-dashoffset"
+                            values="8;0"
+                            dur="4s"
+                            repeatCount="indefinite"
+                          />
+                        </path>
+                      </g>
+                    ))}
+
+                    {/* 五行元素节点 */}
+                    {[
+                      { x: 50, y: 10, text: '木', color: '#4B7355', rotation: 0 },
+                      { x: 85, y: 35, text: '火', color: '#C1432E', rotation: 72 },
+                      { x: 75, y: 80, text: '土', color: '#B88C3D', rotation: 144 },
+                      { x: 25, y: 80, text: '金', color: '#E1D4BB', rotation: 216 },
+                      { x: 15, y: 35, text: '水', color: '#2F4F60', rotation: 288 }
+                    ].map((item, index) => (
+                      <g key={index} filter="url(#elementNeonGlow)" className="animate-pulse-slow">
+                        {/* 发光环 */}
+                        <circle
+                          cx={item.x}
+                          cy={item.y}
+                          r="12"
+                          fill="none"
+                          stroke={item.color}
+                          strokeWidth="0.8"
+                          className="opacity-40"
+                        >
+                          <animate
+                            attributeName="r"
+                            values="8;12;8"
+                            dur="3s"
+                            repeatCount="indefinite"
+                          />
+                        </circle>
+                        {/* 核心圆点 */}
+                        <circle
+                          cx={item.x}
+                          cy={item.y}
+                          r="6"
+                          fill={item.color}
+                          className="opacity-90"
+                        >
+                          <animate
+                            attributeName="opacity"
+                            values="0.9;0.6;0.9"
+                            dur="2s"
+                            repeatCount="indefinite"
+                          />
+                        </circle>
+                        {/* 文字 */}
+                        <text
+                          x={item.x}
+                          y={item.y}
+                          dy="1"
+                          fontSize="4"
+                          fill={item.color}
+                          textAnchor="middle"
+                          alignmentBaseline="middle"
+                          className="font-bold drop-shadow-neon"
+                          transform={`rotate(${item.rotation} ${item.x} ${item.y})`}
+                        >
+                          {item.text}
+                        </text>
+                        {/* 能量波纹 */}
+                        <circle
+                          cx={item.x}
+                          cy={item.y}
+                          r="4"
+                          fill="none"
+                          stroke={item.color}
+                          strokeWidth="0.8"
+                          className="opacity-0"
+                        >
+                          <animate
+                            attributeName="r"
+                            values="4;20"
+                            dur="3s"
+                            repeatCount="indefinite"
+                          />
+                          <animate
+                            attributeName="opacity"
+                            values="0.6;0"
+                            dur="3s"
+                            repeatCount="indefinite"
+                          />
+                        </circle>
+                      </g>
+                    ))}
+
+                    {/* 相生箭头 - 动态光效 */}
+                    <g className="animate-flow">
+                      {[
+                        'M52 14 Q 70 20 82 32',
+                        'M82 38 Q 80 60 72 77',
+                        'M71 80 Q 50 82 28 80',
+                        'M22 77 Q 15 60 17 38',
+                        'M18 32 Q 30 20 48 14'
+                      ].map((d, i) => (
+                        <path
+                          key={i}
+                          d={d}
+                          fill="none"
+                          stroke="#D4B886"
+                          strokeWidth="1"
+                          strokeDasharray="2,4"
+                          className="opacity-90"
+                          markerEnd="url(#glowArrow)"
+                        >
+                          <animate
+                            attributeName="stroke-dashoffset"
+                            values="6;0"
+                            dur="4s"
+                            repeatCount="indefinite"
+                          />
+                        </path>
+                      ))}
+                    </g>
+
+                    {/* 相克箭头 - 虚线 */}
+                    <g className="animate-flow">
+                      {[
+                        'M50 12 L75 78',  // 木克土
+                        'M83 37 L27 78',  // 火克金
+                        'M73 78 L17 37',  // 土克水
+                        'M23 78 L48 12',  // 金克木
+                        'M17 33 L83 33'   // 水克火
+                      ].map((d, i) => (
+                        <path
+                          key={i}
+                          d={d}
+                          fill="none"
+                          stroke="#8B5E3C"
+                          strokeWidth="0.5"
+                          strokeDasharray="2,2"
+                          className="opacity-40"
+                          markerEnd="url(#glowArrowSmall)"
+                        />
+                      ))}
+                    </g>
+
+                    {/* 发光箭头 */}
+                    <defs>
+                      <marker
+                        id="glowArrow"
+                        viewBox="0 0 10 10"
+                        refX="8"
+                        refY="5"
+                        markerWidth="4"
+                        markerHeight="4"
+                        orient="auto"
+                      >
+                        <path
+                          d="M0 0 L10 5 L0 10 z"
+                          fill="#D4B886"
+                          filter="url(#elementNeonGlow)"
+                        />
+                      </marker>
+                      <marker
+                        id="glowArrowSmall"
+                        viewBox="0 0 10 10"
+                        refX="8"
+                        refY="5"
+                        markerWidth="3"
+                        markerHeight="3"
+                        orient="auto"
+                      >
+                        <path
+                          d="M0 0 L10 5 L0 10 z"
+                          fill="#8B5E3C"
+                          className="opacity-40"
+                        />
+                      </marker>
+                    </defs>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            {/* 罗盘部分 */}
+            <div className="relative aspect-square">
+              <div className="absolute inset-0 animate-morph bg-gradient-to-br from-mystic-200/20 to-mystic-200/10 rounded-[60%_40%_30%_70%/60%_30%_70%_40%] backdrop-blur-sm" />
+              <div className="relative w-full h-full transform-gpu hover:scale-105 transition-transform duration-1000">
+                <div className="absolute inset-0 transform hover:rotate-30 transition-transform duration-1000">
+                  {/* 外圈 - 最慢速度旋转 */}
+                  <div className="absolute inset-0 animate-[spin_40s_linear_infinite]">
+                    <svg viewBox="0 0 100 100" className="w-full h-full">
+                      <defs>
+                        <linearGradient id="compassRing" x1="0%" y1="0%" x2="100%" y2="100%">
+                          <stop offset="0%" stopColor="#D4B886" stopOpacity="0.4" />
+                          <stop offset="50%" stopColor="#D4B886" stopOpacity="1" />
+                          <stop offset="100%" stopColor="#D4B886" stopOpacity="0.4" />
+                        </linearGradient>
+                        <pattern id="diagonalHatch" width="3" height="3" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+                          <line x1="0" y1="0" x2="0" y2="3" stroke="#D4B886" strokeWidth="0.3" strokeOpacity="0.2" />
+                        </pattern>
+                      </defs>
+
+                      {/* 装饰环 */}
+                      <g filter="url(#softGlow)">
+                        {/* 外装饰环 - 最粗 */}
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="48"
+                          fill="none"
+                          stroke="url(#compassRing)"
+                          strokeWidth="1.5"
+                          className="opacity-90"
+                        />
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="46"
+                          fill="none"
+                          stroke="url(#diagonalHatch)"
+                          strokeWidth="0.8"
+                          className="opacity-40"
+                        />
+                      </g>
+
+                      {/* 二十四山 */}
+                      {[
+                        '子', '丑', '寅', '卯', '辰', '巳',
+                        '午', '未', '申', '酉', '戌', '亥'
+                      ].map((text, i) => {
+                        const angle = i * 30;
+                        const isNear = angle > 270 || angle < 90;
+                        return (
+                          <g key={text} filter="url(#softGlow)">
+                            <text
+                              x="50"
+                              y="10"
+                              fontSize={isNear ? "4" : "3"}
+                              fill="#D4B886"
+                              textAnchor="middle"
+                              transform={`rotate(${angle} 50 50)`}
+                              className={`font-bold opacity-${isNear ? '80' : '60'}`}
+                            >
+                              {text}
+                            </text>
+                          </g>
+                        );
+                      })}
+
+                      {/* 刻度线 */}
+                      {Array.from({ length: 360 }).map((_, i) => {
+                        const angle = i;
+                        const isNear = angle > 270 || angle < 90;
+                        const isMajor = i % 30 === 0;  // 二十四山主刻度
+                        const isMiddle = i % 15 === 0; // 次要刻度
+                        const isMinor = i % 5 === 0;   // 小刻度
+                        const length = isMajor ? 4 : (isMiddle ? 3 : (isMinor ? 2 : 1));
+                        const opacity = isNear ? 
+                          (isMajor ? 0.9 : (isMiddle ? 0.7 : (isMinor ? 0.5 : 0.3))) : 
+                          (isMajor ? 0.7 : (isMiddle ? 0.5 : (isMinor ? 0.3 : 0.2)));
+                        return (
+                          <line
+                            key={i}
+                            x1="50"
+                            y1="5"
+                            x2="50"
+                            y2={5 + length}
+                            stroke="#D4B886"
+                            strokeWidth={isMajor ? 0.6 : (isMiddle ? 0.4 : (isMinor ? 0.2 : 0.1))}
+                            transform={`rotate(${angle} 50 50)`}
+                            className={`opacity-${opacity * 100}`}
+                            filter={isMajor ? "url(#softGlow)" : undefined}
+                          />
+                        );
+                      })}
+
+                      {/* 八卦方位 */}
+                      {['乾', '兑', '离', '震', '巽', '坎', '艮', '坤'].map((text, i) => {
+                        const angle = i * 45;
+                        const isNear = angle > 270 || angle < 90;
+                        return (
+                          <g key={text} filter="url(#softGlow)">
+                            <text
+                              x="50"
+                              y="15"
+                              fontSize={isNear ? "5.5" : "4.5"}
+                              fill="#D4B886"
+                              textAnchor="middle"
+                              transform={`rotate(${angle} 50 50)`}
+                              className={`font-bold opacity-${isNear ? '90' : '70'}`}
+                            >
+                              {text}
+                            </text>
+                          </g>
+                        );
+                      })}
+                    </svg>
+                  </div>
+
+                  {/* 中圈 - 中等速度反向旋转 */}
+                  <div className="absolute inset-0 animate-[spin_30s_linear_infinite_reverse]">
+                    <svg viewBox="0 0 100 100" className="w-full h-full">
+                      <g filter="url(#softGlow)">
+                        {/* 中圈装饰 - 中等粗细 */}
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="35"
+                          fill="none"
+                          stroke="url(#compassRing)"
+                          strokeWidth="1.2"
+                          className="opacity-80"
+                        />
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="33"
+                          fill="url(#diagonalHatch)"
+                          className="opacity-20"
+                        />
+                      </g>
+
+                      {/* 天干文字 */}
+                      {['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'].map((text, i) => {
+                        const angle = i * 36;
+                        const isNear = angle > 270 || angle < 90;
+                        return (
+                          <g key={text} filter="url(#softGlow)">
+                            <text
+                              x="50"
+                              y="25"
+                              fontSize={isNear ? "4.5" : "3.5"}
+                              fill="#D4B886"
+                              textAnchor="middle"
+                              transform={`rotate(${angle} 50 50)`}
+                              className={`font-bold opacity-${isNear ? '90' : '70'}`}
+                            >
+                              {text}
+                            </text>
+                          </g>
+                        );
+                      })}
+                    </svg>
+                  </div>
+
+                  {/* 内圈 - 最快速度旋转 */}
+                  <div className="absolute inset-0 animate-[spin_20s_linear_infinite]">
+                    <svg viewBox="0 0 100 100" className="w-full h-full">
+                      <defs>
+                        <radialGradient id="taijiGlow" cx="50%" cy="50%" r="50%">
+                          <stop offset="0%" stopColor="#D4B886" stopOpacity="0.6" />
+                          <stop offset="70%" stopColor="#D4B886" stopOpacity="0.2" />
+                          <stop offset="100%" stopColor="#D4B886" stopOpacity="0" />
+                        </radialGradient>
+                      </defs>
+
+                      <g filter="url(#softGlow)">
+                        {/* 内圈装饰 - 最细 */}
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="22"
+                          fill="none"
+                          stroke="url(#compassRing)"
+                          strokeWidth="0.8"
+                          className="opacity-70"
+                        />
+                        {/* 太极图案 */}
+                        <path
+                          d="M50 30 A20 20 0 0 1 50 70 A10 10 0 0 0 50 50 A10 10 0 0 1 50 30"
+                          fill="#D4B886"
+                          className="opacity-60"
+                        />
+                        <circle
+                          cx="50"
+                          cy="40"
+                          r="3"
+                          fill="#D4B886"
+                          className="opacity-80"
+                        />
+                        <circle
+                          cx="50"
+                          cy="60"
+                          r="3"
+                          fill="none"
+                          stroke="#D4B886"
+                          strokeWidth="0.6"
+                          className="opacity-70"
+                        />
+                      </g>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 底部说明文字 */}
+          <div className="text-center mt-24">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto">
+              {[
+                { label: '八卦', desc: '乾坤震巽坎离艮兑' },
+                { label: '天干', desc: '甲乙丙丁戊己庚辛壬癸' },
+                { label: '五行', desc: '金木水火土' },
+                { label: '阴阳', desc: '太极两仪' },
+              ].map((item, index) => (
+                <div
+                  key={index}
+                  className="group relative bg-white/30 backdrop-blur-sm rounded-xl p-6 transform hover:-translate-y-2 transition-all duration-500 hover:shadow-neon"
+                >
+                  <div className="text-xl lg:text-2xl font-bold text-mystic-900 mb-3 group-hover:text-mystic-800 transition-colors">
+                    {item.label}
+                  </div>
+                  <div className="text-sm text-mystic-800/80 group-hover:text-mystic-900/90 transition-colors">
+                    {item.desc}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Section 3: 特色板块 */}
       <div className="py-16 lg:py-32 bg-white relative overflow-hidden">
         {/* 装饰图案 */}
         <div className="absolute inset-0">
