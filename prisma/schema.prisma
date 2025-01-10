@@ -18,6 +18,7 @@ model User {
   comments  Comment[]
   posts     Post[]
   postLikes PostLike[]
+  lastLoginAt DateTime? @default(now())
 
   @@index([email])
   @@index([openid])
