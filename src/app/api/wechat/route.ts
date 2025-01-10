@@ -164,6 +164,14 @@ async function createLoginQrCode(request: NextRequest) {
     // 初始化登录状态
     loginStateMap.set(ticket, { status: "pending" });
 
+    const qrCodeUrl = await fetch(
+      `https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=${encodeURIComponent(
+        ticket
+      )}`
+    );
+
+    console.log("qrCodeUrl", qrCodeUrl);
+
     // 5分钟后清除登录状态
     setTimeout(() => {
       loginStateMap.delete(ticket);
@@ -173,9 +181,7 @@ async function createLoginQrCode(request: NextRequest) {
       sceneStr,
       loginCode: ticket,
       expireSeconds: expire_seconds,
-      qrCodeUrl: `https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=${encodeURIComponent(
-        ticket
-      )}`,
+      qrCodeUrl: qrCodeUrl,
     });
   } catch (error) {
     console.error("生成登录二维码失败:", error);
