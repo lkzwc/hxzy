@@ -62,7 +62,7 @@ export default function Login() {
   const fetchQrCode = async () => {
     try {
       const response = await fetch('/api/wechat', {
-        method: 'PUT'
+        method: 'POST'
       });
       const data = await response.json();
       
@@ -96,11 +96,7 @@ export default function Login() {
         if (pollingInterval) {
           clearInterval(pollingInterval);
         }
-        // 使用 NextAuth 登录
-        signIn('wechat', { 
-          openid: data.openid,
-          callbackUrl: '/' 
-        });
+        console.log('登录成功:', data);
       }
     } catch (error) {
       console.error('检查登录状态失败:', error);
