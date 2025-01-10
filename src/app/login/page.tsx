@@ -70,9 +70,9 @@ export default function Login() {
         setQrCodeUrl(data.qrCodeUrl);
         setQrCodeState(data.loginCode);
         
-        // 开始轮询检查登录状态
-        const interval = setInterval(checkLoginStatus, 2000);
-        setPollingInterval(interval);
+        // // 开始轮询检查登录状态
+        // const interval = setInterval(checkLoginStatus, 2000);
+        // setPollingInterval(interval);
       }
     } catch (error) {
       console.error('获取二维码失败:', error);
@@ -97,6 +97,7 @@ export default function Login() {
           clearInterval(pollingInterval);
         }
         console.log('登录成功:', data);
+        
       }
     } catch (error) {
       console.error('检查登录状态失败:', error);
