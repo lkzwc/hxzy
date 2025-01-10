@@ -129,7 +129,7 @@ async function getAccessToken() {
   return data.access_token;
 }
 
-// 处理公众号消息
+// 获取微信二维码
 async function createLoginQrCode(request: NextRequest) {
   // 判断是微信服务器推送还是前端请求
   try {
@@ -164,14 +164,6 @@ async function createLoginQrCode(request: NextRequest) {
     // 初始化登录状态
     loginStateMap.set(ticket, { status: "pending" });
 
-    const qrCodeUrl = await fetch(
-      `https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=${encodeURIComponent(
-        ticket
-      )}`
-    );
-
-    console.log("qrCodeUrl", qrCodeUrl);
-
     // 5分钟后清除登录状态
     setTimeout(() => {
       loginStateMap.delete(ticket);
@@ -181,7 +173,7 @@ async function createLoginQrCode(request: NextRequest) {
       sceneStr,
       loginCode: ticket,
       expireSeconds: expire_seconds,
-      qrCodeUrl: qrCodeUrl,
+      qrCodeUrl: `https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=${encodeURIComponent(ticket)}`
     });
   } catch (error) {
     console.error("生成登录二维码失败:", error);
