@@ -198,23 +198,28 @@ export default function Home() {
                   <svg viewBox="0 0 100 100" className="w-full h-full filter drop-shadow-neon-strong">
                     <defs>
                       <radialGradient id="elementGlow" cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" stopColor="#D4B886" stopOpacity="0.4" />
+                        <stop offset="0%" stopColor="#D4B886" stopOpacity="0.8" />
+                        <stop offset="70%" stopColor="#D4B886" stopOpacity="0.4" />
                         <stop offset="100%" stopColor="#D4B886" stopOpacity="0" />
                       </radialGradient>
                       <filter id="elementNeonGlow">
-                        <feFlood floodColor="#D4B886" floodOpacity="1" />
-                        <feComposite in2="SourceAlpha" operator="in" />
-                        <feGaussianBlur stdDeviation="2" />
-                        <feComponentTransfer>
-                          <feFuncA type="linear" slope="3" intercept="0" />
-                        </feComponentTransfer>
-                        <feBlend in="SourceGraphic" />
+                        <feGaussianBlur stdDeviation="1.5" result="blur" />
+                        <feFlood floodColor="#D4B886" floodOpacity="0.5" result="color" />
+                        <feComposite in="color" in2="blur" operator="in" result="glow" />
+                        <feMerge>
+                          <feMergeNode in="glow" />
+                          <feMergeNode in="SourceGraphic" />
+                        </feMerge>
                       </filter>
-                      <linearGradient id="elementLine" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#D4B886" stopOpacity="0.2" />
-                        <stop offset="50%" stopColor="#D4B886" stopOpacity="0.8" />
-                        <stop offset="100%" stopColor="#D4B886" stopOpacity="0.2" />
-                      </linearGradient>
+                      <filter id="softBlur">
+                        <feGaussianBlur stdDeviation="0.3" />
+                      </filter>
+                      <filter id="edgeBlur">
+                        <feGaussianBlur stdDeviation="0.8" />
+                        <feComponentTransfer>
+                          <feFuncA type="linear" slope="0.5" />
+                        </feComponentTransfer>
+                      </filter>
                     </defs>
 
                     {/* 五行底层光效 */}
@@ -222,7 +227,8 @@ export default function Home() {
                       <path
                         d="M50 10 L85 35 L75 80 L25 80 L15 35 Z"
                         fill="url(#elementGlow)"
-                        className="opacity-40"
+                        className="opacity-70"
+                        filter="url(#edgeBlur)"
                       />
                     </g>
 
@@ -238,10 +244,10 @@ export default function Home() {
                         <path
                           d={d}
                           fill="none"
-                          stroke="url(#elementLine)"
-                          strokeWidth="0.8"
+                          stroke="#D4B886"
+                          strokeWidth="1"
                           strokeDasharray="4,4"
-                          className="opacity-80"
+                          className="opacity-90"
                         >
                           <animate
                             attributeName="stroke-dashoffset"
@@ -255,11 +261,11 @@ export default function Home() {
 
                     {/* 五行元素节点 */}
                     {[
-                      { x: 50, y: 10, text: '木', color: '#4B7355', rotation: 0 },
-                      { x: 85, y: 35, text: '火', color: '#C1432E', rotation: 72 },
-                      { x: 75, y: 80, text: '土', color: '#B88C3D', rotation: 144 },
-                      { x: 25, y: 80, text: '金', color: '#E1D4BB', rotation: 216 },
-                      { x: 15, y: 35, text: '水', color: '#2F4F60', rotation: 288 }
+                      { x: 50, y: 10, text: '木', color: '#4B7355', rotation: 0, glowColor: 'rgba(75, 115, 85, 0.8)' },
+                      { x: 85, y: 35, text: '火', color: '#C1432E', rotation: 72, glowColor: 'rgba(193, 67, 46, 0.8)' },
+                      { x: 75, y: 80, text: '土', color: '#B88C3D', rotation: 144, glowColor: 'rgba(184, 140, 61, 0.8)' },
+                      { x: 25, y: 80, text: '金', color: '#E1D4BB', rotation: 216, glowColor: 'rgba(225, 212, 187, 0.8)' },
+                      { x: 15, y: 35, text: '水', color: '#2F4F60', rotation: 288, glowColor: 'rgba(47, 79, 96, 0.8)' }
                     ].map((item, index) => (
                       <g key={index} filter="url(#elementNeonGlow)" className="animate-pulse-slow">
                         {/* 发光环 */}
@@ -269,8 +275,8 @@ export default function Home() {
                           r="12"
                           fill="none"
                           stroke={item.color}
-                          strokeWidth="0.8"
-                          className="opacity-40"
+                          strokeWidth="1"
+                          className="opacity-80"
                         >
                           <animate
                             attributeName="r"
@@ -305,6 +311,9 @@ export default function Home() {
                           alignmentBaseline="middle"
                           className="font-bold drop-shadow-neon"
                           transform={`rotate(${item.rotation} ${item.x} ${item.y})`}
+                          style={{
+                            filter: `drop-shadow(0 0 2px ${item.glowColor})`
+                          }}
                         >
                           {item.text}
                         </text>
@@ -317,6 +326,7 @@ export default function Home() {
                           stroke={item.color}
                           strokeWidth="0.8"
                           className="opacity-0"
+                          filter="url(#edgeBlur)"
                         >
                           <animate
                             attributeName="r"
@@ -350,8 +360,9 @@ export default function Home() {
                           stroke="#D4B886"
                           strokeWidth="1"
                           strokeDasharray="2,4"
-                          className="opacity-90"
+                          className="opacity-70"
                           markerEnd="url(#glowArrow)"
+                          filter="url(#softBlur)"
                         >
                           <animate
                             attributeName="stroke-dashoffset"
@@ -379,8 +390,9 @@ export default function Home() {
                           stroke="#8B5E3C"
                           strokeWidth="0.5"
                           strokeDasharray="2,2"
-                          className="opacity-40"
+                          className="opacity-30"
                           markerEnd="url(#glowArrowSmall)"
+                          filter="url(#softBlur)"
                         />
                       ))}
                     </g>
@@ -414,7 +426,8 @@ export default function Home() {
                         <path
                           d="M0 0 L10 5 L0 10 z"
                           fill="#8B5E3C"
-                          className="opacity-40"
+                          className="opacity-30"
+                          filter="url(#softBlur)"
                         />
                       </marker>
                     </defs>
@@ -425,211 +438,244 @@ export default function Home() {
 
             {/* 罗盘部分 */}
             <div className="relative aspect-square">
-              <div className="absolute inset-0 animate-morph bg-gradient-to-br from-mystic-200/20 to-mystic-200/10 rounded-[60%_40%_30%_70%/60%_30%_70%_40%] backdrop-blur-sm" />
-              <div className="relative w-full h-full transform-gpu hover:scale-105 transition-transform duration-1000">
-                <div className="absolute inset-0 transform hover:rotate-30 transition-transform duration-1000">
-                  {/* 外圈 - 最慢速度旋转 */}
-                  <div className="absolute inset-0 animate-[spin_40s_linear_infinite]">
+              <div className="absolute inset-0 bg-[#F5F5F5] rounded-full overflow-hidden shadow-lg">
+                <div className="relative w-full h-full transform-gpu">
+                  {/* 外圈 - 度数刻度 */}
+                  <div className="absolute inset-0 animate-[spin_60s_linear_infinite]">
                     <svg viewBox="0 0 100 100" className="w-full h-full">
                       <defs>
-                        <linearGradient id="compassRing" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" stopColor="#D4B886" stopOpacity="0.4" />
-                          <stop offset="50%" stopColor="#D4B886" stopOpacity="1" />
-                          <stop offset="100%" stopColor="#D4B886" stopOpacity="0.4" />
+                        <linearGradient id="degreeGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" stopColor="#D4B886" stopOpacity="0.3" />
+                          <stop offset="50%" stopColor="#D4B886" stopOpacity="0.8" />
+                          <stop offset="100%" stopColor="#D4B886" stopOpacity="0.3" />
                         </linearGradient>
-                        <pattern id="diagonalHatch" width="3" height="3" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
-                          <line x1="0" y1="0" x2="0" y2="3" stroke="#D4B886" strokeWidth="0.3" strokeOpacity="0.2" />
-                        </pattern>
                       </defs>
 
-                      {/* 装饰环 */}
-                      <g filter="url(#softGlow)">
-                        {/* 外装饰环 - 最粗 */}
-                        <circle
-                          cx="50"
-                          cy="50"
-                          r="48"
-                          fill="none"
-                          stroke="url(#compassRing)"
-                          strokeWidth="1.5"
-                          className="opacity-90"
-                        />
-                        <circle
-                          cx="50"
-                          cy="50"
-                          r="46"
-                          fill="none"
-                          stroke="url(#diagonalHatch)"
-                          strokeWidth="0.8"
-                          className="opacity-40"
-                        />
-                      </g>
-
-                      {/* 二十四山 */}
-                      {[
-                        '子', '丑', '寅', '卯', '辰', '巳',
-                        '午', '未', '申', '酉', '戌', '亥'
-                      ].map((text, i) => {
-                        const angle = i * 30;
-                        const isNear = angle > 270 || angle < 90;
-                        return (
-                          <g key={text} filter="url(#softGlow)">
-                            <text
-                              x="50"
-                              y="10"
-                              fontSize={isNear ? "4" : "3"}
-                              fill="#D4B886"
-                              textAnchor="middle"
-                              transform={`rotate(${angle} 50 50)`}
-                              className={`font-bold opacity-${isNear ? '80' : '60'}`}
-                            >
-                              {text}
-                            </text>
-                          </g>
-                        );
-                      })}
-
-                      {/* 刻度线 */}
+                      {/* 外圈刻度线 */}
                       {Array.from({ length: 360 }).map((_, i) => {
-                        const angle = i;
-                        const isNear = angle > 270 || angle < 90;
-                        const isMajor = i % 30 === 0;  // 二十四山主刻度
-                        const isMiddle = i % 15 === 0; // 次要刻度
-                        const isMinor = i % 5 === 0;   // 小刻度
-                        const length = isMajor ? 4 : (isMiddle ? 3 : (isMinor ? 2 : 1));
-                        const opacity = isNear ? 
-                          (isMajor ? 0.9 : (isMiddle ? 0.7 : (isMinor ? 0.5 : 0.3))) : 
-                          (isMajor ? 0.7 : (isMiddle ? 0.5 : (isMinor ? 0.3 : 0.2)));
+                        const isMajor = i % 10 === 0;
                         return (
-                          <line
-                            key={i}
-                            x1="50"
-                            y1="5"
-                            x2="50"
-                            y2={5 + length}
-                            stroke="#D4B886"
-                            strokeWidth={isMajor ? 0.6 : (isMiddle ? 0.4 : (isMinor ? 0.2 : 0.1))}
-                            transform={`rotate(${angle} 50 50)`}
-                            className={`opacity-${opacity * 100}`}
-                            filter={isMajor ? "url(#softGlow)" : undefined}
-                          />
-                        );
-                      })}
-
-                      {/* 八卦方位 */}
-                      {['乾', '兑', '离', '震', '巽', '坎', '艮', '坤'].map((text, i) => {
-                        const angle = i * 45;
-                        const isNear = angle > 270 || angle < 90;
-                        return (
-                          <g key={text} filter="url(#softGlow)">
-                            <text
-                              x="50"
-                              y="15"
-                              fontSize={isNear ? "5.5" : "4.5"}
-                              fill="#D4B886"
-                              textAnchor="middle"
-                              transform={`rotate(${angle} 50 50)`}
-                              className={`font-bold opacity-${isNear ? '90' : '70'}`}
-                            >
-                              {text}
-                            </text>
+                          <g key={i}>
+                            <line
+                              x1="50"
+                              y1="2"
+                              x2="50"
+                              y2={isMajor ? "4" : "3"}
+                              stroke="#D4B886"
+                              strokeWidth={isMajor ? "0.1" : "0.05"}
+                              transform={`rotate(${i} 50 50)`}
+                              className="opacity-80"
+                            />
+                            {isMajor && (
+                              <text
+                                x="50"
+                                y="7"
+                                fontSize="2"
+                                fill="#C1432E"
+                                textAnchor="middle"
+                                transform={`rotate(${i} 50 50)`}
+                                className="opacity-90"
+                              >
+                                {i}
+                              </text>
+                            )}
                           </g>
                         );
                       })}
+
+                      {/* 外圈装饰环 */}
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="48"
+                        fill="none"
+                        stroke="url(#degreeGrad)"
+                        strokeWidth="0.2"
+                        className="opacity-80"
+                      />
                     </svg>
                   </div>
 
-                  {/* 中圈 - 中等速度反向旋转 */}
-                  <div className="absolute inset-0 animate-[spin_30s_linear_infinite_reverse]">
-                    <svg viewBox="0 0 100 100" className="w-full h-full">
-                      <g filter="url(#softGlow)">
-                        {/* 中圈装饰 - 中等粗细 */}
-                        <circle
-                          cx="50"
-                          cy="50"
-                          r="35"
-                          fill="none"
-                          stroke="url(#compassRing)"
-                          strokeWidth="1.2"
-                          className="opacity-80"
-                        />
-                        <circle
-                          cx="50"
-                          cy="50"
-                          r="33"
-                          fill="url(#diagonalHatch)"
-                          className="opacity-20"
-                        />
-                      </g>
-
-                      {/* 天干文字 */}
-                      {['甲', '乙', '丙', '丁', '戊', '己', '庚', '辛', '壬', '癸'].map((text, i) => {
-                        const angle = i * 36;
-                        const isNear = angle > 270 || angle < 90;
-                        return (
-                          <g key={text} filter="url(#softGlow)">
-                            <text
-                              x="50"
-                              y="25"
-                              fontSize={isNear ? "4.5" : "3.5"}
-                              fill="#D4B886"
-                              textAnchor="middle"
-                              transform={`rotate(${angle} 50 50)`}
-                              className={`font-bold opacity-${isNear ? '90' : '70'}`}
-                            >
-                              {text}
-                            </text>
-                          </g>
-                        );
-                      })}
-                    </svg>
-                  </div>
-
-                  {/* 内圈 - 最快速度旋转 */}
-                  <div className="absolute inset-0 animate-[spin_20s_linear_infinite]">
+                  {/* 第二圈 - 符号和数字 */}
+                  <div className="absolute inset-0 animate-[spin_45s_linear_infinite_reverse]">
                     <svg viewBox="0 0 100 100" className="w-full h-full">
                       <defs>
-                        <radialGradient id="taijiGlow" cx="50%" cy="50%" r="50%">
+                        <linearGradient id="symbolGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" stopColor="#D4B886" stopOpacity="0.4" />
+                          <stop offset="50%" stopColor="#D4B886" stopOpacity="0.9" />
+                          <stop offset="100%" stopColor="#D4B886" stopOpacity="0.4" />
+                        </linearGradient>
+                      </defs>
+
+                      {/* 分隔线和文字 */}
+                      {Array.from({ length: 24 }).map((_, i) => {
+                        const angle = i * 15;
+                        return (
+                          <g key={i}>
+                            <line
+                              x1="35"
+                              y1="0"
+                              x2="45"
+                              y2="0"
+                              stroke="#D4B886"
+                              strokeWidth="0.1"
+                              transform={`rotate(${angle} 50 50) translate(50 50)`}
+                              className="opacity-70"
+                            />
+                            <text
+                              x="40"
+                              y="0"
+                              fontSize="2.5"
+                              fill="#8B5E3C"
+                              textAnchor="middle"
+                              transform={`rotate(${angle} 50 50) translate(50 50)`}
+                              className="opacity-90"
+                            >
+                              {i + 1}
+                            </text>
+                          </g>
+                        );
+                      })}
+
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="40"
+                        fill="none"
+                        stroke="url(#symbolGrad)"
+                        strokeWidth="0.3"
+                        className="opacity-90"
+                      />
+                    </svg>
+                  </div>
+
+                  {/* 第三圈 - 八卦方位 */}
+                  <div className="absolute inset-0 animate-[spin_30s_linear_infinite]">
+                    <svg viewBox="0 0 100 100" className="w-full h-full">
+                      <defs>
+                        <linearGradient id="bagua" x1="0%" y1="0%" x2="100%" y2="0%">
+                          <stop offset="0%" stopColor="#D4B886" stopOpacity="0.5" />
+                          <stop offset="50%" stopColor="#D4B886" stopOpacity="1" />
+                          <stop offset="100%" stopColor="#D4B886" stopOpacity="0.5" />
+                        </linearGradient>
+                      </defs>
+
+                      {['乾', '兑', '离', '震', '巽', '坎', '艮', '坤'].map((text, i) => {
+                        const angle = i * 45;
+                        return (
+                          <g key={text}>
+                            <path
+                              d={`M 50 50 L ${50 + 25 * Math.cos((angle - 22.5) * Math.PI / 180)} ${50 + 25 * Math.sin((angle - 22.5) * Math.PI / 180)} A 25 25 0 0 1 ${50 + 25 * Math.cos((angle + 22.5) * Math.PI / 180)} ${50 + 25 * Math.sin((angle + 22.5) * Math.PI / 180)} Z`}
+                              fill="#F5F5F5"
+                              stroke="#D4B886"
+                              strokeWidth="0.1"
+                              className="opacity-80"
+                            />
+                            <text
+                              x={50 + 30 * Math.cos(angle * Math.PI / 180)}
+                              y={50 + 30 * Math.sin(angle * Math.PI / 180)}
+                              fontSize="3"
+                              fill="#8B5E3C"
+                              textAnchor="middle"
+                              dominantBaseline="middle"
+                              className="opacity-90 font-bold"
+                            >
+                              {text}
+                            </text>
+                          </g>
+                        );
+                      })}
+
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="32"
+                        fill="none"
+                        stroke="url(#bagua)"
+                        strokeWidth="0.4"
+                        className="opacity-90"
+                      />
+                    </svg>
+                  </div>
+
+                  {/* 第四圈 - 天干地支 */}
+                  <div className="absolute inset-0 animate-[spin_20s_linear_infinite_reverse]">
+                    <svg viewBox="0 0 100 100" className="w-full h-full">
+                      <defs>
+                        <linearGradient id="tiangan" x1="0%" y1="0%" x2="100%" y2="0%">
                           <stop offset="0%" stopColor="#D4B886" stopOpacity="0.6" />
-                          <stop offset="70%" stopColor="#D4B886" stopOpacity="0.2" />
+                          <stop offset="50%" stopColor="#D4B886" stopOpacity="1" />
+                          <stop offset="100%" stopColor="#D4B886" stopOpacity="0.6" />
+                        </linearGradient>
+                      </defs>
+
+                      {['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'].map((text, i) => {
+                        const angle = i * 30;
+                        return (
+                          <g key={text}>
+                            <text
+                              x={50 + 20 * Math.cos(angle * Math.PI / 180)}
+                              y={50 + 20 * Math.sin(angle * Math.PI / 180)}
+                              fontSize="2.5"
+                              fill="#8B5E3C"
+                              textAnchor="middle"
+                              dominantBaseline="middle"
+                              className="opacity-90 font-bold"
+                            >
+                              {text}
+                            </text>
+                          </g>
+                        );
+                      })}
+
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="24"
+                        fill="none"
+                        stroke="url(#tiangan)"
+                        strokeWidth="0.3"
+                        className="opacity-90"
+                      />
+                    </svg>
+                  </div>
+
+                  {/* 内圈 - 核心图案 */}
+                  <div className="absolute inset-0 animate-[spin_15s_linear_infinite]">
+                    <svg viewBox="0 0 100 100" className="w-full h-full">
+                      <defs>
+                        <radialGradient id="core" cx="50%" cy="50%" r="50%">
+                          <stop offset="0%" stopColor="#D4B886" stopOpacity="1" />
+                          <stop offset="70%" stopColor="#D4B886" stopOpacity="0.3" />
                           <stop offset="100%" stopColor="#D4B886" stopOpacity="0" />
                         </radialGradient>
                       </defs>
 
-                      <g filter="url(#softGlow)">
-                        {/* 内圈装饰 - 最细 */}
-                        <circle
-                          cx="50"
-                          cy="50"
-                          r="22"
-                          fill="none"
-                          stroke="url(#compassRing)"
-                          strokeWidth="0.8"
-                          className="opacity-70"
-                        />
-                        {/* 太极图案 */}
-                        <path
-                          d="M50 30 A20 20 0 0 1 50 70 A10 10 0 0 0 50 50 A10 10 0 0 1 50 30"
-                          fill="#D4B886"
-                          className="opacity-60"
-                        />
-                        <circle
-                          cx="50"
-                          cy="40"
-                          r="3"
-                          fill="#D4B886"
-                          className="opacity-80"
-                        />
-                        <circle
-                          cx="50"
-                          cy="60"
-                          r="3"
-                          fill="none"
-                          stroke="#D4B886"
-                          strokeWidth="0.6"
-                          className="opacity-70"
-                        />
-                      </g>
+                      <circle
+                        cx="50"
+                        cy="50"
+                        r="15"
+                        fill="url(#core)"
+                        className="opacity-80"
+                      />
+
+                      {/* 内圈装饰 */}
+                      {Array.from({ length: 8 }).map((_, i) => {
+                        const angle = i * 45;
+                        return (
+                          <line
+                            key={i}
+                            x1="50"
+                            y1="35"
+                            x2="50"
+                            y2="40"
+                            stroke="#D4B886"
+                            strokeWidth="0.2"
+                            transform={`rotate(${angle} 50 50)`}
+                            className="opacity-90"
+                          />
+                        );
+                      })}
                     </svg>
                   </div>
                 </div>

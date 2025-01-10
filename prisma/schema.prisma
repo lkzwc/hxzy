@@ -170,3 +170,11 @@ model EBook {
   @@index([title])
   @@index([pinyin])
 }
+
+model AdQrcode {
+  id          String   @id @default(cuid())
+  description String
+  imageUrl    String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}

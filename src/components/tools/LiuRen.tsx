@@ -114,19 +114,19 @@ export default function LiuRen() {
   }, []);
 
   const calculateLiuRen = (lunarMonth: number, lunarDay: number, currentTime: string): LiuRen => {
-    // 1. 从月份开始推算
-    let monthIndex = (lunarMonth - 1) % 6;
+    // 1. 从月份开始推算（月份从1开始）
+    let monthIndex = ((lunarMonth - 1) % 6 + 6) % 6;
     let currentPosition = liuRenArray[monthIndex];
     
-    // 2. 从当前位置续计算日期
-    let daySteps = (lunarDay - 1) % 6;
-    let dayIndex = (liuRenArray.indexOf(currentPosition) + daySteps) % 6;
+    // 2. 从当前位置续计算日期（日期从1开始）
+    let daySteps = ((lunarDay - 1) % 6 + 6) % 6;
+    let dayIndex = (monthIndex + daySteps) % 6;
     currentPosition = liuRenArray[dayIndex];
     
     // 3. 从日期位置继续计算时辰
     const earthBranch = timeToEarthBranch[currentTime];
     const earthBranchIndex = "子丑寅卯辰巳午未申酉戌亥".indexOf(earthBranch);
-    let timeSteps = earthBranchIndex % 6;
+    let timeSteps = (earthBranchIndex % 6 + 6) % 6;
     let finalIndex = (dayIndex + timeSteps) % 6;
     
     return liuRenArray[finalIndex];
@@ -137,9 +137,8 @@ export default function LiuRen() {
     
     // 获取当前农历日期和时辰
     const lunar = Lunar.fromDate(new Date());
-
-    const month = Number(lunar.getMonthInChinese().replace('月', ''));
-    const day = Number(lunar.getDayInChinese().replace('日', ''));
+    const month = lunar.getMonth(); // 直接获取月份数字
+    const day = lunar.getDay(); // 直接获取日期数字
     const currentTime = getCurrentTimeUnit().name;
     
     // 模拟计算延迟
@@ -147,10 +146,20 @@ export default function LiuRen() {
     
     // 计算结果
     const result = calculateLiuRen(month, day, currentTime);
-    setDivinationResult({
-      result,
-      ...resultInterpretations[result]
-    });
+    
+    // 确保结果是六壬数组中的一个
+    if (liuRenArray.includes(result)) {
+      setDivinationResult({
+        result,
+        ...resultInterpretations[result]
+      });
+    } else {
+      // 如果计算结果不在预期范围内，使用默认值
+      setDivinationResult({
+        result: "大安",
+        ...resultInterpretations["大安"]
+      });
+    }
     
     setIsCalculating(false);
   };

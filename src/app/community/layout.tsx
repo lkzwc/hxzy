@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { Right } from '@icon-park/react'
 import { categories } from '@/util/common'
+import QrCodeCarousel from '@/components/QrCodeCarousel'
 
 
 export default function CommunityLayout({
@@ -11,6 +12,16 @@ export default function CommunityLayout({
 }: {
   children: React.ReactNode
 }) {
+  const [qrCodes, setQrCodes] = useState([])
+
+  useEffect(() => {
+    // 获取二维码数据
+    fetch('/api/qrcodes')
+      .then(res => res.json())
+      .then(data => setQrCodes(data))
+      .catch(error => console.error('Error fetching QR codes:', error))
+  }, [])
+
   return (
     <div className="container mx-auto max-w-7xl">
       <div className="flex gap-2 mt-4 sm:ml-16">
@@ -44,7 +55,7 @@ export default function CommunityLayout({
 
         {/* 右侧边栏 - 固定位置 */}
         <div className="w-[240px] hidden lg:block">
-          <div className="fixed w-[240px]  space-y-4">
+          <div className="fixed w-[240px] space-y-4">
             {/* 热门话题 */}
             <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
               <h3 className="text-base font-medium mb-3 pb-2 border-b border-gray-100 flex items-center gap-2">
@@ -84,6 +95,17 @@ export default function CommunityLayout({
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* 广告区 */}
+            <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+              <h3 className="text-base font-medium mb-3 pb-2 border-b border-gray-100 flex items-center gap-2">
+                <span className="w-0.5 h-4 bg-primary rounded-full"></span>
+                广告区
+              </h3>
+              <div className="aspect-square">
+                <QrCodeCarousel qrCodes={qrCodes} />
               </div>
             </div>
           </div>

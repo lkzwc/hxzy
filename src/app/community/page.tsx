@@ -7,12 +7,13 @@ import Link from "next/link";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { Search, Eyes, Comment, Plus } from "@icon-park/react";
+import { Search, Eyes, Comment, Plus, Like, Time } from "@icon-park/react";
 import CreatePostModal from "@/components/CreatePostModal";
 import LikeButton from "@/components/LikeButton";
 import useSWR from "swr";
 import useSWRInfinite from "swr/infinite";
 import { categories } from "@/util/common";
+import QrCodeCarousel from '@/components/QrCodeCarousel'
 
 // 配置 dayjs
 dayjs.locale("zh-cn");
@@ -39,7 +40,22 @@ interface Post {
 }
 
 interface PostsResponse {
-  posts: Post[];
+  posts: Array<{
+    id: string;
+    title: string;
+    content: string;
+    createdAt: string;
+    views: number;
+    tags: string[];
+    author: {
+      name: string | null;
+      image: string | null;
+    };
+    _count: {
+      likes: number;
+      comments: number;
+    };
+  }>;
   hasMore: boolean;
 }
 
@@ -61,6 +77,7 @@ export default function Community() {
   const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [qrCodes, setQrCodes] = useState([])
 
   // 构建查询参数
   const getQueryParams = (pageNum: number) => {
@@ -169,6 +186,14 @@ export default function Community() {
     return () => observer.disconnect();
   }, [hasMore, isLoadingMore]);
 
+  useEffect(() => {
+    // 获取二维码数据
+    fetch('/api/qrcodes')
+      .then(res => res.json())
+      .then(data => setQrCodes(data))
+      .catch(error => console.error('Error fetching QR codes:', error))
+  }, [])
+
   if (error) {
     return (
       <div className="flex justify-center items-center min-h-[200px] text-red-500">
@@ -231,88 +256,81 @@ export default function Community() {
         </div>
       </div>
 
-      {/* 帖子列表 */}
-      <div className="space-y-2 sm:space-y-4 mt-3">
-        {!data && isLoading ? (
-          <div className="flex justify-center items-center min-h-[200px]">
-            <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-2 sm:border-3 border-primary border-t-transparent"></div>
-          </div>
-        ) : posts.length === 0 ? (
-          <div className="text-center py-12 sm:py-16 bg-white rounded-lg sm:rounded-xl border border-gray-100">
-            <div className="text-gray-400 mb-2 text-3xl sm:text-4xl">📝</div>
-            <div className="text-gray-500 px-4 text-sm sm:text-base">暂无帖子，来发布第一篇吧</div>
-          </div>
-        ) : (
-          <>
-            {posts.map((post) => (
-              <Link
-                key={post.id}
-                href={`/community/${post.id}`}
-                className="block bg-white rounded-lg sm:rounded-xl shadow-sm hover:shadow-md transition-all duration-300
-                  border border-gray-100 hover:border-primary/30 group"
-              >
-                <div className="p-3 sm:p-4">
-                  <h2 className="text-base sm:text-lg font-medium text-gray-900 group-hover:text-primary transition-colors line-clamp-1">
-                    {post.title}
-                  </h2>
-                  <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 line-clamp-2">
-                    {post.content}
-                  </p>
-                  <div className="mt-2 sm:mt-3 flex items-center gap-3 sm:gap-4 text-gray-500">
-                    <div className="flex items-center gap-1.5">
-                      {post.author.image ? (
-                        <img
-                          src={post.author.image}
-                          alt={post.author.name || "用户头像"}
-                          className="w-5 h-5 sm:w-6 sm:h-6 rounded-full"
-                        />
-                      ) : (
-                        <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-gray-200" />
-                      )}
-                      <span className="text-sm sm:text-base">{post.author.name || "匿名用户"}</span>
-                    </div>
-                    <span className="text-sm sm:text-base">
-                      {dayjs(post.createdAt).fromNow()}
-                    </span>
-                    {post.tags && post.tags.length > 0 && (
-                      <div className="hidden sm:flex items-center gap-1.5">
-                        {post.tags.map((tag) => (
-                          <span
-                            key={tag}
-                            className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-sm"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                    <div className="flex items-center gap-3 sm:gap-4 ml-auto">
+      {/* 主要内容区域 */}
+      <div className="mt-3 grid grid-cols-1 lg:grid-cols-4 gap-4">
+        {/* 帖子列表 */}
+        <div className="lg:col-span-4 space-y-2 sm:space-y-4">
+          {!data && isLoading ? (
+            <div className="flex justify-center items-center min-h-[200px]">
+              <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-2 sm:border-3 border-primary border-t-transparent"></div>
+            </div>
+          ) : posts.length === 0 ? (
+            <div className="text-center py-12 sm:py-16 bg-white rounded-lg sm:rounded-xl border border-gray-100">
+              <div className="text-gray-400 mb-2 text-3xl sm:text-4xl">📝</div>
+              <div className="text-gray-500 px-4 text-sm sm:text-base">暂无帖子，来发布第一篇吧</div>
+            </div>
+          ) : (
+            <>
+              {posts.map((post) => (
+                <Link
+                  key={post.id}
+                  href={`/community/${post.id}`}
+                  className="block bg-white rounded-lg sm:rounded-xl shadow-sm hover:shadow-md transition-all duration-300
+                    border border-gray-100 hover:border-primary/30 group"
+                >
+                  <div className="p-3 sm:p-4">
+                    <h2 className="text-base sm:text-lg font-medium text-gray-900 group-hover:text-primary transition-colors line-clamp-1">
+                      {post.title}
+                    </h2>
+                    <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 line-clamp-2">
+                      {post.content}
+                    </p>
+                    <div className="mt-2 sm:mt-3 flex items-center gap-3 sm:gap-4 text-gray-500">
                       <div className="flex items-center gap-1.5">
-                        <Eyes theme="outline" size="18" className="flex-shrink-0" />
-                        <span className="text-sm">{post.views}</span>
+                        {post.author.image ? (
+                          <img
+                            src={post.author.image}
+                            alt={post.author.name || "用户头像"}
+                            className="w-5 h-5 sm:w-6 sm:h-6 rounded-full"
+                          />
+                        ) : (
+                          <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-gray-200" />
+                        )}
+                        <span className="text-sm sm:text-base">{post.author.name || "匿名用户"}</span>
                       </div>
-                      <LikeButton postId={post.id} initialLikes={post._count.postLikes} />
                       <div className="flex items-center gap-1.5">
-                        <Comment theme="outline" size="18" className="flex-shrink-0" />
-                        <span className="text-sm">{post._count.comments}</span>
+                        <Like theme="outline" size="16" className="hidden sm:block" />
+                        <span>{post._count.likes}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Comment theme="outline" size="16" className="hidden sm:block" />
+                        <span>{post._count.comments}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Eyes theme="outline" size="16" className="hidden sm:block" />
+                        <span>{post.views}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <Time theme="outline" size="16" className="hidden sm:block" />
+                        <span>{dayjs(post.createdAt).fromNow()}</span>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            ))}
-          </>
-        )}
+                </Link>
+              ))}
+            </>
+          )}
 
-        {/* 加载更多指示器 */}
-        {hasMore && (
-          <div
-            ref={loadingRef}
-            className="flex justify-center items-center py-4 sm:py-6"
-          >
-            <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-2 sm:border-3 border-primary border-t-transparent"></div>
-          </div>
-        )}
+          {/* 加载更多指示器 */}
+          {hasMore && (
+            <div
+              ref={loadingRef}
+              className="flex justify-center items-center py-4 sm:py-6"
+            >
+              <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-2 sm:border-3 border-primary border-t-transparent"></div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* 创建帖子模态框 */}

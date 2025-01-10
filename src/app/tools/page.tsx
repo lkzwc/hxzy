@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Compass, Robot, Star } from '@icon-park/react';
 import LiuRen from '@/components/tools/LiuRen';
 import TimeTable from '@/components/tools/TimeTable';
 import ZiWei from '@/components/tools/ZiWei';
@@ -11,22 +12,21 @@ const tools = [
   {
     id: 'liuren',
     name: '小六壬占卜',
-    icon: '🔮',
+    icon: <Compass theme="outline" size="24" className="text-primary" />,
     description: '传统预测方法，用于预测事情吉凶'
   },
   {
     id: 'ai',
     name: 'AI中医',
-    icon: '🔮',
-    description: '传统预测方法，用于预测事情吉凶'
+    icon: <Robot theme="outline" size="24" className="text-primary" />,
+    description: 'AI辅助诊断与建议'
   },
   {
     id: 'ziwei',
     name: '紫薇占卜',
-    icon: '🔮',
-    description: '传统预测方法，用于预测事情吉凶'
+    icon: <Star theme="outline" size="24" className="text-primary" />,
+    description: '紫薇斗数预测方法'
   },
-  // ... 其他工具配置保持不变
 ];
 
 export default function ToolsPage() {
@@ -52,12 +52,14 @@ export default function ToolsPage() {
                   <button
                     key={tool.id}
                     onClick={() => setActiveTool(tool.id)}
-                    className={`flex items-center gap-2 px-4 py-3 rounded-md transition-colors shrink-0 md:shrink
+                    className={`flex items-center gap-3 px-4 py-3 rounded-md transition-colors shrink-0 md:shrink w-full
                       ${activeTool === tool.id 
                         ? 'bg-primary/10 text-primary' 
                         : 'hover:bg-gray-100 text-gray-600'}`}
                   >
-                    <span className="text-xl">{tool.icon}</span>
+                    <div className={`flex-shrink-0 ${activeTool === tool.id ? 'text-primary' : 'text-gray-400'}`}>
+                      {tool.icon}
+                    </div>
                     <div className="text-left">
                       <div className="font-medium whitespace-nowrap">{tool.name}</div>
                       <div className="text-xs text-gray-500 hidden md:block">{tool.description}</div>
