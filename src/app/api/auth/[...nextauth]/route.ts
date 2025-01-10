@@ -1,6 +1,7 @@
 import NextAuth, { NextAuthOptions } from "next-auth"
 import GithubProvider from "next-auth/providers/github"
-import prisma from '@/app/lib/prisma'
+import CredentialsProvider from "next-auth/providers/credentials"
+import { prisma } from '@/lib/prisma'
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -8,50 +9,46 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }),
-  ],
-  secret: process.env.NEXTAUTH_SECRET,
-  session: {
-    strategy: "jwt",
-  },
-  callbacks: {
-    async signIn({ user, account, profile }) {
-      if (!user.email) return false;
-      
-      try {
-        // 查找或创建用户
-        const dbUser = await prisma.user.upsert({
-          where: { email: user.email },
-          update: {
-            name: user.name || null,
-            image: user.image || null,
-          },
-          create: {
-            email: user.email,
-            name: user.name || null,
-            image: user.image || null,
-          },
-        });
+    CredentialsProvider({
+      id: 'wechat',
+      name: 'WeChat',
+      credentials: {
+        wechatId: { label: "WechatId", type: "text" },
+      },
+      async authorize(credentials) {
+        if (!credentials?.wechatId) {
+          return null
+        }
 
-        // 将数据库用户 ID 添加到 user 对象
-        (user as any).id = dbUser.id;
-        
-        return true;
-      } catch (error) {
-        console.error('Error saving user to database:', error);
-        return false;
+        const user = await prisma.user.findUnique({
+          where: { wechatId: credentials.wechatId }
+        })
+
+        if (!user) {
+          return null
+        }
+
+        return {
+          id: user.id.toString(),
+          name: user.name,
+          email: user.email,
+          image: user.image,
+        }
       }
-    },
+    })
+  ],
+  callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.id = (user as any).id;
+        token.id = user.id
       }
-      return token;
+      return token
     },
     async session({ session, token }) {
       if (session?.user) {
-        (session.user as any).id = token.id;
+        (session.user as any).id = token.id
       }
-      return session;
+      return session
     },
     async redirect({ url, baseUrl }) {
       // 如果是登录相关的URL，登录成功后重定向到首页
@@ -65,6 +62,9 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: '/login',
     error: '/login',
+  },
+  session: {
+    strategy: "jwt",
   },
 }
 

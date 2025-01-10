@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,31 +8,33 @@ datasource db {
 }
 
 model User {
-  id            Int       @id @default(autoincrement())
-  name          String?
-  email         String?   @unique
-  image         String?
-  posts         Post[]
-  comments      Comment[]
-  postLikes     PostLike[]
+  id        Int        @id @default(autoincrement())
+  name      String?
+  email     String?    @unique
+  image     String?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  comments  Comment[]
+  posts     Post[]
+  postLikes PostLike[]
+
+  @@index([email])
 }
 
 model Post {
-  id          Int       @id @default(autoincrement())
-  title       String
-  content     String    @db.Text
-  images      String[]
-  published   Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  tags        String[]
-  views       Int       @default(0)
-
-  // 关联
-  author      User      @relation(fields: [authorId], references: [id])
-  authorId    Int
-  comments    Comment[]
-  postLikes   PostLike[]
+  id        Int        @id @default(autoincrement())
+  title     String
+  content   String
+  images    String[]
+  published Boolean    @default(true)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  tags      String[]
+  views     Int        @default(0)
+  authorId  Int
+  comments  Comment[]
+  author    User       @relation(fields: [authorId], references: [id])
+  postLikes PostLike[]
 
   @@index([authorId])
   @@index([createdAt])
@@ -43,22 +42,18 @@ model Post {
 }
 
 model Comment {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   content   String
   images    String[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  // 关联
-  author    User     @relation(fields: [authorId], references: [id])
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
   authorId  Int
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int
-
-  // 评论的回复
-  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
   parentId  Int?
+  author    User      @relation(fields: [authorId], references: [id])
+  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
   replies   Comment[] @relation("CommentReplies")
+  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
 
   @@index([postId])
   @@index([authorId])
@@ -67,11 +62,10 @@ model Comment {
 
 model PostLike {
   createdAt DateTime @default(now())
-  
-  user      User     @relation(fields: [userId], references: [id])
   userId    Int
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId    Int
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
 
   @@id([userId, postId])
   @@index([userId])
@@ -79,32 +73,30 @@ model PostLike {
 }
 
 model Doctor {
-  id          Int       @id @default(autoincrement())
-  name        String
-  department  String    // 科室
-  hospital    String    // 医院
-  specialty   String    // 专长
-  phone       String    // 联系电话
-  province    String    // 省份
-  introduction String   @db.Text  // 简介
-  avatar      String?   // 头像
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id           Int      @id @default(autoincrement())
+  name         String
+  department   String
+  hospital     String
+  specialty    String
+  phone        String
+  province     String
+  introduction String
+  avatar       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([createdAt])
 }
 
-
-// 中药库
 model ChineseMedicine {
   id          Int      @id @default(autoincrement())
-  name        String   // 药名
-  pinyin      String   // 拼音
-  category    String   // 分类（如：补虚药）
-  properties  String   // 性味
-  effects     String   @db.Text  // 功效
-  description String?  @db.Text  // 详细描述
-  image       String?  // 图片
+  name        String
+  pinyin      String
+  category    String
+  properties  String
+  effects     String
+  description String?
+  image       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -113,17 +105,16 @@ model ChineseMedicine {
   @@index([pinyin])
 }
 
-// 方剂库
 model ClassicalFormula {
   id          Int      @id @default(autoincrement())
-  name        String   // 方剂名
-  pinyin      String   // 拼音
-  source      String   // 出处
-  composition String   @db.Text  // 组成
-  indications String   @db.Text  // 主治
-  usage       String   // 用法
-  description String?  @db.Text  // 详细描述
-  category    String   // 分类（如：补益剂、解表剂等）
+  name        String
+  pinyin      String
+  source      String
+  composition String
+  indications String
+  usage       String
+  description String?
+  category    String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -132,16 +123,15 @@ model ClassicalFormula {
   @@index([pinyin])
 }
 
-// 课程库
 model Course {
   id          Int      @id @default(autoincrement())
-  title       String   // 课程标题
-  instructor  String   // 讲师
-  description String   @db.Text  // 课程描述
-  coverImage  String   // 封面图片
-  category    String   // 分类（如：理论、临床、养生等）
-  link        String   // 课程链接
-  isVip       Boolean  @default(false) // 是否为VIP课程
+  title       String
+  instructor  String
+  description String
+  coverImage  String
+  category    String
+  link        String
+  isVip       Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -149,17 +139,16 @@ model Course {
   @@index([createdAt])
 }
 
-// 电子书库
 model EBook {
   id          Int      @id @default(autoincrement())
-  title       String   // 书名
-  pinyin      String   // 拼音
-  author      String   // 作者
-  dynasty     String   // 朝代
-  category    String   // 分类（如：经典、临床等）
-  description String   @db.Text  // 描述
-  coverImage  String   // 封面图片
-  link        String   // 电子书链接
+  title       String
+  pinyin      String
+  author      String
+  dynasty     String
+  category    String
+  description String
+  coverImage  String
+  link        String
   isVip       Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

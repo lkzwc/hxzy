@@ -4,13 +4,17 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
     "start": "next start",
+    "build": "prisma generate && next build",
+    "start:prod": "NODE_ENV=production next start",
+    "dev:prod": "NODE_ENV=production next dev",
+    "build:prod": "NODE_ENV=production prisma generate && next build",
     "lint": "next lint"
   },
   "dependencies": {
     "@icon-park/react": "^1.4.2",
     "@prisma/client": "6.1.0",
+    "@types/xml2js": "^0.4.14",
     "dayjs": "^1.11.13",
     "framer-motion": "10.16.4",
     "jsonwebtoken": "^9.0.2",
@@ -19,7 +23,8 @@
     "next-auth": "^4.24.11",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "swr": "^2.3.0"
+    "swr": "^2.3.0",
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.7",

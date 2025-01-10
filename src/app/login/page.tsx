@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useSession, signIn } from "next-auth/react"
 import { User, TwoDimensionalCodeOne, Github, Close } from '@icon-park/react'
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 function SocialLogin() {
   return (
@@ -18,7 +19,7 @@ function SocialLogin() {
     </div>
   );
 }
- 
+
 export default function Login() {
   const [isQRLogin, setIsQRLogin] = useState(true);
   const [loginType, setLoginType] = useState('sms');
@@ -27,6 +28,9 @@ export default function Login() {
   const [isRegister, setIsRegister] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [qrCodeUrl, setQrCodeUrl] = useState('');
+  const [qrCodeState, setQrCodeState] = useState('');
+  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout>();
   const router = useRouter();
   const { data: session } = useSession();
 
@@ -36,6 +40,72 @@ export default function Login() {
       router.back();
     }
   }, [session, router]);
+
+  // 获取微信登录二维码
+  useEffect(() => {
+    if (isQRLogin) {
+      fetchQrCode();
+    } else {
+      // 清除轮询
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+      }
+    }
+    
+    return () => {
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+      }
+    };
+  }, [isQRLogin]);
+
+  const fetchQrCode = async () => {
+    try {
+      const response = await fetch('/api/wechat', {
+        method: 'PUT'
+      });
+      const data = await response.json();
+      
+      if (data.loginCode) {
+        setQrCodeUrl(data.qrCodeUrl);
+        setQrCodeState(data.loginCode);
+        
+        // 开始轮询检查登录状态
+        const interval = setInterval(checkLoginStatus, 2000);
+        setPollingInterval(interval);
+      }
+    } catch (error) {
+      console.error('获取二维码失败:', error);
+    }
+  };
+
+  const checkLoginStatus = async () => {
+    try {
+      const response = await fetch('/api/wechat', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ loginCode: qrCodeState }),
+      });
+      
+      const data = await response.json();
+      
+      if (data.status === 'success' && data.openid) {
+        // 登录成功，清除轮询
+        if (pollingInterval) {
+          clearInterval(pollingInterval);
+        }
+        // 使用 NextAuth 登录
+        signIn('wechat', { 
+          openid: data.openid,
+          callbackUrl: '/' 
+        });
+      }
+    } catch (error) {
+      console.error('检查登录状态失败:', error);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,9 +168,21 @@ export default function Login() {
             {isQRLogin ? (
               <div className="flex-1 flex flex-col">
                 <div className="flex-1 flex flex-col items-center justify-center">
-                  <div className="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-4 bg-[#F3E5D7] rounded-lg flex items-center justify-center">
-                    <TwoDimensionalCodeOne theme="outline" size="64" fill="#B87A56" />
-                  </div>
+                  {qrCodeUrl ? (
+                    <div className="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-4 bg-[#F3E5D7] rounded-lg flex items-center justify-center">
+                      <Image 
+                        src={qrCodeUrl}
+                        alt="微信登录二维码"
+                        width={150}
+                        height={150}
+                        className="rounded-lg"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-4 bg-[#F3E5D7] rounded-lg flex items-center justify-center">
+                      <TwoDimensionalCodeOne theme="outline" size="64" fill="#B87A56" />
+                    </div>
+                  )}
                   <p className="text-gray-600 text-sm sm:text-base mb-2">请使用微信扫码登录</p>
                   <p className="text-gray-400 text-xs">扫码后自动登录</p>
                 </div>
@@ -142,7 +224,7 @@ export default function Login() {
                       onChange={(e) => setPhone(e.target.value)}
                       className="w-full h-10 px-4 text-sm sm:text-base border border-[#EAD5C3] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B87A56] bg-[#FFF9F0]"
                     />
-          
+
                     {loginType === 'sms' ? (
                       <div className="flex gap-3">
                         <input

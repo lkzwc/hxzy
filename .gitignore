@@ -44,3 +44,9 @@ next-env.d.ts
 **/public/sw.js.map
 **/public/workbox-*.js.map
 **/public/worker-*.js.map
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production

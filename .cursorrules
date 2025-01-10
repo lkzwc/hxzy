@@ -52,6 +52,7 @@
 - TailwindCSS
 - HTML
 - CSS
+- 数据库使用Prisma 本地连接使用的docker
 
 ### 代码实现指南
 
