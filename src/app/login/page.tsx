@@ -65,7 +65,8 @@ export default function Login() {
         method: 'POST'
       });
       const data = await response.json();
-      
+
+      console.log("data", data);
       if (data.loginCode) {
         setQrCodeUrl(data.qrCodeUrl);
         setQrCodeState(data.loginCode);
@@ -173,6 +174,7 @@ export default function Login() {
                         width={150}
                         height={150}
                         className="rounded-lg"
+                        unoptimized
                       />
                     </div>
                   ) : (
