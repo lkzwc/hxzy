@@ -155,6 +155,8 @@ async function createLoginQrCode(request: NextRequest) {
       }
     );
 
+    console.log("response", accessToken,response);
+
     if (!response.ok) {
       throw new Error("获取二维码ticket失败");
     }
