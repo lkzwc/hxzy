@@ -8,33 +8,6 @@ export const authOptions: NextAuthOptions = {
     GithubProvider({
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
-    }),
-    CredentialsProvider({
-      id: 'wechat',
-      name: 'WeChat',
-      credentials: {
-        wechatId: { label: "WechatId", type: "text" },
-      },
-      async authorize(credentials) {
-        if (!credentials?.wechatId) {
-          return null
-        }
-
-        const user = await prisma.user.findUnique({
-          where: { wechatId: credentials.wechatId }
-        })
-
-        if (!user) {
-          return null
-        }
-
-        return {
-          id: user.id.toString(),
-          name: user.name,
-          email: user.email,
-          image: user.image,
-        }
-      }
     })
   ],
   callbacks: {
