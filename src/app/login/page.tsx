@@ -4,6 +4,7 @@ import { useSession, signIn } from "next-auth/react"
 import { User, TwoDimensionalCodeOne, Github, Close } from '@icon-park/react'
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import useSWR from 'swr';
 
 function SocialLogin() {
   return (
@@ -20,90 +21,79 @@ function SocialLogin() {
   );
 }
 
+const qrCodeFetcher = async (): Promise<any> => {
+  const response = await fetch('/api/wechat', {
+    method: 'POST'
+  });
+  return response.json();
+};
+
+const loginStatusFetcher = async (url: string): Promise<any> => {
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  return response.json();
+};
+
 export default function Login() {
   const [isQRLogin, setIsQRLogin] = useState(true);
   const [loginType, setLoginType] = useState('sms');
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
   const [isRegister, setIsRegister] = useState(false);
-  const [countdown, setCountdown] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [qrCodeUrl, setQrCodeUrl] = useState('');
-  const [qrCodeState, setQrCodeState] = useState('');
-  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout>();
   const router = useRouter();
   const { data: session } = useSession();
 
+  // 获取二维码
+  const { data: qrCodeData, error: qrCodeError } = useSWR(
+    isQRLogin ? "/api/wechat" : null,
+    qrCodeFetcher,
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+      refreshInterval: 0,
+      dedupingInterval: 10000,
+    }
+  );
+
+  // 检查登录状态
+  const { data: loginStatus } = useSWR(
+    qrCodeData?.sceneStr ? `/api/wechat/check?sceneStr=${qrCodeData.sceneStr}` : null,
+    loginStatusFetcher,
+    {
+      refreshInterval: 2000, // 每2秒检查一次
+      refreshWhenHidden: true, // 页面隐藏时继续检查
+    }
+  );
+
+  // 处理登录状态变化
+  useEffect(() => {
+    if (loginStatus?.status === 'authorized' && loginStatus?.openid) {
+      console.log('扫码成功，开始登录:', loginStatus);
+      signIn('credentials', {
+        openid: loginStatus.openid,
+        redirect: false,
+      }).then((result) => {
+        if (result?.error) {
+          console.error('登录失败:', result.error);
+        } else {
+          console.log('登录成功，准备跳转');
+          router.push('/');
+        }
+      });
+    }
+  }, [loginStatus, router]);
+
+  // 已登录则返回
   useEffect(() => {
     if (session) {
-      console.log('登录成功:', session);
+      console.log('已登录，返回上一页:', session);
       router.back();
     }
   }, [session, router]);
-
-  // 获取微信登录二维码
-  useEffect(() => {
-    if (isQRLogin) {
-      fetchQrCode();
-    } else {
-      // 清除轮询
-      if (pollingInterval) {
-        clearInterval(pollingInterval);
-      }
-    }
-    
-    return () => {
-      if (pollingInterval) {
-        clearInterval(pollingInterval);
-      }
-    };
-  }, [isQRLogin]);
-
-  const fetchQrCode = async () => {
-    try {
-      const response = await fetch('/api/wechat', {
-        method: 'POST'
-      });
-      const data = await response.json();
-
-      console.log("data", data);
-      if (data.loginCode) {
-        setQrCodeUrl(data.qrCodeUrl);
-        setQrCodeState(data.loginCode);
-        
-        // // 开始轮询检查登录状态
-        // const interval = setInterval(checkLoginStatus, 2000);
-        // setPollingInterval(interval);
-      }
-    } catch (error) {
-      console.error('获取二维码失败:', error);
-    }
-  };
-
-  const checkLoginStatus = async () => {
-    try {
-      const response = await fetch('/api/wechat', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ loginCode: qrCodeState }),
-      });
-      
-      const data = await response.json();
-      
-      if (data.status === 'success' && data.openid) {
-        // 登录成功，清除轮询
-        if (pollingInterval) {
-          clearInterval(pollingInterval);
-        }
-        console.log('登录成功:', data);
-        
-      }
-    } catch (error) {
-      console.error('检查登录状态失败:', error);
-    }
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -166,10 +156,10 @@ export default function Login() {
             {isQRLogin ? (
               <div className="flex-1 flex flex-col">
                 <div className="flex-1 flex flex-col items-center justify-center">
-                  {qrCodeUrl ? (
+                  {qrCodeData?.qrCodeUrl ? (
                     <div className="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-4 bg-[#F3E5D7] rounded-lg flex items-center justify-center">
                       <Image 
-                        src={qrCodeUrl}
+                        src={qrCodeData.qrCodeUrl}
                         alt="微信登录二维码"
                         width={150}
                         height={150}
