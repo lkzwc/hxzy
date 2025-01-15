@@ -5,10 +5,10 @@
   "scripts": {
     "dev": "next dev",
     "start": "next start",
-    "build": "prisma generate && next build",
+    "build": "next build",
     "start:prod": "NODE_ENV=production next start",
     "dev:prod": "NODE_ENV=production next dev",
-    "build:prod": "NODE_ENV=production prisma generate && next build",
+    "build:prod": "prisma generate && prisma migrate deploy && next build",
     "lint": "next lint"
   },
   "dependencies": {
