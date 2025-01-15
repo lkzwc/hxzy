@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/route'
 import { prisma } from '@/lib/prisma'
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library'
 
 type WhereInput = {
   published: boolean
@@ -130,7 +129,7 @@ export async function POST(request: NextRequest) {
 
     // 查找用户
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email! }
+      where: { id: Number(session.user.id) }
     })
 
     if (!user) {

@@ -28,13 +28,13 @@ const qrCodeFetcher = async (): Promise<any> => {
   return response.json();
 };
 
-const loginStatusFetcher = async (loginToken: string, sceneStr: string): Promise<any> => {
-  const response = await fetch('/api/wechat/check', {
-    method: 'POST',
+const loginStatusFetcher = async (sceneStr: string): Promise<any> => {
+  const response = await fetch('/api/wechat', {
+    method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ loginToken, sceneStr }),
+    body: JSON.stringify({ sceneStr }),
   });
   return response.json();
 };
@@ -61,7 +61,7 @@ export default function Login() {
   // 检查登录状态
   const { data: loginStatus, error: loginError } = useSWR(
     qrCode?.loginToken ? ['loginStatus', qrCode.loginToken] : null,
-    () => loginStatusFetcher(qrCode.loginToken, qrCode.sceneStr),
+    () => loginStatusFetcher(qrCode.sceneStr),
     {
       refreshInterval: 2000, // 每2秒检查一次
       revalidateOnFocus: true,
@@ -71,8 +71,10 @@ export default function Login() {
   // 监听登录状态
   useEffect(() => {
     if (loginStatus?.status === 'authorized' && loginStatus?.openid) {
-      console.log('登录成功:', loginStatus);
-      router.push('/community');
+      signIn('credentials', {
+        openid: loginStatus.openid,
+        redirect: false,
+      })
     }
   }, [loginStatus, router]);
 

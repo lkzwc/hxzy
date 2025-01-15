@@ -2,12 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { parseStringPromise } from "xml2js";
 import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
-import { createLoginToken, updateLoginToken } from "@/lib/loginState";
+import {
+  createLoginToken,
+  updateLoginToken,
+  verifyLoginToken,
+} from "@/lib/loginState";
 
 // 临时使用 Map 存储 sceneStr 和 token 的映射关系
 const tokenMap = new Map<string, string>();
 
-function generateReplyMessage(toUser: string, fromUser: string, content: string) {
+function generateReplyMessage(
+  toUser: string,
+  fromUser: string,
+  content: string
+) {
   const timestamp = Math.floor(Date.now() / 1000);
   return `<xml>
     <ToUserName><![CDATA[${toUser}]]></ToUserName>
@@ -36,7 +44,10 @@ function verifySignature(
 
     // 2. 将三个参数字符串拼接成一个字符串进行 sha1 加密
     const tmpStr = tmpArr.join("");
-    const hash = crypto.createHash("sha1").update(tmpArr.join("")).digest("hex");
+    const hash = crypto
+      .createHash("sha1")
+      .update(tmpArr.join(""))
+      .digest("hex");
 
     // 4. 将加密后的字符串与 signature 对比
     return hash === signature;
@@ -55,7 +66,6 @@ async function handleWeChatMessage(xmlData: string) {
     // 2. 提取消息基本信息
     const toUserName = message.ToUserName[0]; // 开发者微信号
     const fromUserName = message.FromUserName[0]; // 用户的OpenID
-    const createTime = message.CreateTime[0]; // 消息创建时间
     const msgType = message.MsgType[0]; // 消息类型
 
     // 3. 处理事件消息
@@ -65,54 +75,37 @@ async function handleWeChatMessage(xmlData: string) {
       const ticket = message.Ticket?.[0];
 
       // 提取场景值，处理未关注用户的情况
-      const sceneStr = eventKey.startsWith("qrscene_") ? eventKey.replace("qrscene_", "") : eventKey;
-      
+      const sceneStr = eventKey.startsWith("qrscene_")
+        ? eventKey.replace("qrscene_", "")
+        : eventKey;
+
       try {
         // 获取存储的 token
-        console.error('处理推送事件:', { tokenMap });
         const storedToken = tokenMap.get(sceneStr);
         if (!storedToken) {
-          throw new Error('Login token not found');
+          throw new Error("Login token not found");
         }
 
         switch (event.toUpperCase()) {
           case "SCAN": // 已关注用户扫码
           case "SUBSCRIBE": // 未关注用户扫码关注
-            // 获取或创建用户
-            const user = await prisma.user.upsert({
-              where: { openid: fromUserName },
-              update: {
-                lastLoginAt: new Date(),
-              },
-              create: {
+            if (fromUserName) {
+              // 更新登录令牌状态为已授权
+              const finalToken = updateLoginToken(storedToken, sceneStr, {
+                status: "authorized",
                 openid: fromUserName,
-                name: `用户${fromUserName.slice(-6)}`,
-                lastLoginAt: new Date(),
-              },
-            });
+              });
 
-            // 更新登录令牌状态为已授权
-            updateLoginToken(storedToken, sceneStr, {
-              status: "authorized",
-              openid: fromUserName,
-            });
+              tokenMap.set(sceneStr, finalToken);
+            }
 
-            console.log('扫码登录成功:', { 
-              openid: fromUserName, 
-              sceneStr,
-              userId: user.id,
-            });
+            const replyMessage =
+              event.toUpperCase() === "SUBSCRIBE"
+                ? "感谢关注！登录成功，请返回浏览器继续操作。"
+                : "登录成功！请返回浏览器继续操作。";
 
-            const replyMessage = event.toUpperCase() === "SUBSCRIBE" 
-              ? "感谢关注！登录成功，请返回浏览器继续操作。"
-              : "登录成功！请返回浏览器继续操作。";
-              
             return new Response(
-              generateReplyMessage(
-                fromUserName,
-                toUserName,
-                replyMessage
-              )
+              generateReplyMessage(fromUserName, toUserName, replyMessage)
             );
         }
       } catch (error) {
@@ -151,7 +144,9 @@ async function createLoginQrCode(request: NextRequest) {
     const accessToken = await getAccessToken();
 
     // 生成唯一的场景值作为登录标识
-    const sceneStr = `login_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+    const sceneStr = `login_${Date.now()}_${Math.random()
+      .toString(36)
+      .slice(2)}`;
 
     // 创建二维码ticket
     const response = await fetch(
@@ -178,11 +173,11 @@ async function createLoginQrCode(request: NextRequest) {
     const loginToken = createLoginToken(sceneStr);
     tokenMap.set(sceneStr, loginToken);
 
-    console.log('创建登录二维码:', {
+    console.log("创建登录二维码:", {
       sceneStr,
       loginToken,
       expire_seconds,
-      tokenMap
+      tokenMap,
     });
 
     return NextResponse.json({
@@ -190,14 +185,15 @@ async function createLoginQrCode(request: NextRequest) {
       loginToken,
       loginCode: ticket,
       expireSeconds: expire_seconds,
-      qrCodeUrl: `https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=${encodeURIComponent(ticket)}`
+      qrCodeUrl: `https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=${encodeURIComponent(
+        ticket
+      )}`,
     });
   } catch (error) {
     console.error("生成登录二维码失败:", error);
     return NextResponse.json({ error: "生成登录二维码失败" }, { status: 500 });
   }
 }
-
 
 // 处理服务器验证
 export async function GET(request: NextRequest) {
@@ -220,7 +216,7 @@ export async function GET(request: NextRequest) {
       return new NextResponse("missing params", { status: 400 });
     }
 
-    console.log("timestampxx", timestamp, nonce,echostr, signature);
+    console.log("timestampxx", timestamp, nonce, echostr, signature);
 
     const isValid = verifySignature(timestamp, nonce, signature);
 
@@ -251,5 +247,18 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("处理请求失败:", error);
     return NextResponse.json({ error: "处理请求失败" }, { status: 500 });
+  }
+}
+
+export async function PUT(request: NextRequest) {
+  try {
+    const { sceneStr } = await request.json();
+    const loginState = verifyLoginToken(tokenMap.get(sceneStr), sceneStr);
+    return NextResponse.json(loginState);
+  } catch (error) {
+    if (error instanceof Error) {
+      return NextResponse.json({ error: error.message }, { status: 401 });
+    }
+    return NextResponse.json({ error: "Invalid login token" }, { status: 401 });
   }
 }

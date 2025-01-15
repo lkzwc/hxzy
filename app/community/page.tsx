@@ -77,7 +77,6 @@ export default function Community() {
   const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [qrCodes, setQrCodes] = useState([])
 
   // 构建查询参数
   const getQueryParams = (pageNum: number) => {
@@ -186,13 +185,6 @@ export default function Community() {
     return () => observer.disconnect();
   }, [hasMore, isLoadingMore]);
 
-  useEffect(() => {
-    // 获取二维码数据
-    fetch('/api/qrcodes')
-      .then(res => res.json())
-      .then(data => setQrCodes(data))
-      .catch(error => console.error('Error fetching QR codes:', error))
-  }, [])
 
   if (error) {
     return (

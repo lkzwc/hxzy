@@ -156,7 +156,7 @@ export async function POST(
 
     // 查找用户
     const user = await prisma.user.findUnique({
-      where: { email: session.user.email! }
+      where: { email: session.user.id! }
     })
 
     if (!user) {
