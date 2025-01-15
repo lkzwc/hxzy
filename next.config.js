@@ -2,7 +2,7 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['images.unsplash.com', 'localhost','avatars.githubusercontent.com','api.dicebear.com','www.refactoringui.com'],
+    domains: ['images.unsplash.com', 'localhost', 'avatars.githubusercontent.com', 'api.dicebear.com', 'www.refactoringui.com'],
     remotePatterns: [
       {
         protocol: 'http',

@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 44, 62, 80;
+  --background-rgb: 250, 246, 241;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+}
+
+@layer components {
+  .btn {
+    @apply font-medium;
+  }
+  
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-focus text-white border-none;
+  }
+
+  .btn-outline {
+    @apply border-2 border-primary text-primary hover:bg-primary hover:text-white;
+  }
+
+  .btn-lg {
+    @apply h-14 px-8;
+  }
+}
+
+/* 自定义样式 */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+}
+
+/* 隐藏滚动条但保持可滚动 */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}

@@ -2,18 +2,19 @@ import type { Config } from 'tailwindcss'
 
 const config: Config = {
   content: [
-    './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
+    './pages/**/*.{js,ts,jsx,tsx,mdx}',
+    './components/**/*.{js,ts,jsx,tsx,mdx}',
+    './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
       colors: {
-        primary: '#D4B886',
+        primary: '#9B4722',
         'primary-focus': '#C4A876',
-        secondary: '#9B8579',
+        secondary: '#C17F59',
         'secondary-focus': '#8B7569',
-        text: '#2C3E50',
+        background: '#FDF6E3', // 暖米色
+        text: '#5C3A2E',       // 深褐色
         'mystic': {
           50: '#F5EDE4',
           100: '#EBD9C4',
@@ -121,7 +122,20 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  daisyui: {
+    themes: [
+      {
+        light: {
+          ...require("daisyui/src/theming/themes")["light"],
+          primary: "#D4B886",
+          "primary-focus": "#C4A876",
+          secondary: "#9B8579",
+          "secondary-focus": "#8B7569",
+        },
+      },
+    ],
+  },
+  plugins: [require("daisyui")],
 }
 
 export default config 

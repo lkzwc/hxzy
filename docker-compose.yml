@@ -1,36 +1,31 @@
 version: '3.8'
 
 services:
-  # Next.js 应用
-  web:
+  app:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
     environment:
-      - DATABASE_URL=postgresql://admin:admin123@db:5432/hxzy
-      - NEXTAUTH_URL=http://localhost:3000
-      - NEXTAUTH_SECRET=your-nextauth-secret
+      - DATABASE_URL=postgresql://admin:admin123@db:5432/hxzydb?schema=public
+      - NODE_ENV=production
     depends_on:
       - db
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/.next
     restart: always
 
-  # PostgreSQL 数据库
   db:
-    image: postgres:15-alpine
-    environment:
-      - POSTGRES_USER=admin
-      - POSTGRES_PASSWORD=admin123
-      - POSTGRES_DB=hxzy
+    build:
+      context: .
+      dockerfile: Dockerfile.db
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin123
+      - POSTGRES_DB=hxzydb
     restart: always
 
 volumes:
