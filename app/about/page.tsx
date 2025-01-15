@@ -2,14 +2,6 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import prisma from '../lib/prisma';
-
-interface ServerStatus {
-  uptime: string;
-  balance: string;
-}
-
-
 
 export default function AboutUs() {
   const [activeTab, setActiveTab] = useState<'about'|'donate'|'admin'>('about');
