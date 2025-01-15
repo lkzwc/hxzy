@@ -73,7 +73,7 @@ export default function Login() {
     if (loginStatus?.status === 'authorized' && loginStatus?.openid) {
       signIn('credentials', {
         openid: loginStatus.openid,
-        redirect: false,
+        redirect: true,
       })
     }
   }, [loginStatus, router]);

@@ -66,7 +66,7 @@ export const authOptions: NextAuthOptions = {
     async redirect({ url, baseUrl }) {
       // 如果是登录相关的URL，登录成功后重定向到首页
       if (url.startsWith(baseUrl)) {
-        return '/'
+        return '/community'
       }
       // 否则重定向到请求的URL
       return url
