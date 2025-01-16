@@ -8,7 +8,7 @@
     "build": "next build",
     "start:prod": "NODE_ENV=production next start",
     "dev:prod": "NODE_ENV=production next dev",
-    "build:prod": "npx prisma migrate deploy && next build",
+    "build:prod": "prisma migrate deploy && next build",
     "lint": "next lint"
   },
   "dependencies": {
