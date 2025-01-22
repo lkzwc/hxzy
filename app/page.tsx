@@ -33,13 +33,13 @@ import LuopanSection from '@/components/home/LuopanSection'
 
 export default async function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-neutral-50 via-white to-neutral-100">
+    <main className="bg-gradient-to-b from-primary-50 via-white to-neutral-50">
       {/* Hero Section */}
-      <section className="relative min-h-screen">
+      <section className="relative">
         {/* 装饰背景 */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary-100/30 rounded-full filter blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-secondary-100/20 rounded-full filter blur-2xl" />
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary-100/40 rounded-full filter blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-accent-100/30 rounded-full filter blur-2xl" />
         </div>
 
         <div className="container mx-auto px-4 h-full pt-24 lg:pt-32">
@@ -54,13 +54,13 @@ export default async function Home() {
                 中医药文化传承与创新平台
               </div>
               
-              <h1 className="text-5xl lg:text-7xl font-bold text-gray-900 mb-8 leading-tight">
+              <h1 className="text-5xl lg:text-7xl font-bold text-neutral-800 mb-8 leading-tight">
                 传承<span className="text-primary-600">千年智慧</span>
                 <br />
                 守护<span className="bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-secondary-500">现代健康</span>
               </h1>
               
-              <p className="text-xl text-gray-600 mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+              <p className="text-xl text-neutral-600 mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
                 探索中医药文化瑰宝，融合现代科技创新，让传统智慧在当代焕发新生
               </p>
               
@@ -72,9 +72,9 @@ export default async function Home() {
                   <div key={stat.label} className="space-y-2">
                     <div className="text-3xl lg:text-4xl font-bold text-primary-600">
                       {stat.value}
-                      <span className="text-lg text-gray-500 ml-1">{stat.unit}</span>
+                      <span className="text-lg text-neutral-500 ml-1">{stat.unit}</span>
                     </div>
-                    <div className="text-sm text-gray-500">{stat.label}</div>
+                    <div className="text-sm text-neutral-500">{stat.label}</div>
                   </div>
                 ))}
               </div>
@@ -84,7 +84,7 @@ export default async function Home() {
             <div className="lg:col-span-6 relative mt-12 lg:mt-0">
               <Suspense 
                 fallback={
-                  <div className="aspect-square relative rounded-2xl overflow-hidden shadow-2xl bg-gray-100 animate-pulse" />
+                  <div className="aspect-square relative rounded-2xl overflow-hidden shadow-2xl bg-neutral-100 animate-pulse" />
                 }
               >
                 <ClientHeroSection features={features} />
@@ -98,7 +98,7 @@ export default async function Home() {
       <Suspense 
         fallback={
           <div className="h-96 flex items-center justify-center">
-            <div className="w-32 h-32 rounded-lg bg-gray-100 animate-pulse" />
+            <div className="w-32 h-32 rounded-lg bg-neutral-100 animate-pulse" />
           </div>
         }
       >
@@ -106,11 +106,9 @@ export default async function Home() {
       </Suspense>
       
       {/* WuXing Section */}
-      <div className="bg-red-100 min-h-screen">
+      <div className="bg-gradient-to-b from-primary-50 to-primary-100/50">
         <LuopanSection />
       </div>
-
-     
     </main>
   )
 }

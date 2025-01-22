@@ -50,8 +50,7 @@ export default function DoctorsPage() {
   const [selectedRegion, setSelectedRegion] = useState('全部');
   const [selectedSpecialty, setSelectedSpecialty] = useState('全部');
   const [searchQuery, setSearchQuery] = useState('');
-  const [doctors, setDoctors] = useState<any>([])
-
+  const [doctors, setDoctors] = useState<any>([]);
 
   useEffect(() => {
     async function fetchDoctors() {
@@ -71,8 +70,6 @@ export default function DoctorsPage() {
     fetchDoctors();
   }, []);
 
-
-
   // 筛选医生
   const filteredDoctors = doctorsData.filter(doctor => {
     const matchRegion = selectedRegion === '全部' || doctor.region === selectedRegion;
@@ -84,7 +81,7 @@ export default function DoctorsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-neutral-50">
       {/* 筛选区域 */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-md p-6 space-y-6">
@@ -95,24 +92,34 @@ export default function DoctorsPage() {
               placeholder="搜索医生姓名、医院或专长..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-secondary"
+              className="w-full px-4 py-2 border border-neutral-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
             />
           </div>
 
           {/* 筛选条件 */}
           <div className="space-y-4">
-            {/* 地区��选 */}
+            {/* 地区筛选 */}
             <div>
-              <h3 className="text-text font-medium mb-2">按地区筛选：</h3>
+              <h3 className="text-neutral-800 font-medium mb-2">按地区筛选：</h3>
               <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => setSelectedRegion('全部')}
+                  className={`px-4 py-1 rounded-full text-sm transition-colors
+                    ${selectedRegion === '全部'
+                      ? 'bg-primary text-white'
+                      : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
+                    }`}
+                >
+                  全部
+                </button>
                 {regions.map((region) => (
                   <button
                     key={region}
                     onClick={() => setSelectedRegion(region)}
                     className={`px-4 py-1 rounded-full text-sm transition-colors
                       ${selectedRegion === region
-                        ? 'bg-secondary text-white'
-                        : 'bg-gray-100 text-text hover:bg-gray-200'
+                        ? 'bg-primary text-white'
+                        : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
                       }`}
                   >
                     {region}
@@ -123,7 +130,7 @@ export default function DoctorsPage() {
 
             {/* 专科筛选 */}
             <div>
-              <h3 className="text-text font-medium mb-2">按专科筛选：</h3>
+              <h3 className="text-neutral-800 font-medium mb-2">按专科筛选：</h3>
               <div className="flex flex-wrap gap-2">
                 {specialties.map((specialty) => (
                   <button
@@ -131,8 +138,8 @@ export default function DoctorsPage() {
                     onClick={() => setSelectedSpecialty(specialty)}
                     className={`px-4 py-1 rounded-full text-sm transition-colors
                       ${selectedSpecialty === specialty
-                        ? 'bg-secondary text-white'
-                        : 'bg-gray-100 text-text hover:bg-gray-200'
+                        ? 'bg-primary text-white'
+                        : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
                       }`}
                   >
                     {specialty}
@@ -149,26 +156,26 @@ export default function DoctorsPage() {
             <div key={doctor.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
               <div className="p-6">
                 <div className="flex items-start space-x-4">
-                  <div className="w-24 h-24 rounded-full bg-gray-200 flex-shrink-0">
+                  <div className="w-24 h-24 rounded-full bg-neutral-100 flex-shrink-0">
                     {/* 这里可以添加医生头像 */}
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-xl font-bold text-primary">{doctor.name}</h3>
-                    <p className="text-secondary">{doctor.ability}</p>
-                    <p className="text-gray-600">{doctor.province}</p>
+                    <h3 className="text-xl font-bold text-neutral-800">{doctor.name}</h3>
+                    <p className="text-primary-600">{doctor.ability}</p>
+                    <p className="text-neutral-600">{doctor.province}</p>
                     <div className="mt-2 flex flex-wrap gap-2">
-                      {/* {doctor.specialty.map((spec) => (
-                        <span key={spec} className="px-2 py-1 bg-background rounded-full text-xs text-text">
+                      {doctor.specialty?.map((spec) => (
+                        <span key={spec} className="px-2 py-1 bg-primary-50 rounded-full text-xs text-primary-600">
                           {spec}
                         </span>
-                      ))} */}
+                      ))}
                     </div>
                   </div>
                 </div>
-                <p className="mt-4 text-gray-600 line-clamp-3">{doctor.description}</p>
+                <p className="mt-4 text-neutral-600 line-clamp-3">{doctor.description}</p>
                 <Link 
                   href={`/doctors/${doctor.id}`}
-                  className="mt-4 block w-full py-2 bg-primary text-white rounded-md hover:bg-primary/90 transition-colors text-center"
+                  className="mt-4 block w-full py-2 bg-primary text-white rounded-md hover:bg-primary-600 transition-colors text-center"
                 >
                   查看详情
                 </Link>

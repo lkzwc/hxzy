@@ -169,7 +169,7 @@ export default function ProfilePage() {
   )
 
   return (
-    <div className="min-h-screen bg-[#FCFCFD]">
+    <div className="min-h-screen bg-neutral-50">
       {/* 顶部背景 */}
       <div className="h-60 bg-gradient-to-b from-primary/5 to-transparent" />
 

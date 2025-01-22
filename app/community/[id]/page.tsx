@@ -153,12 +153,12 @@ export default function PostDetail({ params }: { params: { id: string } }) {
 
   if (isLoading) {
     return <div className="flex justify-center items-center min-h-screen">
-      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#B87A56]"></div>
+      <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
     </div>
   }
 
   if (error || !post) {
-    return <div className="flex justify-center items-center min-h-screen text-red-500">
+    return <div className="flex justify-center items-center min-h-screen text-primary-600">
       {error || '帖子不存在'}
     </div>
   }
@@ -223,8 +223,8 @@ export default function PostDetail({ params }: { params: { id: string } }) {
               {post.tags.map(tag => (
                 <span
                   key={tag}
-                  className="px-3 py-1.5 text-sm bg-[#F3E5D7] text-[#B87A56] rounded-full 
-                    hover:bg-[#B87A56] hover:text-white transition-colors cursor-pointer"
+                  className="px-3 py-1.5 text-sm bg-primary-50 text-primary rounded-full 
+                    hover:bg-primary hover:text-white transition-colors cursor-pointer"
                 >
                   {tag}
                 </span>

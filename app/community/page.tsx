@@ -188,7 +188,7 @@ export default function Community() {
 
   if (error) {
     return (
-      <div className="flex justify-center items-center min-h-[200px] text-red-500">
+      <div className="flex justify-center items-center min-h-[200px] text-primary-600">
         获取帖子列表失败
       </div>
     );

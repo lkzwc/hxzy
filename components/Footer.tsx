@@ -16,7 +16,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* 网站信息 */}
           <div className="space-y-4 text-center md:text-left">
-            <h3 className="text-lg md:text-xl font-bold border-b border-secondary pb-2">关于我们</h3>
+            <h3 className="text-lg md:text-xl font-bold border-b border-primary pb-2">关于我们</h3>
             <p className="text-background text-sm md:text-base">
               华夏中医网致力于传承和弘扬中医药文化，
               传播养生保健知识，服务大众健康。
@@ -30,7 +30,7 @@ export default function Footer() {
 
           {/* 快速链接 */}
           <div className="space-y-4">
-            <h3 className="text-xl font-bold border-b border-secondary pb-2">快速链接</h3>
+            <h3 className="text-xl font-bold border-b border-primary pb-2">快速链接</h3>
             <ul className="space-y-2">
               {['关于我们', '联系方式', '服务条款', '隐私政策'].map((item) => (
                 <li key={item} className="hover:text-secondary/90 cursor-pointer text-background">
@@ -42,7 +42,7 @@ export default function Footer() {
 
           {/* 友情链接 */}
           <div className="space-y-4">
-            <h3 className="text-xl font-bold border-b border-secondary pb-2">友情链接</h3>
+            <h3 className="text-xl font-bold border-b border-primary pb-2">友情链接</h3>
             <ul className="space-y-2">
               {[
                 { name: '中医药管理局', url: '#' },
@@ -64,7 +64,7 @@ export default function Footer() {
 
           {/* 公众号 */}
           <div className="space-y-4">
-            <h3 className="text-xl font-bold border-b border-secondary pb-2">关注我们</h3>
+            <h3 className="text-xl font-bold border-b border-primary pb-2">关注我们</h3>
             <div className="bg-white p-2 rounded-lg w-32 h-32 flex items-center justify-center">
               {/* 这里替换成实际的二维码图片 */}
               <div className="text-primary text-center text-sm">

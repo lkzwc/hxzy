@@ -42,7 +42,7 @@ export default function AboutUs() {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-6"
             >
-              <h2 className="text-2xl font-bold text-primary border-b border-secondary pb-2">
+              <h2 className="text-2xl font-bold text-primary border-b border-primary pb-2">
                 关于华夏中医
               </h2>
               <p className="text-text">
@@ -72,7 +72,7 @@ export default function AboutUs() {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-6"
             >
-              <h2 className="text-2xl font-bold text-primary border-b border-secondary pb-2">
+              <h2 className="text-2xl font-bold text-primary border-b border-primary pb-2">
                 支持我们
               </h2>
               <p className="text-text">
@@ -120,7 +120,7 @@ export default function AboutUs() {
               animate={{ opacity: 1, y: 0 }}
               className="space-y-6"
             >
-              <h2 className="text-2xl font-bold text-primary border-b border-secondary pb-2">
+              <h2 className="text-2xl font-bold text-primary border-b border-primary pb-2">
                 站长介绍
               </h2>
               <div className="grid items-center md:flex items-start gap-8">

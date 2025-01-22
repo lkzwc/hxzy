@@ -10,42 +10,42 @@ const features = [
     description: '深入了解中医基础理论、诊断方法和治疗原则，掌握传统医学精髓',
     icon: <BookOpen className="w-8 h-8" />,
     link: '/zhongyidb/theory',
-    color: 'from-red-500/20 to-amber-500/20 text-red-600'
+    color: 'from-primary-100 to-primary-200 text-primary-600'
   },
   {
     title: '诊断方法',
     description: '掌握望闻问切四诊方法，提高临床诊断能力，传承经验技巧',
     icon: <Stethoscope className="w-8 h-8" />,
     link: '/zhongyidb/diagnosis',
-    color: 'from-emerald-500/20 to-teal-500/20 text-emerald-600'
+    color: 'from-secondary-100 to-secondary-200 text-secondary-600'
   },
   {
     title: '中药知识',
     description: '系统学习中药材性味归经、功效与应用，了解药物配伍原理',
     icon: <Leaf className="w-8 h-8" />,
     link: '/zhongyidb/herbs',
-    color: 'from-blue-500/20 to-cyan-500/20 text-blue-600'
+    color: 'from-accent-100 to-accent-200 text-accent-600'
   },
   {
     title: '经典医籍',
     description: '研读历代医学经典著作，汲取先贤智慧，传承医道精髓',
     icon: <ScrollText className="w-8 h-8" />,
     link: '/zhongyidb/classics',
-    color: 'from-purple-500/20 to-pink-500/20 text-purple-600'
+    color: 'from-primary-100 to-primary-200 text-primary-600'
   },
   {
     title: '现代研究',
     description: '融合现代科技，探索中医药创新发展，推动学科进步',
     icon: <FlaskConical className="w-8 h-8" />,
     link: '/zhongyidb/research',
-    color: 'from-orange-500/20 to-yellow-500/20 text-orange-600'
+    color: 'from-secondary-100 to-secondary-200 text-secondary-600'
   },
   {
     title: '养生保健',
     description: '学习中医养生之道，平衡身心，提升生活质量',
     icon: <Brain className="w-8 h-8" />,
     link: '/zhongyidb/wellness',
-    color: 'from-indigo-500/20 to-violet-500/20 text-indigo-600'
+    color: 'from-accent-100 to-accent-200 text-accent-600'
   },
 ]
 
@@ -75,8 +75,8 @@ export default function FeaturesSection() {
     <section className="py-24 lg:py-32 relative overflow-hidden">
       {/* 装饰背景 */}
       <div className="absolute inset-0 bg-gradient-to-b from-neutral-50/50 to-white pointer-events-none" />
-      <div className="absolute w-[500px] h-[500px] -right-48 -top-48 bg-primary-100/30 rounded-full blur-3xl" />
-      <div className="absolute w-[400px] h-[400px] -left-24 -bottom-24 bg-secondary-100/30 rounded-full blur-3xl" />
+      <div className="absolute w-[500px] h-[500px] -right-48 -top-48 bg-primary-100/40 rounded-full blur-3xl" />
+      <div className="absolute w-[400px] h-[400px] -left-24 -bottom-24 bg-accent-100/40 rounded-full blur-3xl" />
 
       <div className="container mx-auto px-4 relative">
         <div className="text-center max-w-3xl mx-auto mb-20">
@@ -86,10 +86,10 @@ export default function FeaturesSection() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <h2 className="text-4xl lg:text-5xl font-bold mb-6 bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+            <h2 className="text-4xl lg:text-5xl font-bold mb-6 bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">
               探索传统医药智慧
             </h2>
-            <p className="text-xl text-gray-600 leading-relaxed">
+            <p className="text-xl text-neutral-600 leading-relaxed">
               汇集中医药领域精华，助力传统医学发展创新，让古老智慧焕发新生
             </p>
           </motion.div>
@@ -109,12 +109,12 @@ export default function FeaturesSection() {
               className="group relative"
             >
               <Link href={item.link}>
-                <div className="relative h-full bg-white/50 backdrop-blur-sm rounded-2xl p-8 hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border border-gray-100">
+                <div className="relative h-full bg-white/50 backdrop-blur-sm rounded-2xl p-8 hover:shadow-xl transition-all duration-500 hover:-translate-y-2 border border-neutral-100">
                   <div className={`w-16 h-16 rounded-xl bg-gradient-to-br ${item.color} flex items-center justify-center mb-6`}>
                     {item.icon}
                   </div>
-                  <h3 className="text-2xl font-bold mb-4">{item.title}</h3>
-                  <p className="text-gray-600 mb-6 leading-relaxed">{item.description}</p>
+                  <h3 className="text-2xl font-bold mb-4 text-neutral-800">{item.title}</h3>
+                  <p className="text-neutral-600 mb-6 leading-relaxed">{item.description}</p>
                   <div className="inline-flex items-center text-primary-600 font-medium gap-2 group-hover:gap-4 transition-all">
                     了解更多
                     <ChevronRight className="w-5 h-5" />

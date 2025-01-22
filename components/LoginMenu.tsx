@@ -22,7 +22,7 @@ export function LoginMenu() {
     return (
       <Link
         href="/login"
-        className="ml-8 px-6 py-2 bg-secondary text-background font-medium rounded-md hover:bg-secondary/90 transition-colors"
+        className="ml-8 px-6 py-2 bg-primary text-white font-medium rounded-md hover:bg-primary-600 transition-colors"
       >
         登录
       </Link>
@@ -35,7 +35,7 @@ export function LoginMenu() {
         onClick={() => setShowDropdown(!showDropdown)}
         className="flex items-center space-x-2 cursor-pointer"
       >
-        <div className="w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center overflow-hidden">
+        <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center overflow-hidden">
           {session.user?.image ? (
             <img
               src={session.user.image}
@@ -43,19 +43,19 @@ export function LoginMenu() {
               className="w-full h-full object-cover"
             />
           ) : (
-            <span className="text-secondary text-sm font-medium">
+            <span className="text-primary text-sm font-medium">
               {(session.user?.name || '用户')[0].toUpperCase()}
             </span>
           )}
         </div>
-        <span className="text-background font-medium hover:text-background/90 transition-colors">
+        <span className="text-white font-medium hover:text-white/90 transition-colors">
           {session.user?.name || '用户'}
         </span>
       </div>
 
       {showDropdown && (
         <div 
-          className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 focus:outline-none z-50"
+          className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-primary ring-opacity-5 divide-y divide-neutral-100 focus:outline-none z-50"
           role="menu"
           aria-orientation="vertical"
           aria-labelledby="user-menu"
@@ -63,7 +63,7 @@ export function LoginMenu() {
           <div className="py-1" role="none">
             <Link
               href="/profile"
-              className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              className="block px-4 py-2 text-sm text-neutral-700 hover:bg-primary-50"
               role="menuitem"
               onClick={() => setShowDropdown(false)}
             >
@@ -76,7 +76,7 @@ export function LoginMenu() {
                 setShowDropdown(false);
                 signOut({ callbackUrl: '/' });
               }}
-              className="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+              className="w-full text-left block px-4 py-2 text-sm text-primary-600 hover:bg-primary-50"
               role="menuitem"
             >
               退出登录

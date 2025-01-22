@@ -11,11 +11,11 @@ function SocialLogin() {
     <div className="mt-4 flex justify-center space-x-4">
       <button
         type="button"
-        className="w-10 h-10 flex items-center justify-center rounded-full border hover:bg-[#F3E5D7] transition-colors duration-200"
+        className="w-10 h-10 flex items-center justify-center rounded-full border hover:bg-primary-50 transition-colors duration-200"
         title="使用 GitHub 登录"
         onClick={() => signIn('github')}
       >
-        <Github className="w-6 h-6 text-[#B87A56]" />
+        <Github className="w-6 h-6 text-primary" />
       </button>
     </div>
   );
@@ -99,16 +99,16 @@ export default function Login() {
       <div className="relative w-[320px] sm:w-auto">
         <button
           onClick={handleClose}
-          className="absolute -top-8 -right-8 p-2 rounded-full bg-white hover:bg-[#F3E5D7] transition-colors duration-200"
+          className="absolute -top-8 -right-8 p-2 rounded-full bg-white hover:bg-primary-50 transition-colors duration-200"
           title="关闭"
         >
-          <X className="w-6 h-6 text-[#B87A56]" />
+          <X className="w-6 h-6 text-primary" />
         </button>
 
-        <div className="bg-[#FFF9F0] rounded-2xl flex overflow-hidden shadow-2xl w-full sm:w-[750px] h-[480px] relative">
+        <div className="bg-neutral-50 rounded-2xl flex overflow-hidden shadow-2xl w-full sm:w-[750px] h-[480px] relative">
           <button
             onClick={() => setIsQRLogin(!isQRLogin)}
-            className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full border border-[#EAD5C3] hover:bg-[#F3E5D7] transition-colors duration-200 text-[#B87A56]"
+            className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full border border-primary-200 hover:bg-primary-50 transition-colors duration-200 text-primary"
             title={isQRLogin ? "账号登录" : "扫码登录"}
           >
             {isQRLogin ? (
@@ -118,7 +118,7 @@ export default function Login() {
             )}
           </button>
 
-          <div className="hidden sm:flex w-[280px] bg-gradient-to-b from-[#B87A56] to-[#8B4513] p-8 text-white flex-col justify-center relative overflow-hidden">
+          <div className="hidden sm:flex w-[280px] bg-gradient-to-b from-primary-600 to-primary-800 p-8 text-white flex-col justify-center relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-full opacity-10">
               <div className="absolute inset-0 bg-[url('/images/chinese-pattern.png')] bg-repeat opacity-20"></div>
             </div>
@@ -139,15 +139,15 @@ export default function Login() {
 
           <div className="flex-1 px-6 sm:px-12 py-6 sm:py-8 flex flex-col">
             <div className="mb-6 sm:mb-8">
-              <h2 className="text-xl sm:text-2xl font-semibold text-center text-[#B87A56]">欢迎来到中医传承平台</h2>
-              <p className="text-center text-gray-500 text-xs sm:text-sm mt-2">传承千年智慧，守护健康人生</p>
+              <h2 className="text-xl sm:text-2xl font-semibold text-center text-primary">欢迎来到中医传承平台</h2>
+              <p className="text-center text-neutral-500 text-xs sm:text-sm mt-2">传承千年智慧，守护健康人生</p>
             </div>
 
             {isQRLogin ? (
               <div className="flex-1 flex flex-col">
                 <div className="flex-1 flex flex-col items-center justify-center">
                   {qrCode?.qrCodeUrl ? (
-                    <div className="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-4 bg-[#F3E5D7] rounded-lg flex items-center justify-center">
+                    <div className="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-4 bg-primary-50 rounded-lg flex items-center justify-center">
                       <Image 
                         src={qrCode.qrCodeUrl}
                         alt="微信登录二维码"
@@ -158,20 +158,20 @@ export default function Login() {
                       />
                     </div>
                   ) : (
-                    <div className="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-4 bg-[#F3E5D7] rounded-lg flex items-center justify-center">
-                      <QrCode className="w-16 h-16 text-[#B87A56]" />
+                    <div className="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-4 bg-primary-50 rounded-lg flex items-center justify-center">
+                      <QrCode className="w-16 h-16 text-primary" />
                     </div>
                   )}
-                  <p className="text-gray-600 text-sm sm:text-base mb-2">请使用微信扫码登录</p>
-                  <p className="text-gray-400 text-xs">扫码后自动登录</p>
+                  <p className="text-neutral-600 text-sm sm:text-base mb-2">请使用微信扫码登录</p>
+                  <p className="text-neutral-400 text-xs">扫码后自动登录</p>
                 </div>
                 <div className="mt-auto">
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-[#EAD5C3]"></div>
+                      <div className="w-full border-t border-primary-200"></div>
                     </div>
                     <div className="relative flex justify-center text-xs sm:text-sm">
-                      <span className="px-4 text-[#B87A56] bg-[#FFF9F0]">其他登录方式</span>
+                      <span className="px-4 text-primary bg-neutral-50">其他登录方式</span>
                     </div>
                   </div>
                   <SocialLogin />
@@ -179,16 +179,16 @@ export default function Login() {
               </div>
             ) : (
               <div className="flex-1 flex flex-col">
-                <div className="flex border-b border-[#EAD5C3] mb-6">
+                <div className="flex border-b border-primary-200 mb-6">
                   <button
                     onClick={() => setLoginType('sms')}
-                    className={`flex-1 py-2 text-sm font-medium ${loginType === 'sms' ? 'text-[#B87A56] border-b-2 border-[#B87A56]' : 'text-gray-500'}`}
+                    className={`flex-1 py-2 text-sm font-medium ${loginType === 'sms' ? 'text-primary border-b-2 border-primary' : 'text-neutral-500'}`}
                   >
                     短信登录
                   </button>
                   <button
                     onClick={() => setLoginType('password')}
-                    className={`flex-1 py-2 text-sm font-medium ${loginType === 'password' ? 'text-[#B87A56] border-b-2 border-[#B87A56]' : 'text-gray-500'}`}
+                    className={`flex-1 py-2 text-sm font-medium ${loginType === 'password' ? 'text-primary border-b-2 border-primary' : 'text-neutral-500'}`}
                   >
                     密码登录
                   </button>
@@ -201,7 +201,7 @@ export default function Login() {
                       placeholder="请输入手机号"
                       value={phone}
                       onChange={(e) => setPhone(e.target.value)}
-                      className="w-full h-10 px-4 text-sm sm:text-base border border-[#EAD5C3] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B87A56] bg-[#FFF9F0]"
+                      className="w-full h-10 px-4 text-sm sm:text-base border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-neutral-50"
                     />
 
                     {loginType === 'sms' ? (
@@ -211,11 +211,11 @@ export default function Login() {
                           placeholder="请输入验证码"
                           value={code}
                           onChange={(e) => setCode(e.target.value)}
-                          className="flex-1 h-10 px-4 text-sm sm:text-base border border-[#EAD5C3] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B87A56] bg-[#FFF9F0]"
+                          className="flex-1 h-10 px-4 text-sm sm:text-base border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-neutral-50"
                         />
                         <button
                           type="button"
-                          className="w-[96px] text-[#B87A56] hover:text-[#8B4513] whitespace-nowrap text-sm font-medium"
+                          className="w-[96px] text-primary hover:text-primary-700 whitespace-nowrap text-sm font-medium"
                         >
                           发送验证码
                         </button>
@@ -224,7 +224,7 @@ export default function Login() {
                       <input
                         type="password"
                         placeholder="请输入密码"
-                        className="w-full h-10 px-4 text-sm sm:text-base border border-[#EAD5C3] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#B87A56] bg-[#FFF9F0]"
+                        className="w-full h-10 px-4 text-sm sm:text-base border border-primary-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary bg-neutral-50"
                       />
                     )}
                   </div>
@@ -232,7 +232,7 @@ export default function Login() {
                   <div className="mt-6">
                     <button
                       type="submit"
-                      className="w-full h-10 bg-gradient-to-r from-[#B87A56] to-[#8B4513] text-white rounded-lg hover:opacity-90 transition-opacity duration-200 text-sm sm:text-base font-medium"
+                      className="w-full h-10 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg hover:opacity-90 transition-opacity duration-200 text-sm sm:text-base font-medium"
                     >
                       {isRegister ? "注册" : "登录"}
                     </button>
@@ -241,10 +241,10 @@ export default function Login() {
                   <div className="mt-auto pt-6">
                     <div className="relative">
                       <div className="absolute inset-0 flex items-center">
-                        <div className="w-full border-t border-[#EAD5C3]"></div>
+                        <div className="w-full border-t border-primary-200"></div>
                       </div>
                       <div className="relative flex justify-center text-xs sm:text-sm">
-                        <span className="px-4 text-[#B87A56] bg-[#FFF9F0]">其他登录方式</span>
+                        <span className="px-4 text-primary bg-neutral-50">其他登录方式</span>
                       </div>
                     </div>
                     <SocialLogin />

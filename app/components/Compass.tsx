@@ -55,7 +55,7 @@ const Compass = () => {
             <div
               key={index}
               className={`absolute text-lg font-bold transition-all duration-300
-                ${element.type === 'wuxing' ? 'text-red-800' : ''}
+                ${element.type === 'wuxing' ? 'text-primary-800' : ''}
                 ${element.type === 'bagua' ? 'text-blue-800' : ''}
                 ${element.type === 'dizhi' ? 'text-green-800' : ''}`}
               style={{
@@ -69,7 +69,7 @@ const Compass = () => {
       </div>
       
       {/* 指针 */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-6 bg-red-600" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1 h-6 bg-primary-600" />
     </div>
   );
 };

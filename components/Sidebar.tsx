@@ -12,7 +12,7 @@ export default function Sidebar(props: { size?: 'normal' | 'small' }) {
     const { size = "normal" } = props
   return (
     <div className={`hidden md:block bg-white rounded-lg shadow-md p-4 md:${size==='normal' ? 'w-64 ml-12' : 'w-12 ml-44'}`}>
-      <h2 className="text-primary text-xl font-bold mb-4 pb-2 border-b-2 border-secondary">
+      <h2 className="text-primary text-xl font-bold mb-4 pb-2 border-b-2 border-primary">
         快速导航
       </h2>
       <nav>
