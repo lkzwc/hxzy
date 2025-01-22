@@ -7,7 +7,7 @@ import Image from 'next/image'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
 import relativeTime from 'dayjs/plugin/relativeTime'
-import { Eyes } from '@icon-park/react'
+import { Eye } from 'lucide-react'
 import CommentSection from '@/components/CommentSection'
 import LikeButton from '@/components/LikeButton'
 
@@ -189,7 +189,7 @@ export default function PostDetail({ params }: { params: { id: string } }) {
               </div>
               <div className="flex items-center gap-4 mt-1 text-sm text-gray-500">
                 <span className="flex items-center gap-1">
-                  <Eyes theme="outline" size="14" />
+                  <Eye className="w-4 h-4" />
                   {post.views} 次浏览
                 </span>
                 <LikeButton postId={post.id} initialLikes={post._count.postLikes} className="!gap-1" />

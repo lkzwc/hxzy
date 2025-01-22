@@ -4,7 +4,7 @@ import { useState, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { Pic } from '@icon-park/react'
+import { ImagePlus } from 'lucide-react'
 import { motion } from 'framer-motion'
 
 interface CreatePostModalProps {
@@ -219,7 +219,7 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
                     onChange={handleImageUpload}
                     className="hidden"
                   />
-                  <Pic theme="outline" size="18" />
+                  <ImagePlus className="w-4 h-4" />
                   添加图片
                 </label>
                 {/* 显示已上传的图片预览 */}

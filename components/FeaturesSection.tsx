@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { Book, Prescription, Stethoscope, Leaves, Right } from '@icon-park/react'
+import { BookOpen, ScrollText, Stethoscope, Leaf, ChevronRight } from 'lucide-react'
 
 export default function FeaturesSection() {
   return (
@@ -17,12 +17,12 @@ export default function FeaturesSection() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             {
-              icon: Book,
+              icon: BookOpen,
               title: '经典医著',
               desc: '探索《黄帝内经》、《伤寒论》等中医经典著作的深邃智慧'
             },
             {
-              icon: Prescription,
+              icon: ScrollText,
               title: '方剂研究',
               desc: '分享经方验方的临床运用与现代研究成果'
             },
@@ -32,7 +32,7 @@ export default function FeaturesSection() {
               desc: '交流望闻问切的临床经验与辨证施治的思路方法'
             },
             {
-              icon: Leaves,
+              icon: Leaf,
               title: '养生之道',
               desc: '传承中医养生智慧，实践健康生活方式'
             }
@@ -42,7 +42,7 @@ export default function FeaturesSection() {
               className="group bg-white rounded-xl p-6 hover:shadow-xl transition-all duration-500 hover:-translate-y-2"
             >
               <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:bg-primary/20 transition-colors">
-                <item.icon theme="outline" size="32" className="text-primary" />
+                <item.icon className="w-8 h-8 text-primary" />
               </div>
               <h3 className="text-xl font-bold mb-3">{item.title}</h3>
               <p className="text-gray-600 text-sm mb-4">{item.desc}</p>
@@ -51,7 +51,7 @@ export default function FeaturesSection() {
                 className="inline-flex items-center text-primary hover:text-primary-focus font-medium gap-2 group-hover:gap-4 transition-all"
               >
                 了解更多
-                <Right theme="outline" size="20" />
+                <ChevronRight className="w-5 h-5" />
               </Link>
             </div>
           ))}

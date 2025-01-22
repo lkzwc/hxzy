@@ -47,7 +47,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   // 获取当前页面的标题配置
-  const currentPageTitle = pageTitles[pathname];
+  const currentPageTitle = pathname ? pageTitles[pathname] : undefined;
 
   // 防止菜单打开时页面滚动
   useEffect(() => {
@@ -63,51 +63,69 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <header className="fixed top-0 left-0 right-0 bg-primary text-background px-4 md:px-8 py-4 flex justify-between items-center shadow-md z-50">
-        <Link href="/" className="text-2xl font-bold">
-          华夏中医
-        </Link>
+      <header className="fixed top-0 left-0 right-0 z-50">
+        {/* 毛玻璃效果背景 */}
+        <div className="absolute inset-0 bg-gradient-to-r from-primary-600/95 to-primary-500/95 backdrop-blur-md shadow-lg" />
 
-        {/* 移动端菜单按钮 */}
-        <button
-          className="md:hidden p-2 hover:bg-primary/80 rounded-lg transition-colors"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label={isMenuOpen ? '关闭菜单' : '打开菜单'}
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            {isMenuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
-        </button>
+        <div className="relative px-4 md:px-8 py-4">
+          <div className="flex justify-between items-center max-w-7xl mx-auto">
+            <Link 
+              href="/" 
+              className="text-2xl font-bold text-white flex items-center gap-2 group"
+            >
+              <span className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center
+                group-hover:bg-white/20 transition-colors">
+                华
+              </span>
+              <span className="group-hover:text-white/90 transition-colors">
+                华夏中医
+              </span>
+            </Link>
 
-        {/* 桌面端导航 */}
-        <nav className="hidden md:flex items-center">
-          <ul className="flex gap-8">
-            {menuItems.map((item) => (
-              <li key={item.name}>
-                <Link 
-                  href={item.path}
-                  className="text-background hover:text-background/80 transition-colors"
-                >
-                  {item.name}
-                </Link>
-              </li>
-            ))}
-            <LoginMenu />
-          </ul>
-        </nav>
+            {/* 移动端菜单按钮 */}
+            <button
+              className="md:hidden p-2 hover:bg-white/10 rounded-lg transition-colors text-white"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              aria-label={isMenuOpen ? '关闭菜单' : '打开菜单'}
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                {isMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+
+            {/* 桌面端导航 */}
+            <nav className="hidden md:flex items-center gap-2">
+              <ul className="flex items-center gap-1">
+                {menuItems.map((item) => (
+                  <li key={item.name}>
+                    <Link 
+                      href={item.path}
+                      className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors
+                        ${pathname === item.path 
+                          ? 'bg-white/15 text-white' 
+                          : 'text-white/80 hover:bg-white/10 hover:text-white'
+                        }`}
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <div className="w-px h-6 bg-white/20 mx-2" />
+              <LoginMenu />
+            </nav>
+          </div>
+        </div>
       </header>
-
-      {/* 添加占位元素，防止内容被固定导航栏遮挡 */}
-      <div className="h-[60px]"></div>
 
       {/* 移动端菜单 */}
       <div 
-        className={`fixed inset-0 bg-black transition-opacity duration-300 md:hidden ${
-          isMenuOpen ? 'opacity-50 z-40' : 'opacity-0 pointer-events-none'
+        className={`fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
+          isMenuOpen ? 'opacity-100 z-40' : 'opacity-0 pointer-events-none'
         }`}
         onClick={() => setIsMenuOpen(false)}
       />
@@ -117,37 +135,45 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         }`}
       >
         <div className="flex flex-col h-full">
-          <div className="flex justify-between items-center p-4 border-b border-gray-200">
-            <span className="text-lg font-bold text-primary">导航菜单</span>
+          <div className="flex justify-between items-center p-4 border-b border-gray-100">
+            <span className="text-lg font-bold bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent">
+              导航菜单
+            </span>
             <button
               onClick={() => setIsMenuOpen(false)}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-50 rounded-lg transition-colors"
               aria-label="关闭菜单"
             >
-              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
           <nav className="flex-1 overflow-y-auto">
-            <ul className="p-4 space-y-2">
+            <ul className="p-4 space-y-1">
               {menuItems.map((item) => (
                 <li key={item.name}>
                   <Link
                     href={item.path}
-                    className="block px-4 py-3 text-text hover:bg-background rounded-md transition-colors"
+                    className={`flex items-center px-4 py-3 rounded-lg transition-colors ${
+                      pathname === item.path
+                        ? 'bg-primary-50 text-primary-600'
+                        : 'text-gray-600 hover:bg-gray-50'
+                    }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    {item.name}
+                    <span className="font-medium">{item.name}</span>
                   </Link>
                 </li>
               ))}
             </ul>
           </nav>
-          <div className="p-4 border-t border-gray-200">
+          <div className="p-4 border-t border-gray-100">
             <Link
               href="/login"
-              className="block w-full px-4 py-3 bg-primary text-white rounded-md text-center hover:bg-primary/90 transition-colors"
+              className="flex items-center justify-center gap-2 w-full px-4 py-3 bg-gradient-to-r 
+                from-primary-600 to-primary-500 text-white font-medium rounded-lg
+                hover:from-primary-700 hover:to-primary-600 transition-colors"
               onClick={() => setIsMenuOpen(false)}
             >
               登录
@@ -155,6 +181,9 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </div>
+
+      {/* 添加占位元素 */}
+      <div className="h-[72px]" />
 
       <main className="flex-1 relative">
         {currentPageTitle && (

@@ -6,7 +6,7 @@ import Image from 'next/image'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import 'dayjs/locale/zh-cn'
-import { MessageOne, CloseSmall } from '@icon-park/react'
+import { MessageCircle, X, ImagePlus } from 'lucide-react'
 
 // 配置 dayjs
 dayjs.extend(relativeTime)
@@ -160,7 +160,7 @@ export default function CommentSection({
                   onClick={handleCancelReply}
                   className="ml-1 p-0.5 hover:bg-base-200 rounded-full transition-colors"
                 >
-                  <CloseSmall theme="outline" size="14" />
+                  <X className="w-3.5 h-3.5" />
                 </button>
               </div>
             )}
@@ -212,9 +212,7 @@ export default function CommentSection({
                     className="p-2 text-gray-500 hover:text-primary hover:bg-base-200 rounded-full transition-colors"
                     title="添加图片"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
-                    </svg>
+                    <ImagePlus className="w-5 h-5" />
                   </button>
                 </div>
                 <button
@@ -292,7 +290,7 @@ export default function CommentSection({
                   onClick={() => handleReply(comment)}
                   className="flex items-center gap-1 text-gray-500 hover:text-primary transition-colors"
                 >
-                  <MessageOne theme="outline" size="16" />
+                  <MessageCircle className="w-5 h-5" />
                   回复
                 </button>
               </div>
@@ -337,7 +335,7 @@ export default function CommentSection({
                         onClick={() => handleReply(reply)}
                         className="flex items-center gap-1 text-gray-500 hover:text-primary transition-colors"
                       >
-                        <MessageOne theme="outline" size="16" />
+                        <MessageCircle className="w-5 h-5" />
                         回复
                       </button>
                     </div>

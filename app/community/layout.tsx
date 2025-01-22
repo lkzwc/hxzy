@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { Right } from '@icon-park/react'
+import { ChevronRight } from 'lucide-react'
 import { categories } from '@/util/common'
 import QrCodeCarousel from '@/components/QrCodeCarousel'
 

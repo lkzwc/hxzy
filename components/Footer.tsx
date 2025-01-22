@@ -17,11 +17,11 @@ export default function Footer() {
           {/* 网站信息 */}
           <div className="space-y-4 text-center md:text-left">
             <h3 className="text-lg md:text-xl font-bold border-b border-secondary pb-2">关于我们</h3>
-            <p className="text-background/90 text-sm md:text-base">
+            <p className="text-background text-sm md:text-base">
               华夏中医网致力于传承和弘扬中医药文化，
               传播养生保健知识，服务大众健康。
             </p>
-            <p className="text-background/90 text-sm md:text-base">
+            <p className="text-background text-sm md:text-base">
               联系电话：15556355573
               <br />
               邮箱：liuketh@qq.com
@@ -33,7 +33,7 @@ export default function Footer() {
             <h3 className="text-xl font-bold border-b border-secondary pb-2">快速链接</h3>
             <ul className="space-y-2">
               {['关于我们', '联系方式', '服务条款', '隐私政策'].map((item) => (
-                <li key={item} className="hover:text-secondary cursor-pointer">
+                <li key={item} className="hover:text-secondary/90 cursor-pointer text-background">
                   {item}
                 </li>
               ))}
@@ -51,7 +51,7 @@ export default function Footer() {
                 <li key={link.name}>
                   <a 
                     href={link.url} 
-                    className="hover:text-secondary cursor-pointer"
+                    className="hover:text-secondary/90 cursor-pointer text-background"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
@@ -72,7 +72,7 @@ export default function Footer() {
                 <p>官方公众号</p>
               </div>
             </div>
-            <p className="text-sm text-background/90">
+            <p className="text-background text-sm">
               关注公众号，获取最新养生资讯
             </p>
           </div>
@@ -80,10 +80,10 @@ export default function Footer() {
 
         {/* 版权信息 */}
         <div className="mt-8 pt-4 border-t border-background/20 text-center">
-          <p className="text-sm md:text-base text-background/80">
+          <p className="text-sm md:text-base text-background">
             © {new Date().getFullYear()} 华夏中医网. All rights reserved.
           </p>
-          <p className="mt-2 text-xs md:text-sm text-background/60">
+          <p className="mt-2 text-xs md:text-sm text-background/80">
             备案号：陕西ICP备XXXXXXXX号-1 
           </p>
         </div>

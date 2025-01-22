@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Compass, Robot, Star } from '@icon-park/react';
+import { Compass, Bot, Star } from 'lucide-react';
 import LiuRen from '@/components/tools/LiuRen';
 import TimeTable from '@/components/tools/TimeTable';
 import ZiWei from '@/components/tools/ZiWei';
@@ -10,23 +10,26 @@ import AI from '@/components/tools/AI';
 // 工具列表
 const tools = [
   {
-    id: 'liuren',
-    name: '小六壬占卜',
-    icon: <Compass theme="outline" size="24" className="text-primary" />,
-    description: '传统预测方法，用于预测事情吉凶'
+    id: 'ai-assistant',
+    name: 'AI 中医助手',
+    description: '智能问诊，辅助诊断',
+    icon: <Bot className="w-8 h-8 text-primary" />,
+    link: '/tools/ai-assistant'
   },
   {
-    id: 'ai',
-    name: 'AI中医',
-    icon: <Robot theme="outline" size="24" className="text-primary" />,
-    description: 'AI辅助诊断与建议'
+    id: 'diagnosis',
+    name: '辅助诊断',
+    description: '症状分析，证候辨识',
+    icon: <Compass className="w-8 h-8 text-primary" />,
+    link: '/tools/diagnosis'
   },
   {
-    id: 'ziwei',
-    name: '紫薇占卜',
-    icon: <Star theme="outline" size="24" className="text-primary" />,
-    description: '紫薇斗数预测方法'
-  },
+    id: 'favorites',
+    name: '收藏夹',
+    description: '收藏的工具和资料',
+    icon: <Star className="w-8 h-8 text-primary" />,
+    link: '/tools/favorites'
+  }
 ];
 
 export default function ToolsPage() {

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Like } from '@icon-park/react'
+import { Heart } from 'lucide-react'
 import useSWR from 'swr'
 
 interface LikeButtonProps {
@@ -69,11 +69,9 @@ export default function LikeButton({ postId, initialLikes = 0, className = '' }:
       disabled={isLoading}
       className={`group flex items-center gap-1.5 text-gray-500 hover:text-primary transition-colors ${className}`}
     >
-      <Like
-        theme={isLiked ? 'filled' : 'outline'}
-        size='18'
-        className={`flex-shrink-0 transition-colors ${
-          isLiked ? 'text-primary' : 'group-hover:text-primary'
+      <Heart
+        className={`w-4 h-4 flex-shrink-0 transition-colors ${
+          isLiked ? 'fill-current text-primary' : 'group-hover:text-primary'
         }`}
       />
       <span className='text-sm'>{likes}</span>

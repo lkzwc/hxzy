@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { Like, Star, Book, Comment, Right } from '@icon-park/react'
+import { Heart, Star, BookOpen, MessageSquare, ChevronRight } from 'lucide-react'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import 'dayjs/locale/zh-cn'
@@ -38,7 +38,7 @@ const features = [
   { 
     id: 'likes', 
     name: '我的点赞', 
-    icon: <Like theme="outline" size="20" />,
+    icon: <Heart className="w-5 h-5" />,
     description: '点赞过的帖子',
     color: 'text-rose-500',
     available: true
@@ -46,7 +46,7 @@ const features = [
   { 
     id: 'favorites', 
     name: '我的收藏', 
-    icon: <Star theme="outline" size="20" />,
+    icon: <Star className="w-5 h-5" />,
     description: '收藏的内容',
     color: 'text-amber-500',
     available: false
@@ -54,7 +54,7 @@ const features = [
   { 
     id: 'study', 
     name: '学习记录', 
-    icon: <Book theme="outline" size="20" />,
+    icon: <BookOpen className="w-5 h-5" />,
     description: '学习的历程',
     color: 'text-emerald-500',
     available: false
@@ -127,7 +127,7 @@ export default function ProfilePage() {
             className="inline-flex items-center gap-2 mt-4 text-primary hover:text-primary/80 transition-colors"
           >
             去社区看看
-            <Right theme="outline" size="16" />
+            <ChevronRight className="w-4 h-4" />
           </Link>
         </div>
       ) : (
@@ -150,7 +150,7 @@ export default function ProfilePage() {
                   <div className="flex items-center gap-4 text-xs text-gray-400">
                     <span>{dayjs(post.createdAt).format('YYYY年MM月DD日')}</span>
                     <span className="flex items-center gap-1.5">
-                      <Comment theme="outline" size="14" />
+                      <MessageSquare className="w-3.5 h-3.5" />
                       {post._count.comments} 条评论
                     </span>
                     <LikeButton 

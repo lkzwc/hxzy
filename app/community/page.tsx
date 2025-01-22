@@ -7,7 +7,7 @@ import Link from "next/link";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { Search, Eyes, Comment, Plus, Like, Time } from "@icon-park/react";
+import { Search, Eye, MessageSquare, Plus, Heart, Clock } from "lucide-react";
 import CreatePostModal from "@/components/CreatePostModal";
 import LikeButton from "@/components/LikeButton";
 import useSWR from "swr";
@@ -152,8 +152,8 @@ export default function Community() {
 
   // 初始化搜索和分类参数
   useEffect(() => {
-    const tag = searchParams.get("tag");
-    const search = searchParams.get("search");
+    const tag = searchParams?.get("tag");
+    const search = searchParams?.get("search");
     if (tag) {
       setSearchInput("");
       setActiveCategory(tag);
@@ -162,7 +162,7 @@ export default function Community() {
       setSearchInput(search);
       setSearchQuery(search);
     }
-  }, []);
+  }, [searchParams]);
 
   // 监听滚动加载
   useEffect(() => {
@@ -203,7 +203,7 @@ export default function Community() {
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="flex-1 flex items-center gap-2">
               <div className="flex-1 flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-primary/20 hover:bg-gray-100 transition-all">
-                <Search theme="outline" size="18" className="text-gray-400 flex-shrink-0" />
+                <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
                 <input
                   type="text"
                   placeholder="搜索感兴趣的内容..."
@@ -224,7 +224,7 @@ export default function Community() {
               onClick={() => session ? setIsModalOpen(true) : router.push('/api/auth/signin')}
               className="flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors"
             >
-              <Plus theme="outline" size="18" className="flex-shrink-0" />
+              <Plus className="w-4 h-4 flex-shrink-0" />
               <span className="text-sm sm:text-base">发帖</span>
             </button>
           </div>
@@ -291,19 +291,19 @@ export default function Community() {
                         <span className="text-sm sm:text-base">{post.author.name || "匿名用户"}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <Like theme="outline" size="16" className="hidden sm:block" />
+                        <Heart className="w-4 h-4" />
                         <span>{post._count.likes}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <Comment theme="outline" size="16" className="hidden sm:block" />
+                        <MessageSquare className="w-4 h-4" />
                         <span>{post._count.comments}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <Eyes theme="outline" size="16" className="hidden sm:block" />
+                        <Eye className="w-4 h-4" />
                         <span>{post.views}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <Time theme="outline" size="16" className="hidden sm:block" />
+                        <Clock className="w-4 h-4" />
                         <span>{dayjs(post.createdAt).fromNow()}</span>
                       </div>
                     </div>
