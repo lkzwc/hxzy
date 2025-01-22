@@ -6,7 +6,7 @@ const features = [
   {
     title: '传统医学智慧',
     desc: '探索中医理论体系，传承千年医药智慧',
-    image: '/images/tcm-herbs.jpg',
+    image: 'https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?q=80&w=2070',
     stats: [
       { label: '历史传承', value: '5000+', unit: '年' },
       { label: '经典著作', value: '300+', unit: '部' },
@@ -16,7 +16,7 @@ const features = [
   {
     title: '现代科技融合',
     desc: '结合现代科技，创新中医药发展',
-    image: '/images/modern-tech.jpg',
+    image: 'https://images.unsplash.com/photo-1512290746430-3ffb4fab31bc?q=80&w=2940',
     stats: [
       { label: '数字化医案', value: '100万+', unit: '例' },
       { label: 'AI 辅助诊断', value: '95%+', unit: '准确率' },
