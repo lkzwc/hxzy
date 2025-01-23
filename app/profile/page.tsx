@@ -110,7 +110,7 @@ export default function ProfilePage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="divide-y divide-gray-100"
+      className="divide-y divide-neutral-100"
     >
       {posts.length === 0 ? (
         <div className="text-center py-20">
@@ -121,7 +121,7 @@ export default function ProfilePage() {
           >
             💝
           </motion.div>
-          <div className="text-gray-400 text-lg">还没有点赞任何帖子</div>
+          <div className="text-neutral-400 text-lg">还没有点赞任何帖子</div>
           <Link 
             href="/community" 
             className="inline-flex items-center gap-2 mt-4 text-primary hover:text-primary/80 transition-colors"
@@ -141,13 +141,13 @@ export default function ProfilePage() {
           >
             <Link
               href={`/community/${post.id}`}
-              className="block px-8 py-6 hover:bg-gray-50/50 transition-colors"
+              className="block px-8 py-6 hover:bg-neutral-50/50 transition-colors"
             >
               <div className="flex items-start gap-4">
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-base font-medium text-gray-900 mb-2 line-clamp-1">{post.title}</h3>
-                  <p className="text-gray-500 text-sm line-clamp-2 mb-3 leading-relaxed">{post.content}</p>
-                  <div className="flex items-center gap-4 text-xs text-gray-400">
+                  <h3 className="text-base font-medium text-neutral-900 mb-2 line-clamp-1">{post.title}</h3>
+                  <p className="text-neutral-500 text-sm line-clamp-2 mb-3 leading-relaxed">{post.content}</p>
+                  <div className="flex items-center gap-4 text-xs text-neutral-400">
                     <span>{dayjs(post.createdAt).format('YYYY年MM月DD日')}</span>
                     <span className="flex items-center gap-1.5">
                       <MessageSquare className="w-3.5 h-3.5" />
@@ -178,7 +178,7 @@ export default function ProfilePage() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-2xl shadow-sm border border-gray-100/50 backdrop-blur-sm 
+          className="bg-white rounded-2xl shadow-sm border border-neutral-100/50 backdrop-blur-sm 
             bg-white/60 p-8 mb-8"
         >
           <div className="flex flex-col sm:flex-row items-center gap-8">
@@ -193,26 +193,26 @@ export default function ProfilePage() {
               />
             </div>
             <div className="flex-1 min-w-0 text-center sm:text-left">
-              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+              <h1 className="text-2xl font-bold text-neutral-900 mb-2">
                 {session?.user?.name || '未登录用户'}
               </h1>
-              <p className="text-gray-500 mb-6">
+              <p className="text-neutral-500 mb-6">
                 {session?.user?.email || '请先登录'}
               </p>
-              <div className="inline-flex items-center gap-8 px-6 py-3 bg-gray-50 rounded-xl">
+              <div className="inline-flex items-center gap-8 px-6 py-3 bg-neutral-50 rounded-xl">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">{stats.posts}</div>
-                  <div className="text-sm text-gray-500 mt-0.5">发帖</div>
+                  <div className="text-2xl font-bold text-neutral-900">{stats.posts}</div>
+                  <div className="text-sm text-neutral-500 mt-0.5">发帖</div>
                 </div>
-                <div className="w-px h-12 bg-gray-200" />
+                <div className="w-px h-12 bg-neutral-200" />
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">{stats.comments}</div>
-                  <div className="text-sm text-gray-500 mt-0.5">评论</div>
+                  <div className="text-2xl font-bold text-neutral-900">{stats.comments}</div>
+                  <div className="text-sm text-neutral-500 mt-0.5">评论</div>
                 </div>
-                <div className="w-px h-12 bg-gray-200" />
+                <div className="w-px h-12 bg-neutral-200" />
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-gray-900">{stats.likes}</div>
-                  <div className="text-sm text-gray-500 mt-0.5">获赞</div>
+                  <div className="text-2xl font-bold text-neutral-900">{stats.likes}</div>
+                  <div className="text-sm text-neutral-500 mt-0.5">获赞</div>
                 </div>
               </div>
             </div>
@@ -220,8 +220,8 @@ export default function ProfilePage() {
         </motion.div>
 
         {/* 功能标签页 */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100/50 overflow-hidden">
-          <div className="flex overflow-x-auto hide-scrollbar border-b border-gray-100">
+        <div className="bg-white rounded-2xl shadow-sm border border-neutral-100/50 overflow-hidden">
+          <div className="flex overflow-x-auto hide-scrollbar border-b border-neutral-100">
             {features.map((feature) => (
               <button
                 key={feature.id}
@@ -229,10 +229,10 @@ export default function ProfilePage() {
                 disabled={!feature.available}
                 className={`relative flex-shrink-0 flex items-center gap-2 px-8 py-5 text-sm font-medium 
                   ${activeFeature === feature.id 
-                    ? `${feature.color} bg-gray-50/50` 
+                    ? `${feature.color} bg-neutral-50/50` 
                     : feature.available 
-                      ? 'text-gray-500 hover:text-gray-700' 
-                      : 'text-gray-300 cursor-not-allowed'
+                      ? 'text-neutral-500 hover:text-neutral-700' 
+                      : 'text-neutral-300 cursor-not-allowed'
                   } transition-all`}
               >
                 {feature.icon}
@@ -248,8 +248,8 @@ export default function ProfilePage() {
                 )}
                 {!feature.available && (
                   <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gray-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-gray-500"></span>
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neutral-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-neutral-500"></span>
                   </span>
                 )}
               </button>
