@@ -163,12 +163,10 @@ export default function LuopanSection() {
               {/* 连接线 */}
               <svg className="absolute inset-0 w-full h-full">
                 <g transform="translate(150, 150) scale(0.6) md:translate(300, 300) md:scale(1.2)">
-                  {wuxingData.map((element, index) => 
+                  {wuxingData.map((element) => 
                     element.connections.map(target => {
                       const targetElement = wuxingData.find(e => e.name === target);
-                      // 只画一次连接线：当前元素的索引小于目标元素的索引时
-                      const targetIndex = wuxingData.findIndex(e => e.name === target);
-                      if (!targetElement || index > targetIndex) return null;
+                      if (!targetElement) return null;
                       
                       return (
                         <motion.path
