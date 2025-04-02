@@ -79,7 +79,7 @@ export default function Community() {
   const searchParams = useSearchParams();
 
   // 获取分类数据
-  const { data: categoriesData, error: categoriesError } = useSWR<Array<{ name: string, id: number, order: number }>>("api/categories", fetcher, {
+  const { data: categoriesData, error: categoriesError } = useSWR<Array<{ name: string, id: number, order: number }>>("/api/categories", fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
@@ -211,12 +211,12 @@ export default function Community() {
           {/* 搜索和发帖按钮 */}
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="flex-1 flex items-center gap-2">
-              <div className="flex-1 flex items-center gap-2 bg-gray-50 rounded-lg px-3 py-2 focus-within:ring-1 focus-within:ring-primary/20 hover:bg-gray-100 transition-all">
+              <div className="flex-1 flex items-center gap-2 bg-gray-50 rounded-lg px-3 focus-within:ring-1 focus-within:ring-primary/20 hover:bg-gray-100 transition-all">
                 <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
                 <input
                   type="text"
                   placeholder="搜索感兴趣的内容..."
-                  className="flex-1 text-sm sm:text-base bg-transparent focus:outline-none min-w-0"
+                  className="flex-1 text-sm sm:text-base bg-transparent focus:outline-none min-w-0 p-2"
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                   onKeyPress={handleKeyPress}
@@ -239,12 +239,12 @@ export default function Community() {
           </div>
 
           {/* 分类标签 */}
-          <div className="flex items-center gap-2 mt-2 sm:mt-3 overflow-x-auto pb-1 hide-scrollbar">
+          <div className="md:hidden flex items-center gap-2 mt-2 sm:mt-3 overflow-x-auto pb-1 hide-scrollbar">
             {categories.map((category) => (
               <button
                 key={category.name}
                 onClick={() => handleCategoryChange(category.name)}
-                className={`md:hidden  flex-shrink-0 sm px-3 sm:px-4 rounded-full text-sm sm:text-base whitespace-nowrap transition-colors ${
+                className={`flex-shrink-0 sm px-3 sm:px-4 rounded-full text-sm sm:text-base whitespace-nowrap transition-colors ${
                   activeCategory === category.name
                     ? 'bg-primary text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -258,9 +258,9 @@ export default function Community() {
       </div>
 
       {/* 主要内容区域 */}
-      <div className="mt-3 grid grid-cols-1 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
         {/* 帖子列表 */}
-        <div className="lg:col-span-4 space-y-2 sm:space-y-4 mt-4">
+        <div className="lg:col-span-4 space-y-2 sm:space-y-4 mt-2">
           {!data && isLoading ? (
             <div className="flex justify-center items-center min-h-[200px]">
               <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-2 sm:border-3 border-primary border-t-transparent"></div>
@@ -273,13 +273,13 @@ export default function Community() {
           ) : (
             <>
               {posts.map((post) => (
-                <Link
-                  key={post.id}
-                  href={`/community/${post.id}`}
-                  className="block bg-white rounded-lg sm:rounded-xl shadow-sm hover:shadow-md transition-all duration-300
-                    border border-gray-100 hover:border-primary/30 group"
-                >
-                  <div className="p-3 sm:p-4">
+                <div key={post.id} className="relative bg-white rounded-lg sm:rounded-xl shadow-sm hover:shadow-md transition-all duration-300
+                    border border-gray-100 hover:border-primary/30 group">
+                  <Link
+                    href={`/community/${post.id}`}
+                    target="_blank"
+                    className="block p-3 sm:p-4"
+                  >
                     <h2 className="text-base sm:text-lg font-medium text-gray-900 group-hover:text-primary transition-colors line-clamp-1">
                       {post.title}
                     </h2>
@@ -300,8 +300,11 @@ export default function Community() {
                         <span className="text-sm sm:text-base">{post.author.name || "匿名用户"}</span>
                       </div>
                       <div className="flex items-center gap-1.5">
-                        <Heart className="w-4 h-4" />
-                        <span>{post._count.likes}</span>
+                        <LikeButton 
+                          postId={post.id} 
+                          initialLikes={post._count.likes} 
+                          className="!gap-1.5 !text-xs"
+                        />
                       </div>
                       <div className="flex items-center gap-1.5">
                         <MessageSquare className="w-4 h-4" />
@@ -316,8 +319,8 @@ export default function Community() {
                         <span>{dayjs(post.createdAt).fromNow()}</span>
                       </div>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+                </div>
               ))}
             </>
           )}

@@ -139,11 +139,13 @@ export default function ProfilePage() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.2 }}
           >
-            <Link
-              href={`/community/${post.id}`}
-              className="block px-8 py-6 hover:bg-neutral-50/50 transition-colors"
-            >
-              <div className="flex items-start gap-4">
+            <div className="relative px-8 py-6 hover:bg-neutral-50/50 transition-colors">
+              <Link
+                href={`/community/${post.id}`}
+                target="_blank"
+                className="block absolute inset-0 z-0"
+              ></Link>
+              <div className="flex items-start gap-4 relative z-10">
                 <div className="flex-1 min-w-0">
                   <h3 className="text-base font-medium text-neutral-900 mb-2 line-clamp-1">{post.title}</h3>
                   <p className="text-neutral-500 text-sm line-clamp-2 mb-3 leading-relaxed">{post.content}</p>
@@ -153,15 +155,17 @@ export default function ProfilePage() {
                       <MessageSquare className="w-3.5 h-3.5" />
                       {post._count.comments} 条评论
                     </span>
-                    <LikeButton 
-                      postId={post.id} 
-                      initialLikes={post._count.postLikes} 
-                      className="!gap-1.5 !text-xs"
-                    />
+                    <div className="relative z-20">
+                      <LikeButton 
+                        postId={post.id} 
+                        initialLikes={post._count.postLikes} 
+                        className="!gap-1.5 !text-xs"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
-            </Link>
+            </div>
           </motion.div>
         ))
       )}

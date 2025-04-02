@@ -6,6 +6,7 @@ import { ChevronRight } from "lucide-react";
 import QrCodeCarousel from "@/components/QrCodeCarousel";
 import useSWR from "swr";
 import TagCloudContainer from "@/components/TagCloudContainer";
+import { usePathname } from "next/navigation";
 
 // 定义获取数据的fetcher函数
 const fetcher = async (url: string) => {
@@ -22,11 +23,11 @@ export default function CommunityLayout({
   children: React.ReactNode;
 }) {
   const [qrCodes, setQrCodes] = useState([]);
-
+  const pathname = usePathname()
   // 获取分类数据
   const { data: categoriesData } = useSWR<
     Array<{ name: string; id: number; order: number }>
-  >("api/categories", fetcher, {
+  >("/api/categories", fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
@@ -54,7 +55,8 @@ export default function CommunityLayout({
     <div className="container mx-auto max-w-7xl">
       <div className="flex gap-2 mt-4 sm:ml-16">
         {/* 左侧筛选区 - 固定位置 */}
-        <div className="w-[150px] hidden md:grid">
+        {
+          pathname === '/community' && <div className="w-[150px] hidden md:grid">
           <div className="fixed w-[150px]">
             <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
               <h3 className="text-base font-medium mb-3 pb-2 border-b border-gray-100 flex items-center gap-2">
@@ -82,6 +84,7 @@ export default function CommunityLayout({
             </div>
           </div>
         </div>
+        }
 
         {/* 中间内容区 */}
         <div className="flex-1 min-w-0">{children}</div>

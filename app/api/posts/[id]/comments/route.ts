@@ -156,11 +156,11 @@ export async function POST(
 
     // 查找用户
     const user = await prisma.user.findUnique({
-      where: { email: session.user.id! }
+      where: { id: parseInt(session.user.id!) }
     })
 
     if (!user) {
-      console.error('发表评论失败: 用户不存在', { email: session.user.email })
+      console.error('发表评论失败: 用户不存在', { id: session.user.id })
       return NextResponse.json(
         { error: '用户不存在' },
         { status: 404 }
