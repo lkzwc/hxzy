@@ -183,7 +183,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* 添加占位元素 */}
-      <div className="h-[72px]" />
+      <div className="h-[64px]" />
 
       <main className="flex-1 relative">
         {currentPageTitle && (

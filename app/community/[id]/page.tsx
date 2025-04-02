@@ -177,10 +177,9 @@ export default function PostDetail({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-6">
-      <div className="flex flex-col md:flex-row gap-6">
+      <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row gap-6">
         {/* 左侧边栏 - 作者信息和交互按钮 */}
-        <div className="w-[150px] hidden md:block flex-shrink-0">
+        <div className="w-[80px] hidden md:block flex-shrink-0">
           <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sticky top-6">
             {/* 作者信息 */}
             <div className="flex flex-col items-center text-center mb-4 pb-4 border-b border-gray-100">
@@ -197,10 +196,7 @@ export default function PostDetail({ params }: { params: { id: string } }) {
               <div className="font-medium text-gray-900 mb-1 text-sm">
                 {post.author.name || "匿名用户"}
               </div>
-              <div className="text-xs text-gray-500 mb-3">
-                {dayjs(post.createdAt).format("YYYY年MM月DD日")}
-              </div>
-              <button className="w-full py-1.5 px-3 bg-primary text-white rounded-full text-xs font-medium hover:bg-primary/90 transition-colors">
+              <button className="w-full py-1 bg-primary text-white rounded-full text-xs font-medium hover:bg-primary/90 transition-colors">
                 关注
               </button>
             </div>
@@ -322,6 +318,5 @@ export default function PostDetail({ params }: { params: { id: string } }) {
           </div>
         </div>
       </div>
-    </div>
   );
 }

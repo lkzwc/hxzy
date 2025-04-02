@@ -175,7 +175,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-neutral-50">
       {/* 顶部背景 */}
-      <div className="h-60 bg-gradient-to-b from-primary/5 to-transparent" />
+      <div className="h-[140px] bg-gradient-to-b from-primary/5 to-transparent" />
 
       <div className="max-w-5xl mx-auto px-4 -mt-32">
         {/* 用户信息卡片 */}
