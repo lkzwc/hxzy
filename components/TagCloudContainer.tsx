@@ -48,7 +48,7 @@ const TagCloudContainer = () => {
 
   return (
     <div className="mt-3">
-      <h3 className="text-lg font-medium text-gray-900 mb-2">热门标签</h3>
+      <h3 className="text-lg font-medium text-gray-900 mb-2">词云</h3>
       <TagCloud tags={data.tags} maxTags={50} />
     </div>
   );

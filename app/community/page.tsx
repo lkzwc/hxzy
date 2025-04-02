@@ -79,10 +79,13 @@ export default function Community() {
   const searchParams = useSearchParams();
 
   // 获取分类数据
-  const { data: categories = [{ name: "全部" }] } = useSWR<Array<{ name: string }>>("api/categories", fetcher, {
+  const { data: categoriesData, error: categoriesError } = useSWR<Array<{ name: string, id: number, order: number }>>("api/categories", fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
+  
+  // 处理分类数据，确保始终有"全部"选项
+  const categories = categoriesData ? [{ name: "全部", id: 0, order: 0 }, ...categoriesData] : [{ name: "全部", id: 0, order: 0 }];
 
   // 构建查询参数
   const getQueryParams = (pageNum: number) => {
@@ -241,7 +244,7 @@ export default function Community() {
               <button
                 key={category.name}
                 onClick={() => handleCategoryChange(category.name)}
-                className={`flex-shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-sm sm:text-base whitespace-nowrap transition-colors ${
+                className={`md:hidden  flex-shrink-0 sm px-3 sm:px-4 rounded-full text-sm sm:text-base whitespace-nowrap transition-colors ${
                   activeCategory === category.name
                     ? 'bg-primary text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -256,11 +259,6 @@ export default function Community() {
 
       {/* 主要内容区域 */}
       <div className="mt-3 grid grid-cols-1 lg:grid-cols-4 gap-4">
-        {/* 3D词云 */}
-        <div className="lg:col-span-4">
-          <TagCloudContainer />
-        </div>
-        
         {/* 帖子列表 */}
         <div className="lg:col-span-4 space-y-2 sm:space-y-4 mt-4">
           {!data && isLoading ? (
