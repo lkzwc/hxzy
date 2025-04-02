@@ -19,35 +19,35 @@ interface CompassRing {
 const wuxingData = [
   {
     name: '火',
-    color: '#FF5252',
+    color: '#DC2626', // 更具传统的朱红色
     position: { x: 0, y: -150 },
     properties: ['南方', '夏季', '心脏', '丙丁', '赤色'],
     connections: ['土']
   },
   {
     name: '土',
-    color: '#FFC107',
+    color: '#B45309', // 更沉稳的赭石色
     position: { x: 143, y: -46 },
     properties: ['中央', '长夏', '脾胃', '戊己', '黄色'],
     connections: ['金']
   },
   {
     name: '金',
-    color: '#FFD700',
+    color: '#92400E', // 更古朴的铜金色
     position: { x: 88, y: 121 },
     properties: ['西方', '秋季', '肺部', '庚辛', '白色'],
     connections: ['水']
   },
   {
     name: '水',
-    color: '#2196F3',
+    color: '#1E40AF', // 更深邃的靛青色
     position: { x: -88, y: 121 },
     properties: ['北方', '冬季', '肾脏', '壬癸', '黑色'],
     connections: ['木']
   },
   {
     name: '木',
-    color: '#4CAF50',
+    color: '#166534', // 更沉稳的松柏绿
     position: { x: -143, y: -46 },
     properties: ['东方', '春季', '肝脏', '甲乙', '青色'],
     connections: ['火']
@@ -66,7 +66,7 @@ const compassRings: CompassRing[] = [
     ].map((text, i) => ({
       text,
       degree: (i * 15) - 90,  // 从正北开始
-      color: '#4A5568'
+      color: '#6D28D9' // 更深沉的紫色，代表节气的庄重感
     })),
     radius: 220,
     rotationDirection: -1,
@@ -77,7 +77,7 @@ const compassRings: CompassRing[] = [
     elements: ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'].map((text, i) => ({
       text,
       degree: (i * 30) - 90,  // 从正北开始
-      color: '#4A90E2'
+      color: '#1D4ED8' // 更沉稳的藏青色，代表地支的稳重
     })),
     radius: 180,
     rotationDirection: 1,
@@ -91,7 +91,7 @@ const compassRings: CompassRing[] = [
     ].map((text, i) => ({
       text,
       degree: (i * 30) - 90,  // 从正北开始
-      color: '#805AD5'
+      color: '#831843' // 更深沉的酱紫色，代表时辰的庄重
     })),
     radius: 140,
     rotationDirection: -1,
@@ -102,7 +102,7 @@ const compassRings: CompassRing[] = [
     elements: ['乾', '兑', '离', '震', '巽', '坎', '艮', '坤'].map((text, i) => ({
       text,
       degree: (i * 45) - 90,  // 从正北开始
-      color: '#2D3748'
+      color: '#064E3B' // 更深邃的墨绿色，代表八卦的自然与和谐
     })),
     radius: 100,
     rotationDirection: 1,
@@ -139,7 +139,7 @@ export default function LuopanSection() {
   };
 
   return (
-    <section className="py-12 md:py-20 bg-gradient-to-b from-pink-50 to-white overflow-hidden">
+    <section className="py-12 md:py-20 bg-gradient-to-b from-amber-50/90 via-white to-stone-100/90 overflow-hidden">
       <div className="container mx-auto px-4">
         <div className="grid lg:grid-cols-2 gap-8 md:gap-16 items-center">
           {/* 五行图 */}
@@ -304,14 +304,14 @@ export default function LuopanSection() {
                 >
                   {/* 环形背景 */}
                   <div 
-                    className="absolute rounded-full border border-gray-200"
+                    className="absolute rounded-full border border-amber-200 shadow-inner"
                     style={{
                       width: window.innerWidth < 768 ? ring.radius * 1.2 : ring.radius * 2,
                       height: window.innerWidth < 768 ? ring.radius * 1.2 : ring.radius * 2,
                       left: '50%',
                       top: '50%',
                       transform: 'translate(-50%, -50%)',
-                      background: 'linear-gradient(to right, rgba(255,255,255,0.9), rgba(255,255,255,0.5))'
+                      background: 'linear-gradient(to right, rgba(255,247,237,0.95), rgba(254,243,199,0.6))'
                     }}
                   />
 
@@ -353,27 +353,29 @@ export default function LuopanSection() {
               {/* 中心太极图 */}
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
                 w-16 h-16 md:w-24 md:h-24 z-10">
-                <div className="relative w-full h-full rounded-full overflow-hidden bg-white shadow-lg">
-                  {/* 太极背景和阴阳分割保持不变 */}
-                  <div className="absolute inset-0 bg-black" />
-                  <div className="absolute inset-0">
-                    <div className="absolute top-0 left-0 w-full h-1/2 bg-white rounded-t-full" />
-                    <div className="absolute bottom-0 left-0 w-full h-1/2 bg-black rounded-b-full" />
-                    <div className="absolute top-1/4 left-1/2 -translate-x-1/2 
-                      w-8 h-8 md:w-12 md:h-12">
-                      <div className="w-full h-full rounded-full bg-black">
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
-                          w-2 h-2 md:w-3 md:h-3 rounded-full bg-white" />
-                      </div>
-                    </div>
-                    <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 
-                      w-8 h-8 md:w-12 md:h-12">
-                      <div className="w-full h-full rounded-full bg-white">
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
-                          w-2 h-2 md:w-3 md:h-3 rounded-full bg-black" />
-                      </div>
-                    </div>
-                  </div>
+                <div className="relative w-full h-full rounded-full overflow-hidden bg-white shadow-lg border border-amber-200">
+                  <svg viewBox="0 0 100 100" className="w-full h-full">
+                    {/* 背景圆 */}
+                    <circle cx="50" cy="50" r="49" fill="white" stroke="#FDE68A" strokeWidth="1" />
+                    
+                    {/* 阴阳分割线 - 使用精确的圆弧路径 */}
+                    <path
+                      d="M50,0 A50,50 0 0,1 50,100 A25,25 0 0,1 50,50 A25,25 0 0,0 50,0"
+                      fill="black"
+                      transform="rotate(90 50 50)"
+                    />
+                    <path
+                      d="M50,0 A50,50 0 0,0 50,100 A25,25 0 0,0 50,50 A25,25 0 0,1 50,0"
+                      fill="white"
+                      transform="rotate(90 50 50)"
+                    />
+                    
+                    {/* 阴阳鱼眼 - 调整位置和大小 */}
+                    <circle cx="25" cy="50" r="6" fill="black" />
+                    <circle cx="25" cy="50" r="1.5" fill="white" />
+                    <circle cx="75" cy="50" r="6" fill="white" />
+                    <circle cx="75" cy="50" r="1.5" fill="black" />
+                  </svg>
                 </div>
               </div>
             </motion.div>
@@ -382,4 +384,4 @@ export default function LuopanSection() {
       </div>
     </section>
   );
-} 
+}

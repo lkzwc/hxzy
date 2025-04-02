@@ -17,7 +17,13 @@ export default function CommunityLayout({
   useEffect(() => {
     // 获取二维码数据
     fetch('/api/qrcodes')
-      .then(res => res.json())
+      .then(res => {
+        console.log(res)
+        if (!res.ok) {
+          throw new Error('Network response was not ok')
+        }
+        return res.json()
+      })
       .then(data => setQrCodes(data))
       .catch(error => console.error('Error fetching QR codes:', error))
   }, [])

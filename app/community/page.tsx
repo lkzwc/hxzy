@@ -12,8 +12,8 @@ import CreatePostModal from "@/components/CreatePostModal";
 import LikeButton from "@/components/LikeButton";
 import useSWR from "swr";
 import useSWRInfinite from "swr/infinite";
-import { categories } from "@/util/common";
 import QrCodeCarousel from '@/components/QrCodeCarousel'
+import TagCloudContainer from '@/components/TagCloudContainer'
 
 // 配置 dayjs
 dayjs.locale("zh-cn");
@@ -77,6 +77,12 @@ export default function Community() {
   const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  // 获取分类数据
+  const { data: categories = [{ name: "全部" }] } = useSWR<Array<{ name: string }>>("api/categories", fetcher, {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
 
   // 构建查询参数
   const getQueryParams = (pageNum: number) => {
@@ -233,15 +239,15 @@ export default function Community() {
           <div className="flex items-center gap-2 mt-2 sm:mt-3 overflow-x-auto pb-1 hide-scrollbar">
             {categories.map((category) => (
               <button
-                key={category}
-                onClick={() => handleCategoryChange(category)}
+                key={category.name}
+                onClick={() => handleCategoryChange(category.name)}
                 className={`flex-shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-sm sm:text-base whitespace-nowrap transition-colors ${
-                  activeCategory === category
+                  activeCategory === category.name
                     ? 'bg-primary text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
-                {category}
+                {category.name}
               </button>
             ))}
           </div>
@@ -250,8 +256,13 @@ export default function Community() {
 
       {/* 主要内容区域 */}
       <div className="mt-3 grid grid-cols-1 lg:grid-cols-4 gap-4">
+        {/* 3D词云 */}
+        <div className="lg:col-span-4">
+          <TagCloudContainer />
+        </div>
+        
         {/* 帖子列表 */}
-        <div className="lg:col-span-4 space-y-2 sm:space-y-4">
+        <div className="lg:col-span-4 space-y-2 sm:space-y-4 mt-4">
           {!data && isLoading ? (
             <div className="flex justify-center items-center min-h-[200px]">
               <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-2 sm:border-3 border-primary border-t-transparent"></div>

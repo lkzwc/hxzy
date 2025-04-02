@@ -57,3 +57,17 @@ INSERT INTO "AdQrcode" (id, description, "imageUrl", "order", "createdAt") VALUE
 ('clr8j1k0g0000ml08g9tt3j7x', '关注我们的官方微信公众号，获取最新中医资讯', '/images/qr/official-account.png', 1, NOW()),
 ('clr8j1k0g0001ml08kj7h4m2y', '加入中医交流群，与同道切磋交流', '/images/qr/wechat-group.png', 2, NOW()),
 ('clr8j1k0g0002ml08d8jf2k9z', '关注视频号，观看中医讲座直播', '/images/qr/video-account.png', 3, NOW()); 
+
+INSERT INTO "Category" (id, name, "order") VALUES
+('1', '内科', 1),
+('2', '外科', 2),
+('3', '妇科', 3),
+('4', '儿科', 4),
+('5', '针灸', 5),
+('6', '推拿', 6),
+('7', '骨伤科', 7),
+('8', '皮肤科', 8),
+('9', '五官科', 9),
+('10', '养生保健', 10),
+('11', '肿瘤科', 11),
+('12', '心理科', 12);

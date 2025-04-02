@@ -14,7 +14,7 @@ model User {
   openid    String?    @unique
   image     String?
   createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  updatedAt DateTime   @updatedAt @default(now())
   comments  Comment[]
   posts     Post[]
   postLikes PostLike[]
@@ -169,4 +169,12 @@ model AdQrcode {
   imageUrl    String
   order       Int      @default(0)
   createdAt   DateTime @default(now())
+}
+
+model Category {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  order       Int      @default(0)
+
+  @@index([order])
 }
