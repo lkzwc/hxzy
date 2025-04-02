@@ -35,16 +35,10 @@ interface CommentResponse {
   } | null
 }
 
-type Props = {
-  params: {
-    id: string;
-  };
-};
-
 // 获取评论列表
 export async function GET(
   request: NextRequest,
-  { params }: Props
+  { params }: { params: { id: string } }
 ) {
   try {
     const postId = parseInt(params.id)
@@ -307,4 +301,4 @@ export async function POST(
       { status: 500 }
     )
   }
-} 
+}

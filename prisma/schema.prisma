@@ -9,9 +9,9 @@ datasource db {
 
 model User {
   id        Int        @id @default(autoincrement())
+  otherId   String?    @unique
   name      String?
-  email     String?    @unique
-  openid    String?    @unique
+  email     String?    @unique 
   image     String?
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt @default(now())
@@ -21,7 +21,7 @@ model User {
   lastLoginAt DateTime? @default(now())
 
   @@index([email])
-  @@index([openid])
+  @@index([id])
 }
 
 model Post {

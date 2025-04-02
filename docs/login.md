@@ -2,6 +2,23 @@
 
 ## 微信扫码登录流程
 
+GitHub 登录流程 ：
+
+1. 用户点击 GitHub 登录
+2. GitHub OAuth 验证
+3. 验证成功后进入 signIn 回调
+4. 写入/更新用户数据
+5. 生成 JWT token
+6. 创建 session
+微信登录流程 ：
+
+1. 用户通过微信认证获取 openid
+2. 调用 CredentialsProvider 的 authorize
+3. 进入 signIn 回调
+4. 写入/更新用户数据
+5. 生成 JWT token
+6. 创建 session
+
 ### 1. 获取登录二维码
 前端页面加载时，调用 `/api/wechat` 接口获取登录二维码：
 - 服务端生成唯一的场景值 `sceneStr`

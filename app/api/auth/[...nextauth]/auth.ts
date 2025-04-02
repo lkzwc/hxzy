@@ -1,8 +1,8 @@
-import { NextAuthOptions } from "next-auth"
-import GithubProvider from "next-auth/providers/github"
-import CredentialsProvider from "next-auth/providers/credentials"
-import { prisma } from '@/lib/prisma'
-import crypto from 'crypto';
+import { NextAuthOptions } from "next-auth";
+import GithubProvider from "next-auth/providers/github";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { prisma } from "@/lib/prisma";
+import crypto from "crypto";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -10,6 +10,7 @@ export const authOptions: NextAuthOptions = {
       clientId: process.env.GITHUB_CLIENT_ID!,
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }),
+    // 自定义微信登录
     CredentialsProvider({
       name: "WeChat",
       credentials: {
@@ -18,30 +19,65 @@ export const authOptions: NextAuthOptions = {
       async authorize(credentials) {
         if (!credentials?.openid) return null;
 
-        // 查找或创建用户
-        const user = await prisma.user.upsert({
-          where: { openid: credentials.openid },
-          update: {
-            lastLoginAt: new Date(),
-          },
-          create: {
-            openid: credentials.openid,
-            name: `微信用户${crypto.createHash("sha1").update(credentials.openid).digest("hex").slice(0, 6)}`,
-            lastLoginAt: new Date(),
-          },
-        });
-
+        // 只是做登陆逻辑不写库
         // 返回用户信息，这些信息会被传递给 jwt 回调
         return {
-          id: String(user.id), // 转换为字符串
-          openid: user.openid,
-          name: user.name,
-          image: user.image,
+          id: credentials.openid,
+          name: `微信用户${crypto
+            .createHash("sha1")
+            .update(credentials.openid)
+            .digest("hex")
+            .slice(0, 6)}`,
         };
       },
     }),
   ],
   callbacks: {
+    async signIn({ user, account, profile }) {
+      console.log("signIn", user, account, profile);
+      
+      try {
+        // 黑名单
+        if ([""].includes(user?.id)) return false;
+
+        const userData = {
+          name: user.name,
+          image: user.image,
+          otherId: "",
+          lastLoginAt: new Date(),
+        };
+
+        // 根据不同登录方式补充特定字段
+        if (account?.provider === "github") {
+          Object.assign(userData, {
+            email: user.email,
+            image: user.image || profile?.avatar_url,
+            otherId: user?.id,
+          });
+        } else if (account?.provider === "credentials") {
+          // 微信登录
+          Object.assign(userData, {
+            otherId: user.id,
+          });
+        }
+
+        // 使用 upsert 统一处理用户数据
+        const dbUser = await prisma.user.upsert({
+          where: { otherId: userData?.otherId },
+          update: userData,
+          create: userData,
+        });
+
+        console.log("signIn000", dbUser);
+
+        user.id = String(dbUser.id);
+
+        return true;
+      } catch (error) {
+        console.error("Error in signIn callback:", error);
+        return false;
+      }
+    },
     async jwt({ token, user }) {
       console.log("jwt", token, user);
       if (user) {
@@ -66,15 +102,15 @@ export const authOptions: NextAuthOptions = {
     async redirect({ url, baseUrl }) {
       // 如果是登录相关的URL，登录成功后重定向到首页
       if (url.startsWith(baseUrl)) {
-        return '/community'
+        return "/community";
       }
       // 否则重定向到请求的URL
-      return url
+      return url;
     },
   },
   pages: {
-    signIn: '/login',
-    error: '/login',
+    signIn: "/login",
+    error: "/login",
   },
   session: {
     strategy: "jwt",
@@ -83,4 +119,4 @@ export const authOptions: NextAuthOptions = {
   jwt: {
     maxAge: 30 * 24 * 60 * 60, // 30 天
   },
-} 
+};
