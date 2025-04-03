@@ -28,13 +28,24 @@ const TagCloud = ({ tags, maxTags = 50 }: TagCloudProps) => {
     return minSize + (value / max) * (maxSize - minSize);
   };
   
+  // 使用中医传统色彩
   const getTagColor = (value: number, max: number) => {
-    const intensity = Math.min(0.5 + (value / max) * 0.5, 1);
-    return `hsl(${220 + (value / max) * 40}, ${70 + (value / max) * 30}%, ${50 + (value / max) * 20}%)`;
+    // 中医传统色彩：墨绿、朱红、藏青、赭石色、青黄
+    const colors = [
+      'hsl(150, 40%, 35%)', // 墨绿
+      'hsl(10, 80%, 50%)',  // 朱红
+      'hsl(210, 60%, 25%)', // 藏青
+      'hsl(30, 60%, 45%)',  // 赭石色
+      'hsl(60, 70%, 50%)'   // 青黄
+    ];
+    
+    // 根据权重选择颜色
+    const colorIndex = Math.floor((value / max) * (colors.length - 1));
+    return colors[colorIndex];
   };
 
   return (
-    <div className="w-full h-64 bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden relative">
+    <div className="w-full h-64 bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden relative hover:shadow-md transition-all duration-300">
       <div className="tag-cloud-container">
         <div className="tag-cloud">
           {limitedTags.map((tag, index) => {
@@ -61,9 +72,10 @@ const TagCloud = ({ tags, maxTags = 50 }: TagCloudProps) => {
               transform: `translate3d(${x}px, ${y}px, ${z}px)`,
               opacity: (z + radius) / (2 * radius), // 根据z轴位置调整透明度
               zIndex: Math.floor((z + radius) / 2), // 根据z轴位置调整层级
-              textShadow: '0 1px 2px rgba(0,0,0,0.1)',
+              textShadow: '0 1px 3px rgba(0,0,0,0.15)',
               cursor: 'pointer',
-              transition: 'transform 0.1s ease-out',
+              transition: 'transform 0.3s ease-out, color 0.3s ease',
+              fontWeight: value > (maxValue * 0.7) ? 'bold' : 'normal',
             } as React.CSSProperties;
             
             return (
@@ -87,7 +99,8 @@ const TagCloud = ({ tags, maxTags = 50 }: TagCloudProps) => {
           display: flex;
           justify-content: center;
           align-items: center;
-          perspective: 500px;
+          perspective: 600px;
+          background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(250,250,250,0.5));
         }
         
         .tag-cloud {
@@ -95,7 +108,7 @@ const TagCloud = ({ tags, maxTags = 50 }: TagCloudProps) => {
           width: 240px;
           height: 240px;
           transform-style: preserve-3d;
-          animation: rotate 20s infinite linear;
+          animation: rotate 25s infinite linear;
         }
         
         .tag-item {
@@ -110,16 +123,25 @@ const TagCloud = ({ tags, maxTags = 50 }: TagCloudProps) => {
         
         .tag-item:hover {
           z-index: 1000 !important;
-          transform: scale(1.2) !important;
+          transform: scale(1.3) !important;
+          text-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
         }
         
         @keyframes rotate {
           0% {
-            transform: rotateY(0deg);
+            transform: rotateX(5deg) rotateY(0deg);
+          }
+          50% {
+            transform: rotateX(-5deg) rotateY(180deg);
           }
           100% {
-            transform: rotateY(360deg);
+            transform: rotateX(5deg) rotateY(360deg);
           }
+        }
+        
+        /* 暂停动画当鼠标悬停 */
+        .tag-cloud-container:hover .tag-cloud {
+          animation-play-state: paused;
         }
       `}</style>
     </div>

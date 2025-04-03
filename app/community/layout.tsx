@@ -53,14 +53,14 @@ export default function CommunityLayout({
 
   return (
     <div className="container mx-auto max-w-7xl">
-      <div className="flex gap-2 mt-4 sm:ml-16">
+      <div className="flex gap-4 mt-4 sm:ml-16">
         {/* 左侧筛选区 - 固定位置 */}
         {
-          pathname === '/community' && <div className="w-[150px] hidden md:grid">
-          <div className="fixed w-[150px]">
-            <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+          pathname === '/community' && <div className="w-[180px] hidden md:grid">
+          <div className="fixed w-[180px]">
+            <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100 hover:shadow-md transition-all duration-300">
               <h3 className="text-base font-medium mb-3 pb-2 border-b border-gray-100 flex items-center gap-2">
-                <span className="w-0.5 h-4 bg-primary rounded-full"></span>
+                <span className="w-1 h-4 bg-primary rounded-full"></span>
                 分类筛选
               </h3>
               <div className="flex flex-col gap-2">
@@ -72,14 +72,18 @@ export default function CommunityLayout({
                         ? "/community"
                         : `/community?tag=${category.name}`
                     }
-                    className={`px-3 py-1.5 rounded-md transition-colors text-sm text-left hover:bg-gray-50 text-gray-600`}
+                    className={`px-3 py-2 rounded-md transition-colors text-sm hover:bg-gray-50 ${
+                      pathname === '/community' && new URLSearchParams(window.location.search).get('tag') === category.name
+                        ? 'bg-primary/10 text-primary font-medium'
+                        : 'text-gray-600'
+                    }`}
                   >
                     {category.name}
                   </Link>
                 ))}
               </div>
             </div>
-            <div className="mt-2 relative">
+            <div className="mt-4 relative">
               <TagCloudContainer />
             </div>
           </div>
@@ -93,74 +97,51 @@ export default function CommunityLayout({
         <div className="w-[240px] hidden lg:block">
           <div className="fixed w-[240px] space-y-4">
             {/* 热门话题 */}
-            <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
+            <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100 hover:shadow-md transition-all duration-300">
               <h3 className="text-base font-medium mb-3 pb-2 border-b border-gray-100 flex items-center gap-2">
-                <span className="w-0.5 h-4 bg-primary rounded-full"></span>
+                <span className="w-1 h-4 bg-primary rounded-full"></span>
                 热门话题
               </h3>
-              <div className="space-y-2.5">
-                {["经方临床实践", "四气五味辨证", "针灸要穴"].map(
-                  (topic, index) => (
-                    <div
-                      key={index}
-                      className="flex items-center gap-2 group cursor-pointer"
-                    >
-                      <span
-                        className={`w-5 h-5 rounded flex items-center justify-center text-xs
-                      ${
-                        index < 3
-                          ? "bg-primary/10 text-primary"
-                          : "bg-gray-50 text-gray-500"
-                      }`}
-                      >
-                        {index + 1}
-                      </span>
-                      <span className="text-gray-700 text-sm group-hover:text-primary transition-colors">
-                        {topic}
-                      </span>
-                    </div>
-                  )
-                )}
-              </div>
-            </div>
-
-            {/* 活跃作者 */}
-            <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
-              <h3 className="text-base font-medium mb-3 pb-2 border-b border-gray-100 flex items-center gap-2">
-                <span className="w-0.5 h-4 bg-primary rounded-full"></span>
-                活跃作者
-              </h3>
               <div className="space-y-3">
-                {["张三丰", "李时珍", "孙思邈"].map((author, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-2.5 group cursor-pointer"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm">
-                      {author[0]}
-                    </div>
-                    <div>
-                      <div className="text-sm text-gray-900 group-hover:text-primary transition-colors">
-                        {author}
-                      </div>
-                      <div className="text-xs text-gray-500">
-                        发帖 {30 - index * 5}
-                      </div>
-                    </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary flex-shrink-0">
+                    🔥
                   </div>
-                ))}
+                  <div>
+                    <Link href="/community?tag=中医理论" className="text-sm font-medium text-gray-900 hover:text-primary transition-colors line-clamp-1">
+                      中医理论基础探讨
+                    </Link>
+                    <p className="text-xs text-gray-500 mt-1 line-clamp-1">探讨中医基础理论的应用</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center text-amber-500 flex-shrink-0">
+                    🌿
+                  </div>
+                  <div>
+                    <Link href="/community?tag=方剂" className="text-sm font-medium text-gray-900 hover:text-primary transition-colors line-clamp-1">
+                      经典方剂分析
+                    </Link>
+                    <p className="text-xs text-gray-500 mt-1 line-clamp-1">分享经典方剂的组成与应用</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-500 flex-shrink-0">
+                    📚
+                  </div>
+                  <div>
+                    <Link href="/community?tag=经典" className="text-sm font-medium text-gray-900 hover:text-primary transition-colors line-clamp-1">
+                      经典著作解读
+                    </Link>
+                    <p className="text-xs text-gray-500 mt-1 line-clamp-1">《黄帝内经》《伤寒论》等解读</p>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* 广告区 */}
-            <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-100">
-              <h3 className="text-base font-medium mb-3 pb-2 border-b border-gray-100 flex items-center gap-2">
-                <span className="w-0.5 h-4 bg-primary rounded-full"></span>
-                广告区
-              </h3>
-              <div className="aspect-square">
-                <QrCodeCarousel qrCodes={qrCodes} />
-              </div>
+            {/* 二维码轮播 */}
+            <div className="mt-4">
+              <QrCodeCarousel qrCodes={qrCodes} />
             </div>
           </div>
         </div>

@@ -39,11 +39,14 @@ export default function QrCodeCarousel({ qrCodes = [] }: QrCodeCarouselProps) {
 
   return (
     <div 
-      className="relative bg-white rounded-xl shadow-lg p-6"
+      className="relative bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-all duration-300"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      <h3 className="text-lg font-bold text-gray-900 mb-4">关注我们</h3>
+      <h3 className="text-base font-medium text-gray-900 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
+        <span className="w-1 h-4 bg-primary rounded-full"></span>
+        关注我们
+      </h3>
       
       <div className="relative aspect-square">
         {qrCodes.map((qrCode, index) => (
@@ -62,11 +65,11 @@ export default function QrCodeCarousel({ qrCodes = [] }: QrCodeCarouselProps) {
                 src={qrCode.imageUrl}
                 alt={qrCode.id}
                 fill
-                className="object-contain"
+                className="object-contain p-2"
               />
             </div>
             <div className="text-center mt-4">
-              <p className="text-sm text-gray-500">{qrCode.description}</p>
+              <p className="text-sm text-gray-600">{qrCode.description}</p>
             </div>
           </div>
         ))}
@@ -77,28 +80,29 @@ export default function QrCodeCarousel({ qrCodes = [] }: QrCodeCarouselProps) {
           {/* 导航按钮 */}
           <button
             onClick={handlePrevious}
-            className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 shadow-lg flex items-center justify-center text-gray-600 hover:text-primary transition-colors"
+            className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 shadow-md flex items-center justify-center text-gray-600 hover:text-primary transition-colors border border-gray-100"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={handleNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 shadow-lg flex items-center justify-center text-gray-600 hover:text-primary transition-colors"
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 shadow-md flex items-center justify-center text-gray-600 hover:text-primary transition-colors border border-gray-100"
           >
             <ChevronRight className="w-5 h-5" />
           </button>
 
           {/* 指示器 */}
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2">
             {qrCodes.map((_, index) => (
               <button
                 key={index}
+                onClick={() => setCurrentIndex(index)}
                 className={`w-2 h-2 rounded-full transition-all duration-300 ${
                   index === currentIndex
                     ? 'w-6 bg-primary'
                     : 'bg-gray-300 hover:bg-gray-400'
                 }`}
-                onClick={() => setCurrentIndex(index)}
+                aria-label={`查看第 ${index + 1} 个二维码`}
               />
             ))}
           </div>
@@ -106,4 +110,4 @@ export default function QrCodeCarousel({ qrCodes = [] }: QrCodeCarouselProps) {
       )}
     </div>
   );
-} 
+}

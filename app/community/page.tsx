@@ -211,7 +211,7 @@ export default function Community() {
           {/* 搜索和发帖按钮 */}
           <div className="flex flex-col sm:flex-row gap-2">
             <div className="flex-1 flex items-center gap-2">
-              <div className="flex-1 flex items-center gap-2 bg-gray-50 rounded-lg px-3 focus-within:ring-1 focus-within:ring-primary/20 hover:bg-gray-100 transition-all">
+              <div className="flex-1 flex items-center gap-2 bg-gray-50 rounded-lg px-3 focus-within:ring-2 focus-within:ring-primary/30 hover:bg-gray-100 transition-all">
                 <Search className="w-4 h-4 text-gray-400 flex-shrink-0" />
                 <input
                   type="text"
@@ -238,13 +238,13 @@ export default function Community() {
             </button>
           </div>
 
-          {/* 分类标签 */}
+          {/* 分类标签 - 移动端 */}
           <div className="md:hidden flex items-center gap-2 mt-2 sm:mt-3 overflow-x-auto pb-1 hide-scrollbar">
             {categories.map((category) => (
               <button
                 key={category.name}
                 onClick={() => handleCategoryChange(category.name)}
-                className={`flex-shrink-0 sm px-3 sm:px-4 rounded-full text-sm sm:text-base whitespace-nowrap transition-colors ${
+                className={`flex-shrink-0 px-3 py-1.5 rounded-full text-sm whitespace-nowrap transition-colors ${
                   activeCategory === category.name
                     ? 'bg-primary text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -258,9 +258,39 @@ export default function Community() {
       </div>
 
       {/* 主要内容区域 */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mt-4">
+        {/* 左侧分类筛选 - 桌面端 */}
+        <div className="hidden lg:block lg:col-span-1">
+          <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100 sticky top-24">
+            <h3 className="text-base font-medium mb-3 pb-2 border-b border-gray-100 flex items-center gap-2">
+              <span className="w-1 h-4 bg-primary rounded-full"></span>
+              分类筛选
+            </h3>
+            <div className="flex flex-col gap-1.5">
+              {categories.map((category) => (
+                <button
+                  key={category.name}
+                  onClick={() => handleCategoryChange(category.name)}
+                  className={`px-3 py-2 rounded-md text-left transition-colors ${
+                    activeCategory === category.name
+                      ? 'bg-primary/10 text-primary font-medium'
+                      : 'text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  {category.name}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* 词云组件 */}
+          <div className="mt-4">
+            <TagCloudContainer />
+          </div>
+        </div>
+
         {/* 帖子列表 */}
-        <div className="lg:col-span-4 space-y-2 sm:space-y-4 mt-2">
+        <div className="lg:col-span-3 space-y-3">
           {!data && isLoading ? (
             <div className="flex justify-center items-center min-h-[200px]">
               <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-2 sm:border-3 border-primary border-t-transparent"></div>
@@ -286,7 +316,7 @@ export default function Community() {
                     <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-600 line-clamp-2">
                       {post.content}
                     </p>
-                    <div className="mt-2 sm:mt-3 flex items-center gap-3 sm:gap-4 text-gray-500">
+                    <div className="mt-2 sm:mt-3 flex flex-wrap items-center gap-3 sm:gap-4 text-gray-500">
                       <div className="flex items-center gap-1.5">
                         {post.author.image ? (
                           <img
@@ -318,6 +348,23 @@ export default function Community() {
                         <Clock className="w-4 h-4" />
                         <span>{dayjs(post.createdAt).fromNow()}</span>
                       </div>
+                      
+                      {/* 标签展示 */}
+                      {post.tags && post.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-1 w-full">
+                          {post.tags.slice(0, 3).map((tag) => (
+                            <span 
+                              key={tag} 
+                              className="px-2 py-0.5 bg-gray-50 text-gray-500 text-xs rounded-full border border-gray-100"
+                            >
+                              {tag}
+                            </span>
+                          ))}
+                          {post.tags.length > 3 && (
+                            <span className="text-xs text-gray-400">+{post.tags.length - 3}</span>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </Link>
                 </div>
