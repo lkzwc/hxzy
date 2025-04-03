@@ -75,7 +75,7 @@ const TagCloud = ({ tags, maxTags = 50 }: TagCloudProps) => {
               textShadow: '0 1px 3px rgba(0,0,0,0.15)',
               cursor: 'pointer',
               transition: 'transform 0.3s ease-out, color 0.3s ease',
-              fontWeight: value > (maxValue * 0.7) ? 'bold' : 'normal',
+              fontWeight: tag.value > (maxValue * 0.7) ? 'bold' : 'normal',
             } as React.CSSProperties;
             
             return (
