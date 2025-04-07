@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { ChevronRight } from "lucide-react";
+import { RightOutlined } from "@ant-design/icons";
 import QrCodeCarousel from "@/components/QrCodeCarousel";
 import useSWR from "swr";
 import TagCloudContainer from "@/components/TagCloudContainer";

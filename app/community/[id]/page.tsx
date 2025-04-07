@@ -9,7 +9,7 @@ import Link from "next/link";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { Eye, MessageSquare, Star, Share, Clock } from "lucide-react";
+import { EyeOutlined, MessageOutlined, StarOutlined, ShareAltOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import CommentSection from "@/components/CommentSection";
 import LikeButton from "@/components/LikeButton";
 
@@ -194,8 +194,8 @@ export default function PostDetail({ params }: any) {
                   className="rounded-full object-cover border-2 border-white shadow-sm"
                 />
               </div>
-              <div className="font-medium text-gray-900 mb-1 text-sm">
-                {post.author.name || "匿名用户"}
+              <div className="font-medium text-gray-900 mb-1 text-sm truncate w-full" title={post.author.name || "匿名用户"}>
+                {post.author.name ? (post.author.name.length > 5 ? `${post.author.name.slice(0, 5)}...` : post.author.name) : "匿名用户"}
               </div>
               <button className="w-full py-1.5 bg-primary text-white rounded-full text-xs font-medium hover:bg-primary/90 transition-colors">
                 关注
@@ -203,25 +203,25 @@ export default function PostDetail({ params }: any) {
             </div>
 
             {/* 交互按钮 */}
-            <div className="flex flex-col items-center gap-4">
-              <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center gap-4 w-full">
+              <div className="flex flex-col items-center w-full px-2">
                 <LikeButton
                   postId={post.id}
                   initialLikes={post._count.postLikes}
-                  className="!flex-col !gap-1"
+                  className="!flex-col w-full"
                 />
               </div>
-              <div className="flex flex-col items-center text-gray-500 hover:text-primary transition-colors cursor-pointer">
-                <MessageSquare className="w-6 h-6" />
-                <span className="text-xs mt-1">{post._count.comments}</span>
+              <div className="flex flex-col items-center w-full px-2 text-gray-500 hover:text-primary transition-colors cursor-pointer">
+                <MessageOutlined className="w-6 h-6" />
+                <span className="text-xs mt-1 ml-[-7px]">{post._count.comments}</span>
               </div>
-              <div className="flex flex-col items-center text-gray-500 hover:text-amber-500 transition-colors cursor-pointer">
-                <Star className="w-6 h-6" />
-                <span className="text-xs mt-1">收藏</span>
+              <div className="flex flex-col items-center w-full px-2 text-gray-500 hover:text-amber-500 transition-colors cursor-pointer">
+                <StarOutlined className="w-6 h-6" />
+                <span className="text-xs mt-1 ml-[-7px]">收藏</span>
               </div>
-              <div className="flex flex-col items-center text-gray-500 hover:text-emerald-500 transition-colors cursor-pointer">
-                <Share className="w-6 h-6" />
-                <span className="text-xs mt-1">分享</span>
+              <div className="flex flex-col items-center w-full px-2 text-gray-500 hover:text-emerald-500 transition-colors cursor-pointer">
+                <ShareAltOutlined className="w-6 h-6" />
+                <span className="text-xs mt-1 ml-[-7px]">分享</span>
               </div>
             </div>
           </div>
@@ -234,30 +234,6 @@ export default function PostDetail({ params }: any) {
             {/* 帖子标题和元信息 */}
             <div className="border-b border-gray-100 pb-4 mb-4">
               <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">{post.title}</h1>
-              <div className="flex flex-wrap items-center gap-4 text-sm text-gray-500">
-                <div className="flex items-center gap-2">
-                  {post.author.image ? (
-                    <Image
-                      src={post.author.image}
-                      alt={post.author.name || "用户头像"}
-                      width={24}
-                      height={24}
-                      className="rounded-full"
-                    />
-                  ) : (
-                    <div className="w-6 h-6 rounded-full bg-gray-200" />
-                  )}
-                  <span>{post.author.name || "匿名用户"}</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Eye className="w-4 h-4" />
-                  <span>{post.views} 次浏览</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <Clock className="w-4 h-4" />
-                  <span>{dayjs(post.createdAt).format("YYYY年MM月DD日 HH:mm")}</span>
-                </div>
-              </div>
               
               {/* 标签展示 */}
               {post.tags && post.tags.length > 0 && (
@@ -306,15 +282,15 @@ export default function PostDetail({ params }: any) {
                 />
               </div>
               <div className="flex flex-col items-center text-gray-500">
-                <MessageSquare className="w-6 h-6" />
+                <MessageOutlined className="w-6 h-6" />
                 <span className="text-xs mt-1">{post._count.comments}</span>
               </div>
               <div className="flex flex-col items-center text-gray-500">
-                <Star className="w-6 h-6" />
+                <StarOutlined className="w-6 h-6" />
                 <span className="text-xs mt-1">收藏</span>
               </div>
               <div className="flex flex-col items-center text-gray-500">
-                <Share className="w-6 h-6" />
+                <ShareAltOutlined className="w-6 h-6" />
                 <span className="text-xs mt-1">分享</span>
               </div>
             </div>

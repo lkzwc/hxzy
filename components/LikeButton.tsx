@@ -3,7 +3,7 @@
 import { useState, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
-import { Heart } from 'lucide-react'
+import { HeartOutlined, HeartFilled } from '@ant-design/icons'
 import useSWR from 'swr'
 
 interface LikeButtonProps {
@@ -86,14 +86,18 @@ export default function LikeButton({ postId, initialLikes = 0, className = '' }:
     <button
       onClick={handleLike}
       disabled={isLoading}
-      className={`group flex items-center gap-1.5 text-gray-500 hover:text-primary transition-colors ${className}`}
+      className={`group h-8 w-8 flex items-center text-gray-500 hover:text-primary transition-colors ${className}`}
     >
-      <Heart
-        className={`w-4 h-4 flex-shrink-0 transition-colors ${
-          isLiked ? 'fill-current text-primary' : 'group-hover:text-primary'
-        }`}
-      />
-      <span className='text-sm'>{likes}</span>
+      {isLiked ? (
+        <HeartFilled
+          className="w-6 h-6 flex-shrink-0 transition-colors text-primary"
+        />
+      ) : (
+        <HeartOutlined
+          className="w-6 h-6 flex-shrink-0 transition-colors group-hover:text-primary"
+        />
+      )}
+      { className !== '' ? <span className='text-sm flex ml-[-7px]'>{likes}</span> : <span className='text-sm flex'>{likes}</span>}
     </button>
   )
 }

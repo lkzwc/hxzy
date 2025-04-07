@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, Book, Pill, FileText, Video } from 'lucide-react'
+import { SearchOutlined, BookOutlined, PicCenterOutlined, FileTextOutlined ,VideoCameraOutlined} from '@ant-design/icons'
 import Image from 'next/image'
 
 // 定义数据类型
@@ -60,25 +60,25 @@ const categories = [
   {
     id: 'books',
     name: '经典医著',
-    icon: <Book className="w-6 h-6" />,
+    icon: <BookOutlined className="w-6 h-6" />,
     description: '探索中医经典著作'
   },
   {
     id: 'herbs',
     name: '中药材库',
-    icon: <Pill className="w-6 h-6" />,
+    icon: <PicCenterOutlined className="w-6 h-6" />,
     description: '了解中药性味功效'
   },
   {
     id: 'prescriptions',
     name: '方剂大全',
-    icon: <FileText className="w-6 h-6" />,
+    icon: <FileTextOutlined className="w-6 h-6" />,
     description: '学习经典方剂'
   },
   {
-    id: 'videos',
+    id: 'VideoCameraOutlineds',
     name: '视频讲解',
-    icon: <Video className="w-6 h-6" />,
+    icon: <VideoCameraOutlined className="w-6 h-6" />,
     description: '观看教学视频'
   }
 ]
@@ -215,7 +215,7 @@ export default function ZhongYiDBPage() {
                   className="btn btn-primary btn-circle"
                   onClick={handleSearch}
                 >
-                  <Search className="w-4 h-4 text-gray-400" />
+                  <SearchOutlined className="w-4 h-4 text-gray-400" />
                 </button>
               </div>
             </div>
@@ -232,28 +232,28 @@ export default function ZhongYiDBPage() {
               className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[100px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'zhongyao' ? 'btn-primary' : 'btn-ghost'}`}
               onClick={() => setActiveTab('zhongyao')}
             >
-              <Pill className={`sm:w-5 sm:h-5 ${activeTab === 'zhongyao' ? 'text-current' : 'text-gray-600'}`} />
+              <span className={`sm:w-5 sm:h-5 ${activeTab === 'zhongyao' ? 'text-current' : 'text-gray-600'}`}>🌿</span>
               中药
             </button>
             <button 
               className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[100px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'jingfang' ? 'btn-primary' : 'btn-ghost'}`}
               onClick={() => setActiveTab('jingfang')}
             >
-              <FileText className={`sm:w-5 sm:h-5 ${activeTab === 'jingfang' ? 'text-current' : 'text-gray-600'}`} />
+              <FileTextOutlined className={`sm:w-5 sm:h-5 ${activeTab === 'jingfang' ? 'text-current' : 'text-gray-600'}`} />
               经方
             </button>
             <button 
               className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[100px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'kecheng' ? 'btn-primary' : 'btn-ghost'}`}
               onClick={() => setActiveTab('kecheng')}
             >
-              <Video className={`sm:w-5 sm:h-5 ${activeTab === 'kecheng' ? 'text-current' : 'text-gray-600'}`} />
+              <VideoCameraOutlined className={`sm:w-5 sm:h-5 ${activeTab === 'kecheng' ? 'text-current' : 'text-gray-600'}`} />
               课程
             </button>
             <button 
               className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[100px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'dianzishu' ? 'btn-primary' : 'btn-ghost'}`}
               onClick={() => setActiveTab('dianzishu')}
             >
-              <Book className={`sm:w-5 sm:h-5 ${activeTab === 'dianzishu' ? 'text-current' : 'text-gray-600'}`} />
+              <BookOutlined className={`sm:w-5 sm:h-5 ${activeTab === 'dianzishu' ? 'text-current' : 'text-gray-600'}`} />
               电子书
             </button>
           </div>

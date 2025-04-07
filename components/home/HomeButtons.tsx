@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ArrowRight, BookOpen } from 'lucide-react'
+import { RightOutlined, BookOutlined } from '@ant-design/icons'
 import { motion } from 'framer-motion'
 
 const buttonVariants = {
@@ -32,7 +32,7 @@ export default function HomeButtons() {
             hover:shadow-primary-500/40 transition-all duration-300 group"
         >
           <span>进入社区</span>
-          <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+          <RightOutlined className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
         </Link>
       </motion.div>
 
@@ -47,10 +47,10 @@ export default function HomeButtons() {
             font-semibold rounded-full shadow-lg shadow-gray-200/50 hover:shadow-xl 
             hover:shadow-gray-200/70 border border-gray-100 transition-all duration-300 group"
         >
-          <BookOpen className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
+          <BookOutlined className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
           <span>了解更多</span>
         </Link>
       </motion.div>
     </div>
   )
-} 
+}

@@ -1,7 +1,7 @@
 'use client'
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Compass, Bot, Star } from 'lucide-react';
+import { CompassOutlined, RobotOutlined, StarOutlined } from '@ant-design/icons';
 import LiuRen from '@/components/tools/LiuRen';
 import TimeTable from '@/components/tools/TimeTable';
 import ZiWei from '@/components/tools/ZiWei';
@@ -13,21 +13,21 @@ const tools = [
     id: 'ai-assistant',
     name: 'AI 中医助手',
     description: '智能问诊，辅助诊断',
-    icon: <Bot className="w-8 h-8 text-primary" />,
+    icon: <RobotOutlined className="w-8 h-8 text-primary" />,
     link: '/tools/ai-assistant'
   },
   {
     id: 'diagnosis',
     name: '辅助诊断',
     description: '症状分析，证候辨识',
-    icon: <Compass className="w-8 h-8 text-primary" />,
+    icon: <CompassOutlined className="w-8 h-8 text-primary" />,
     link: '/tools/diagnosis'
   },
   {
     id: 'favorites',
     name: '收藏夹',
     description: '收藏的工具和资料',
-    icon: <Star className="w-8 h-8 text-primary" />,
+    icon: <StarOutlined className="w-8 h-8 text-primary" />,
     link: '/tools/favorites'
   }
 ];
@@ -85,4 +85,4 @@ export default function ToolsPage() {
       </div>
     </div>
   );
-} 
+}

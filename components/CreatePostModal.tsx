@@ -4,8 +4,7 @@ import { useState, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { ImagePlus } from 'lucide-react'
-import { motion } from 'framer-motion'
+import { CloudUploadOutlined } from '@ant-design/icons'
 
 interface CreatePostModalProps {
   isOpen: boolean
@@ -219,7 +218,7 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
                     onChange={handleImageUpload}
                     className="hidden"
                   />
-                  <ImagePlus className="w-4 h-4" />
+                  <CloudUploadOutlined className="w-4 h-4" />
                   添加图片
                 </label>
                 {/* 显示已上传的图片预览 */}

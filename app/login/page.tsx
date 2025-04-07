@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react';
 import { useSession, signIn } from "next-auth/react"
-import { User, QrCode, Github, X } from 'lucide-react'
+import { UserSwitchOutlined, QrcodeOutlined, GithubOutlined, CloseOutlined } from '@ant-design/icons'
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import useSWR from 'swr';
@@ -15,7 +15,7 @@ function SocialLogin() {
         title="使用 GitHub 登录"
         onClick={() => signIn('github')}
       >
-        <Github className="w-6 h-6 text-primary" />
+        <GithubOutlined className="w-6 h-6 text-primary" />
       </button>
     </div>
   );
@@ -102,7 +102,7 @@ export default function Login() {
           className="absolute -top-8 -right-8 p-2 rounded-full bg-white hover:bg-primary-50 transition-colors duration-200"
           title="关闭"
         >
-          <X className="w-6 h-6 text-primary" />
+          <CloseOutlined className="w-6 h-6 text-primary" />
         </button>
 
         <div className="bg-neutral-50 rounded-2xl flex overflow-hidden shadow-2xl w-full sm:w-[750px] h-[480px] relative">
@@ -112,9 +112,9 @@ export default function Login() {
             title={isQRLogin ? "账号登录" : "扫码登录"}
           >
             {isQRLogin ? (
-              <User className="w-4 h-4" />
+              <UserSwitchOutlined className="w-4 h-4" />
             ) : (
-              <QrCode className="w-4 h-4" />
+              <QrcodeOutlined className="w-4 h-4" />
             )}
           </button>
 
@@ -159,7 +159,7 @@ export default function Login() {
                     </div>
                   ) : (
                     <div className="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-4 bg-primary-50 rounded-lg flex items-center justify-center">
-                      <QrCode className="w-16 h-16 text-primary" />
+                      <QrcodeOutlined className="w-16 h-16 text-primary" />
                     </div>
                   )}
                   <p className="text-neutral-600 text-sm sm:text-base mb-2">请使用微信扫码登录</p>

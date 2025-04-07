@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { BookOpen, ScrollText, Stethoscope, Leaf, ChevronRight } from 'lucide-react'
+import { BookOutlined, FileTextOutlined, MedicineBoxOutlined, SmileOutlined, RightOutlined } from '@ant-design/icons'
 
 export default function FeaturesSection() {
   return (
@@ -17,22 +17,22 @@ export default function FeaturesSection() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             {
-              icon: BookOpen,
+              icon: BookOutlined,
               title: '经典医著',
               desc: '探索《黄帝内经》、《伤寒论》等中医经典著作的深邃智慧'
             },
             {
-              icon: ScrollText,
+              icon: FileTextOutlined,
               title: '方剂研究',
               desc: '分享经方验方的临床运用与现代研究成果'
             },
             {
-              icon: Stethoscope,
+              icon: MedicineBoxOutlined,
               title: '诊疗心得',
               desc: '交流望闻问切的临床经验与辨证施治的思路方法'
             },
             {
-              icon: Leaf,
+              icon: SmileOutlined,
               title: '养生之道',
               desc: '传承中医养生智慧，实践健康生活方式'
             }
@@ -51,7 +51,7 @@ export default function FeaturesSection() {
                 className="inline-flex items-center text-primary hover:text-primary-focus font-medium gap-2 group-hover:gap-4 transition-all"
               >
                 了解更多
-                <ChevronRight className="w-5 h-5" />
+                <RightOutlined className="w-5 h-5" />
               </Link>
             </div>
           ))}
@@ -59,4 +59,4 @@ export default function FeaturesSection() {
       </div>
     </section>
   )
-} 
+}

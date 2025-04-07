@@ -1,12 +1,8 @@
 import './globals.css'
-import { Inter } from 'next/font/google'
 import Providers from '@/components/Providers'
 import Layout from '@/components/Layout'
+import { AntdRegistry } from '@ant-design/nextjs-registry';
 
-const inter = Inter({ 
-  subsets: ['latin'],
-  display: 'swap',
-})
 
 export const metadata = {
   metadataBase: new URL('https://hxzy.life'),
@@ -39,12 +35,14 @@ export default function RootLayout({
   return (
     <html lang="zh-CN" suppressHydrationWarning>
       <meta name="google-adsense-account" content="ca-pub-8701466885719364"></meta>
-      <body className={`${inter.className} antialiased`} suppressHydrationWarning>
-        <Providers>
-          <div className="min-h-screen bg-white text-neutral-800">
-            <Layout>{children}</Layout>
-          </div>
-        </Providers>
+      <body suppressHydrationWarning>
+        <AntdRegistry>
+          <Providers>
+            <Layout>
+              {children}
+            </Layout>
+          </Providers>
+        </AntdRegistry>
       </body>
     </html>
   )

@@ -2,48 +2,48 @@
 
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { BookOpen, Stethoscope, Leaf, ChevronRight, ScrollText, FlaskConical, Brain } from 'lucide-react'
+import { ReadOutlined, MedicineBoxOutlined, RightOutlined, FileTextOutlined, ExperimentOutlined, SmileOutlined } from '@ant-design/icons'
 
 const features = [
   {
     title: '中医理论',
     description: '深入了解中医基础理论、诊断方法和治疗原则，掌握传统医学精髓',
-    icon: <BookOpen className="w-8 h-8" />,
+    icon: <ReadOutlined className="w-8 h-8" />,
     link: '/zhongyidb/theory',
     color: 'from-primary-100 to-primary-200 text-primary-600'
   },
   {
     title: '诊断方法',
     description: '掌握望闻问切四诊方法，提高临床诊断能力，传承经验技巧',
-    icon: <Stethoscope className="w-8 h-8" />,
+    icon: <MedicineBoxOutlined className="w-8 h-8" />,
     link: '/zhongyidb/diagnosis',
     color: 'from-secondary-100 to-secondary-200 text-secondary-600'
   },
   {
     title: '中药知识',
     description: '系统学习中药材性味归经、功效与应用，了解药物配伍原理',
-    icon: <Leaf className="w-8 h-8" />,
+    icon: <RightOutlined className="w-8 h-8" />,
     link: '/zhongyidb/herbs',
     color: 'from-accent-100 to-accent-200 text-accent-600'
   },
   {
     title: '经典医籍',
     description: '研读历代医学经典著作，汲取先贤智慧，传承医道精髓',
-    icon: <ScrollText className="w-8 h-8" />,
+    icon: <FileTextOutlined className="w-8 h-8" />,
     link: '/zhongyidb/classics',
     color: 'from-primary-100 to-primary-200 text-primary-600'
   },
   {
     title: '现代研究',
     description: '融合现代科技，探索中医药创新发展，推动学科进步',
-    icon: <FlaskConical className="w-8 h-8" />,
+    icon: <ExperimentOutlined className="w-8 h-8" />,
     link: '/zhongyidb/research',
     color: 'from-secondary-100 to-secondary-200 text-secondary-600'
   },
   {
     title: '养生保健',
     description: '学习中医养生之道，平衡身心，提升生活质量',
-    icon: <Brain className="w-8 h-8" />,
+    icon: <SmileOutlined className="w-8 h-8" />,
     link: '/zhongyidb/wellness',
     color: 'from-accent-100 to-accent-200 text-accent-600'
   },
@@ -117,7 +117,7 @@ export default function FeaturesSection() {
                   <p className="text-neutral-600 mb-6 leading-relaxed">{item.description}</p>
                   <div className="inline-flex items-center text-primary-600 font-medium gap-2 group-hover:gap-4 transition-all">
                     了解更多
-                    <ChevronRight className="w-5 h-5" />
+                    <SmileOutlined className="w-5 h-5" />
                   </div>
                 </div>
               </Link>
@@ -127,4 +127,4 @@ export default function FeaturesSection() {
       </div>
     </section>
   )
-} 
+}
