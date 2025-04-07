@@ -301,7 +301,7 @@ export default function Community() {
                       </div>
                       <div className="flex items-center gap-1.5">
                         <LikeButton 
-                          postId={post.id} 
+                          postId={parseInt(post.id)} 
                           initialLikes={post._count.likes} 
                           className="!gap-1.5 !text-xs"
                         />

@@ -48,7 +48,7 @@ interface Post {
   comments: Comment[];
 }
 
-export default function PostDetail({ params }: { params: { id: string } }) {
+export default function PostDetail({ params }: any) {
   // 使用React.use()解包params
   const resolvedParams: any = React.use(params);
   const postId = resolvedParams.id;

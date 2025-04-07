@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import React from 'react';
 
 interface Tag {
   text: string;
@@ -13,23 +13,22 @@ interface TagCloudProps {
   maxTags?: number;
 }
 
-// 主词云组件
 const TagCloud = ({ tags, maxTags = 50 }: TagCloudProps) => {
-  // 限制标签数量，避免性能问题
+  // 限制标签数量
   const limitedTags = tags.slice(0, maxTags);
   
   // 找出最大权重值
   const maxValue = Math.max(...limitedTags.map(tag => tag.value));
   
-  // 根据标签权重计算大小和颜色
-  const getTagSize = (value: number, max: number) => {
-    const minSize = 0.8;
-    const maxSize = 1.6;
-    return minSize + (value / max) * (maxSize - minSize);
+  // 根据标签权重计算大小
+  const getTagSize = (value: number) => {
+    const minSize = 0.7;
+    const maxSize = 1.2;
+    return minSize + (value / maxValue) * (maxSize - minSize);
   };
   
   // 使用中医传统色彩
-  const getTagColor = (value: number, max: number) => {
+  const getTagColor = (value: number) => {
     // 中医传统色彩：墨绿、朱红、藏青、赭石色、青黄
     const colors = [
       'hsl(150, 40%, 35%)', // 墨绿
@@ -40,7 +39,7 @@ const TagCloud = ({ tags, maxTags = 50 }: TagCloudProps) => {
     ];
     
     // 根据权重选择颜色
-    const colorIndex = Math.floor((value / max) * (colors.length - 1));
+    const colorIndex = Math.floor((value / maxValue) * (colors.length - 1));
     return colors[colorIndex];
   };
 
@@ -49,8 +48,8 @@ const TagCloud = ({ tags, maxTags = 50 }: TagCloudProps) => {
       <div className="tag-cloud-container">
         <div className="tag-cloud">
           {limitedTags.map((tag, index) => {
-            const size = getTagSize(tag.value, maxValue);
-            const color = getTagColor(tag.value, maxValue);
+            const size = getTagSize(tag.value);
+            const color = getTagColor(tag.value);
             
             // 计算标签在球面上的位置
             const phi = Math.acos(-1 + (2 * index) / limitedTags.length);

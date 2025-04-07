@@ -38,10 +38,10 @@ interface CommentResponse {
 // 获取评论列表
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
-    const postId = parseInt(params.id)
+    const postId = parseInt(params?.id)
     if (isNaN(postId)) {
       return NextResponse.json(
         { error: '无效的帖子ID' },
@@ -142,7 +142,7 @@ export async function GET(
 // 发表评论
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -156,11 +156,11 @@ export async function POST(
 
     // 查找用户
     const user = await prisma.user.findUnique({
-      where: { id: parseInt(session.user.id!) }
+      where: { id: parseInt(session.user?.id!) }
     })
 
     if (!user) {
-      console.error('发表评论失败: 用户不存在', { id: session.user.id })
+      console.error('发表评论失败: 用户不存在', { id: session.user?.id })
       return NextResponse.json(
         { error: '用户不存在' },
         { status: 404 }

@@ -5,7 +5,7 @@ import { authOptions } from '@/app/api/auth/[...nextauth]/auth'
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -28,7 +28,7 @@ export async function GET(
     const like = await prisma.postLike.findUnique({
       where: {
         userId_postId: {
-          userId: parseInt(session.user.id),
+          userId: parseInt(session.user.id || '0'),
           postId,
         },
       },
@@ -56,7 +56,7 @@ export async function GET(
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -93,7 +93,7 @@ export async function POST(
     const existingLike = await prisma.postLike.findUnique({
       where: {
         userId_postId: {
-          userId: parseInt(session.user.id),
+          userId: parseInt(session.user.id || '0'),
           postId,
         },
       },
@@ -104,7 +104,7 @@ export async function POST(
       await prisma.postLike.delete({
         where: {
           userId_postId: {
-            userId: parseInt(session.user.id),
+            userId: parseInt(session.user.id || '0'),
             postId,
           },
         },
@@ -113,7 +113,7 @@ export async function POST(
       // 添加点赞
       await prisma.postLike.create({
         data: {
-          userId: parseInt(session.user.id),
+          userId: parseInt(session.user.id || '0'),
           postId,
         },
       })
@@ -137,4 +137,4 @@ export async function POST(
       { status: 500 }
     )
   }
-} 
+}

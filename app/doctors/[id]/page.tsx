@@ -43,7 +43,7 @@ const doctorDetailData = {
   ]
 };
 
-export default function DoctorDetailPage({ params }: { params: { id: string } }) {
+export default function DoctorDetailPage({ params }: any) {
   const [doctor, setDoctor] = useState<any>(null);
 
   useEffect(() => {

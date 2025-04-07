@@ -159,7 +159,7 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
                   placeholder="输入标题..."
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="text-lg font-medium bg-transparent border-none focus:outline-none placeholder:text-gray-400 w-full"
+                  className="text-lg font-medium bg-transparent border-b border-gray-200 hover:border-gray-400 focus:border-primary px-2 py-1.5 w-80 focus:outline-none transition-colors placeholder:text-gray-400"
                 />
               </div>
               <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors">
@@ -266,4 +266,4 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
       </div>
     </div>
   )
-} 
+}

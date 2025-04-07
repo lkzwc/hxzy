@@ -38,7 +38,7 @@ export const authOptions: NextAuthOptions = {
       
       try {
         // 黑名单
-        if ([""].includes(user?.id)) return false;
+        if ([""].includes(user?.id as string)) return false;
 
         const userData = {
           name: user.name,
@@ -51,7 +51,7 @@ export const authOptions: NextAuthOptions = {
         if (account?.provider === "github") {
           Object.assign(userData, {
             email: user.email,
-            image: user.image || profile?.avatar_url,
+            image: user.image || (profile as any)?.avatar_url,
             otherId: user?.id,
           });
         } else if (account?.provider === "credentials") {
@@ -87,14 +87,17 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = String(token.id);
+        // 确保session.user.id是字符串类型
+        session.user.id = token.id ? String(token.id) : undefined;
         // 可以添加其他需要的用户信息
-        const user = await prisma.user.findUnique({
-          where: { id: Number(token.id) },
-        });
-        if (user) {
-          session.user.name = user.name;
-          session.user.image = user.image;
+        if (token.id) {
+          const user = await prisma.user.findUnique({
+            where: { id: Number(token.id) },
+          });
+          if (user) {
+            session.user.name = user.name;
+            session.user.image = user.image;
+          }
         }
       }
       return session;

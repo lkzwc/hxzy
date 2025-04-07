@@ -4,7 +4,7 @@ import { prisma } from '@/lib/prisma'
 // 获取帖子详情
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     const postId = parseInt(params.id)
@@ -101,7 +101,7 @@ export async function GET(
 // 添加评论
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: any
 ) {
   try {
     const { content, authorId } = await request.json()

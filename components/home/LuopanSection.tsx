@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface CompassRing {
@@ -22,35 +22,35 @@ const wuxingData = [
     color: '#DC2626', // 更具传统的朱红色
     position: { x: 0, y: -150 },
     properties: ['南方', '夏季', '心脏', '丙丁', '赤色'],
-    connections: ['土']
+    connections: ['土'] // 火生土
   },
   {
     name: '土',
     color: '#B45309', // 更沉稳的赭石色
     position: { x: 143, y: -46 },
     properties: ['中央', '长夏', '脾胃', '戊己', '黄色'],
-    connections: ['金']
+    connections: ['金'] // 土生金
   },
   {
     name: '金',
     color: '#92400E', // 更古朴的铜金色
     position: { x: 88, y: 121 },
     properties: ['西方', '秋季', '肺部', '庚辛', '白色'],
-    connections: ['水']
+    connections: ['水'] // 金生水
   },
   {
     name: '水',
     color: '#1E40AF', // 更深邃的靛青色
     position: { x: -88, y: 121 },
     properties: ['北方', '冬季', '肾脏', '壬癸', '黑色'],
-    connections: ['木']
+    connections: ['木'] // 水生木
   },
   {
     name: '木',
     color: '#166534', // 更沉稳的松柏绿
     position: { x: -143, y: -46 },
     properties: ['东方', '春季', '肝脏', '甲乙', '青色'],
-    connections: ['火']
+    connections: ['火'] // 木生火
   }
 ];
 
@@ -115,6 +115,15 @@ export default function LuopanSection() {
   const [ringRotations, setRingRotations] = useState<Record<string, number>>(
     Object.fromEntries(compassRings.map(ring => [ring.id, 0]))
   );
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // 检测屏幕尺寸
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // 处理五行元素点击
   const handleWuxingClick = (name: string) => {
@@ -133,8 +142,8 @@ export default function LuopanSection() {
   const getPropertyPosition = (centerX: number, centerY: number, radius: number, angle: number) => {
     const radian = (angle - 90) * Math.PI / 180;
     return {
-      x: centerX + radius * Math.cos(radian),
-      y: centerY + radius * Math.sin(radian)
+      x: Math.round(centerX + radius * Math.cos(radian)),
+      y: Math.round(centerY + radius * Math.sin(radian))
     };
   };
 
@@ -162,7 +171,8 @@ export default function LuopanSection() {
             >
               {/* 连接线 */}
               <svg className="absolute inset-0 w-full h-full">
-                <g transform="translate(150, 150) scale(0.6) md:translate(300, 300) md:scale(1.2)">
+                <g transform={`translate(${isMobile ? 150 : 300}, ${isMobile ? 150 : 300}) scale(${isMobile ? 0.6 : 1.2})`}>
+                  {/* 相生关系线 - 实线 */}
                   {wuxingData.map((element) => 
                     element.connections.map(target => {
                       const targetElement = wuxingData.find(e => e.name === target);
@@ -187,7 +197,6 @@ export default function LuopanSection() {
 
               {/* 五行元素 */}
               {wuxingData.map((element, index) => {
-                const isMobile = window.innerWidth < 768;
                 const centerOffset = isMobile ? 150 : 300;
                 const scale = isMobile ? 0.6 : 1.2;
                 
@@ -219,20 +228,19 @@ export default function LuopanSection() {
                     >
                       {/* 属性展示 */}
                       {element.properties.map((prop, i) => {
-                        const angle = (i * (360 / element.properties.length)) * (Math.PI / 180);
+                        const angle = (i * (360 / element.properties.length));
                         const radius = isMobile ? 45 : 75;
-                        const x = Math.cos(angle) * radius;
-                        const y = Math.sin(angle) * radius;
+                        const x = Math.cos(angle * Math.PI / 180) * radius;
+                        const y = Math.sin(angle * Math.PI / 180) * radius;
 
                         return (
                           <div
                             key={i}
-                            className="absolute"
+                            className="absolute z-20"
                             style={{
                               left: '50%',
                               top: '50%',
-                              transform: `translate(-50%, -50%) translate(${x}px, ${y}px)`,
-                              zIndex: 20
+                              transform: `translate(-50%, -50%) translate(${Math.round(x)}px, ${Math.round(y)}px)`
                             }}
                           >
                             <div 
@@ -306,8 +314,8 @@ export default function LuopanSection() {
                   <div 
                     className="absolute rounded-full border border-amber-200 shadow-inner"
                     style={{
-                      width: window.innerWidth < 768 ? ring.radius * 1.2 : ring.radius * 2,
-                      height: window.innerWidth < 768 ? ring.radius * 1.2 : ring.radius * 2,
+                      width: isMobile ? ring.radius * 1.2 : ring.radius * 2,
+                      height: isMobile ? ring.radius * 1.2 : ring.radius * 2,
                       left: '50%',
                       top: '50%',
                       transform: 'translate(-50%, -50%)',
@@ -318,9 +326,9 @@ export default function LuopanSection() {
                   {/* 文字 */}
                   {ring.elements.map((element, index) => {
                     const angle = (element.degree * Math.PI) / 180;
-                    const radius = window.innerWidth < 768 ? ring.radius * 0.6 : ring.radius;
-                    const x = Math.cos(angle) * radius;
-                    const y = Math.sin(angle) * radius;
+                    const radius = isMobile ? ring.radius * 0.6 : ring.radius;
+                    const x = Number((Math.cos(angle) * radius).toFixed());
+                    const y = Number((Math.sin(angle) * radius).toFixed());
                     
                     return (
                       <div
@@ -350,34 +358,114 @@ export default function LuopanSection() {
                 </motion.div>
               ))}
 
-              {/* 中心太极图 */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 
-                w-16 h-16 md:w-24 md:h-24 z-10">
+              {/* 中心八卦太极图 */}
+              <motion.div 
+                className="absolute top-[37%] left-[37%] -translate-x-1/2 -translate-y-1/2 
+                  w-20 h-20 md:w-32 md:h-32 z-10"
+                animate={{ rotate: 360 }}
+                transition={{
+                  duration: 60,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+              >
                 <div className="relative w-full h-full rounded-full overflow-hidden bg-white shadow-lg border border-amber-200">
-                  <svg viewBox="0 0 100 100" className="w-full h-full">
+                  <svg viewBox="0 0 200 200" className="w-full h-full">
                     {/* 背景圆 */}
-                    <circle cx="50" cy="50" r="49" fill="white" stroke="#FDE68A" strokeWidth="1" />
+                    <circle cx="100" cy="100" r="98" fill="white" stroke="#FDE68A" strokeWidth="1" />
                     
-                    {/* 阴阳分割线 - 使用精确的圆弧路径 */}
-                    <path
-                      d="M50,0 A50,50 0 0,1 50,100 A25,25 0 0,1 50,50 A25,25 0 0,0 50,0"
-                      fill="black"
-                      transform="rotate(90 50 50)"
-                    />
-                    <path
-                      d="M50,0 A50,50 0 0,0 50,100 A25,25 0 0,0 50,50 A25,25 0 0,1 50,0"
-                      fill="white"
-                      transform="rotate(90 50 50)"
-                    />
+                    {/* 八卦符号 - 围绕太极图，按照传统方位排列 */}
+                    {/* 乾卦 (天) - 正北方 - 三阳爻 */}
+                    <g transform="translate(100, 20)">
+                      <line x1="-12" y1="-5" x2="12" y2="-5" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="-12" y1="0" x2="12" y2="0" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="-12" y1="5" x2="12" y2="5" stroke="#064E3B" strokeWidth="2" />
+                    </g>
                     
-                    {/* 阴阳鱼眼 - 调整位置和大小 */}
-                    <circle cx="25" cy="50" r="6" fill="black" />
-                    <circle cx="25" cy="50" r="1.5" fill="white" />
-                    <circle cx="75" cy="50" r="6" fill="white" />
-                    <circle cx="75" cy="50" r="1.5" fill="black" />
+                    {/* 兑卦 (泽) - 东北方 - 上下阳爻，中间阴爻 */}
+                    <g transform="translate(155, 45)">
+                      <line x1="-12" y1="-5" x2="12" y2="-5" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="-12" y1="0" x2="-2" y2="0" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="2" y1="0" x2="12" y2="0" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="-12" y1="5" x2="12" y2="5" stroke="#064E3B" strokeWidth="2" />
+                    </g>
+                    
+                    {/* 离卦 (火) - 正东方 - 上下阳爻，中间阴爻 */}
+                    <g transform="translate(180, 100)">
+                      <line x1="-12" y1="-5" x2="12" y2="-5" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="-12" y1="0" x2="-2" y2="0" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="2" y1="0" x2="12" y2="0" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="-12" y1="5" x2="12" y2="5" stroke="#064E3B" strokeWidth="2" />
+                    </g>
+                    
+                    {/* 震卦 (雷) - 东南方 - 下阳爻，上中阴爻 */}
+                    <g transform="translate(155, 155)">
+                      <line x1="-12" y1="-5" x2="-2" y2="-5" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="2" y1="-5" x2="12" y2="-5" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="-12" y1="0" x2="-2" y2="0" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="2" y1="0" x2="12" y2="0" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="-12" y1="5" x2="12" y2="5" stroke="#064E3B" strokeWidth="2" />
+                    </g>
+                    
+                    {/* 巽卦 (风) - 正南方 - 上中阳爻，下阴爻 */}
+                    <g transform="translate(100, 180)">
+                      <line x1="-12" y1="-5" x2="12" y2="-5" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="-12" y1="0" x2="12" y2="0" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="-12" y1="5" x2="-2" y2="5" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="2" y1="5" x2="12" y2="5" stroke="#064E3B" strokeWidth="2" />
+                    </g>
+                    
+                    {/* 坎卦 (水) - 西南方 - 中阳爻，上下阴爻 */}
+                    <g transform="translate(45, 155)">
+                      <line x1="-12" y1="-5" x2="-2" y2="-5" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="2" y1="-5" x2="12" y2="-5" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="-12" y1="0" x2="12" y2="0" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="-12" y1="5" x2="-2" y2="5" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="2" y1="5" x2="12" y2="5" stroke="#064E3B" strokeWidth="2" />
+                    </g>
+                    
+                    {/* 艮卦 (山) - 正西方 - 上阳爻，中下阴爻 */}
+                    <g transform="translate(20, 100)">
+                      <line x1="-12" y1="-5" x2="12" y2="-5" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="-12" y1="0" x2="-2" y2="0" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="2" y1="0" x2="12" y2="0" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="-12" y1="5" x2="-2" y2="5" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="2" y1="5" x2="12" y2="5" stroke="#064E3B" strokeWidth="2" />
+                    </g>
+                    
+                    {/* 坤卦 (地) - 西北方 - 三阴爻 */}
+                    <g transform="translate(45, 45)">
+                      <line x1="-12" y1="-5" x2="-2" y2="-5" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="2" y1="-5" x2="12" y2="-5" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="-12" y1="0" x2="-2" y2="0" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="2" y1="0" x2="12" y2="0" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="-12" y1="5" x2="-2" y2="5" stroke="#064E3B" strokeWidth="2" />
+                      <line x1="2" y1="5" x2="12" y2="5" stroke="#064E3B" strokeWidth="2" />
+                    </g>
+                    
+                    {/* 中心太极图 */}
+                    <g transform="translate(100, 100) scale(0.5)">
+                      <circle cx="0" cy="0" r="50" fill="white" stroke="#FDE68A" strokeWidth="1" />
+                      
+                      {/* 阴阳分割线 */}
+                      <path
+                        d="M0,-50 A50,50 0 0,1 0,50 A25,25 0 0,0 0,0 A25,25 0 0,1 0,-50"
+                        fill="black"
+                      />
+                      <path
+                        d="M0,-50 A50,50 0 0,0 0,50 A25,25 0 0,1 0,0 A25,25 0 0,0 0,-50"
+                        fill="white"
+                      />
+                      
+                      {/* 阴阳鱼眼 */}
+                      <circle cx="0" cy="-25" r="5" fill="white" />
+                      <circle cx="0" cy="-25" r="1.5" fill="black" />
+                      <circle cx="0" cy="25" r="5" fill="black" />
+                      <circle cx="0" cy="25" r="1.5" fill="white" />
+                    </g>
                   </svg>
                 </div>
-              </div>
+              </motion.div>
             </motion.div>
           </div>
         </div>
