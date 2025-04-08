@@ -29,13 +29,16 @@ const TagCloud = ({ tags, maxTags = 50 }: TagCloudProps) => {
   
   // 使用中医传统色彩
   const getTagColor = (value: number) => {
-    // 中医传统色彩：墨绿、朱红、藏青、赭石色、青黄
+    // 中医传统色彩：墨绿、朱红、藏青、赭石色、青黄、紫檀、丹砂、松花
     const colors = [
-      'hsl(150, 40%, 35%)', // 墨绿
-      'hsl(10, 80%, 50%)',  // 朱红
-      'hsl(210, 60%, 25%)', // 藏青
-      'hsl(30, 60%, 45%)',  // 赭石色
-      'hsl(60, 70%, 50%)'   // 青黄
+      'hsl(150, 40%, 35%)',  // 墨绿
+      'hsl(10, 80%, 50%)',    // 朱红
+      'hsl(210, 60%, 25%)',   // 藏青
+      'hsl(30, 60%, 45%)',    // 赭石色
+      'hsl(60, 70%, 50%)',    // 青黄
+      'hsl(340, 50%, 40%)',   // 紫檀
+      'hsl(0, 70%, 55%)',     // 丹砂
+      'hsl(90, 45%, 45%)'     // 松花
     ];
     
     // 根据权重选择颜色
@@ -98,16 +101,17 @@ const TagCloud = ({ tags, maxTags = 50 }: TagCloudProps) => {
           display: flex;
           justify-content: center;
           align-items: center;
-          perspective: 600px;
-          background: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(250,250,250,0.5));
+          perspective: 800px;
+          background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(250,250,250,0.7));
+          padding: 1rem;
         }
         
         .tag-cloud {
           position: relative;
-          width: 240px;
-          height: 240px;
+          width: 280px;
+          height: 280px;
           transform-style: preserve-3d;
-          animation: rotate 25s infinite linear;
+          animation: rotate 30s infinite cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .tag-item {
@@ -118,23 +122,25 @@ const TagCloud = ({ tags, maxTags = 50 }: TagCloudProps) => {
           white-space: nowrap;
           user-select: none;
           transform-style: preserve-3d;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .tag-item:hover {
           z-index: 1000 !important;
-          transform: scale(1.3) !important;
-          text-shadow: 0 2px 8px rgba(0,0,0,0.2) !important;
+          transform: scale(1.2) !important;
+          text-shadow: 0 3px 12px rgba(0,0,0,0.15) !important;
+          filter: brightness(1.1);
         }
         
         @keyframes rotate {
           0% {
-            transform: rotateX(5deg) rotateY(0deg);
+            transform: rotateX(8deg) rotateY(0deg);
           }
           50% {
-            transform: rotateX(-5deg) rotateY(180deg);
+            transform: rotateX(-8deg) rotateY(180deg);
           }
           100% {
-            transform: rotateX(5deg) rotateY(360deg);
+            transform: rotateX(8deg) rotateY(360deg);
           }
         }
         

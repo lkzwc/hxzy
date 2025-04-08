@@ -98,7 +98,7 @@ export default function Community() {
   };
 
   // 使用SWR获取帖子数据
-  const { data, error, isLoading, size, setSize, mutate } = useSWRInfinite<PostsResponse>(
+  const { data, error, isLoading: postsLoading, size, setSize, mutate } = useSWRInfinite<PostsResponse>(
     (index) => `/api/posts?${getQueryParams(index + 1)}`,
     fetcher,
     {
@@ -111,7 +111,7 @@ export default function Community() {
   // 合并所有页面的数据
   const posts = data ? data.flatMap(page => page.posts) : [];
   const hasMore = data ? data[data.length - 1]?.hasMore : true;
-  const isLoadingMore = isLoading || (size > 0 && data && typeof data[size - 1] === "undefined");
+  const isLoadingMore = postsLoading || (size > 0 && data && typeof data[size - 1] === "undefined");
 
   // 处理搜索和分类筛选
   const handleSearch = () => {
@@ -261,7 +261,7 @@ export default function Community() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 mt-4">
         {/* 帖子列表 */}
         <div className="lg:col-span-4 space-y-3">
-          {!data && isLoading ? (
+          {!data && postsLoading ? (
             <div className="flex justify-center items-center min-h-[200px]">
               <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-2 sm:border-3 border-primary border-t-transparent"></div>
             </div>

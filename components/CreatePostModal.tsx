@@ -33,8 +33,8 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
         return
       }
       // 标签数量限制
-      if (selectedTags.length >= 5) {
-        alert('最多只能添加5个标签')
+      if (selectedTags.length >= 3) {
+        alert('最多只能添加3个标签')
         return
       }
       // 避免重复标签
@@ -57,6 +57,12 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
 
     if (!session?.user) {
       router.push('/login')
+      return
+    }
+
+    // 检查图片数量限制
+    if (images.length + files.length > 9) {
+      alert('最多只能上传9张图片')
       return
     }
 
@@ -97,6 +103,18 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
 
     if (selectedTags.length === 0) {
       alert('请至少选择一个标签')
+      return
+    }
+
+    // 验证标题长度
+    if (title.trim().length > 30) {
+      alert('标题不能超过30个字符')
+      return
+    }
+
+    // 验证内容长度
+    if (content.trim().length > 250) {
+      alert('内容不能超过250个字符')
       return
     }
 
@@ -187,12 +205,12 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
                 <input
                   ref={tagInputRef}
                   type="text"
-                  placeholder={selectedTags.length === 0 ? "添加标签以便他人快速找到，输入标签回车（最多5个）" : "继续添加标签..."}
+                  placeholder={selectedTags.length === 0 ? "添加标签以便他人快速找到，输入标签回车（最多3个）" : "继续添加标签..."}
                   value={currentTag}
                   onChange={(e) => setCurrentTag(e.target.value)}
                   onKeyDown={handleAddTag}
                   className="flex-1 bg-transparent border-none text-sm focus:outline-none min-w-[120px]"
-                  disabled={selectedTags.length >= 5}
+                  disabled={selectedTags.length >= 3}
                 />
               </div>
             </div>
