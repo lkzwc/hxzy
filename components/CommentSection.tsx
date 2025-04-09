@@ -54,6 +54,12 @@ export default function CommentSection({
     const files = e.target.files
     if (!files?.length) return
 
+    // 检查图片数量限制
+    if (images.length + files.length > 3) {
+      alert('最多只能上传3张图片')
+      return
+    }
+
     const formData = new FormData()
     for (let i = 0; i < files.length; i++) {
       formData.append('files', files[i])
@@ -82,6 +88,12 @@ export default function CommentSection({
     e.preventDefault()
     if (!session) return
     if (!content.trim()) return
+
+    // 验证内容长度
+    if (content.trim().length > 200) {
+      alert('评论内容不能超过200字')
+      return
+    }
 
     setIsSubmitting(true)
     try {

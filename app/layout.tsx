@@ -19,12 +19,7 @@ export const metadata = {
     email: false,
     address: false,
     telephone: false,
-  },
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-  },
-  themeColor: '#2C3E50',
+  }
 }
 
 export default function RootLayout({

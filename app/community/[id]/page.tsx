@@ -12,6 +12,8 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { EyeOutlined, MessageOutlined, StarOutlined, ShareAltOutlined, ClockCircleOutlined } from "@ant-design/icons";
 import CommentSection from "@/components/CommentSection";
 import LikeButton from "@/components/LikeButton";
+import { MessageType, useMessageAlert } from "@/components/useMessageAlert";
+
 
 // 配置 dayjs
 dayjs.locale("zh-cn");
@@ -60,6 +62,7 @@ export default function PostDetail({ params }: any) {
   const [commentImages, setCommentImages] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: session } = useSession();
+  const { openNotification } = useMessageAlert();
   const router = useRouter();
 
   useEffect(() => {
@@ -113,8 +116,8 @@ export default function PostDetail({ params }: any) {
       const data = await response.json();
       setCommentImages((prev) => [...prev, ...data.urls]);
     } catch (error) {
-      console.error("Error uploading images:", error);
-      alert("图片上传失败，请重试");
+      console.error("Error uploading images:",error);
+      openNotification("图片上传失败，请重试", MessageType.ERROR);
     }
   };
 
@@ -155,7 +158,7 @@ export default function PostDetail({ params }: any) {
       setCommentImages([]);
     } catch (error) {
       console.error("Error submitting comment:", error);
-      alert("评论失败，请重试");
+      openNotification("评论失败，请重试",MessageType.ERROR);
     } finally {
       setIsSubmitting(false);
     }

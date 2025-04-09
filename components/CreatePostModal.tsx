@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { CloudUploadOutlined } from '@ant-design/icons'
+import { useMessageAlert,MessageType } from './useMessageAlert'
 
 interface CreatePostModalProps {
   isOpen: boolean
@@ -21,31 +22,41 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
   const [isSubmitting, setIsSubmitting] = useState(false)
   const tagInputRef = useRef<HTMLInputElement>(null)
   const { data: session } = useSession()
+  const { openNotification } = useMessageAlert()
   const router = useRouter()
 
-  const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const [tagError, setTagError] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (tagError) {
+      openNotification(tagError)
+      setTagError(null)
+    }
+  }, [tagError])
+
+  const handleAddTag = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && currentTag.trim()) {
       e.preventDefault()
       const newTag = currentTag.trim()
       // 标签长度限制
       if (newTag.length > 20) {
-        alert('标签长度不能超过20个字符')
+        setTagError('标签长度不能超过20个字符')
         return
       }
       // 标签数量限制
       if (selectedTags.length >= 3) {
-        alert('最多只能添加3个标签')
+        setTagError('最多只能添加3个标签')
         return
       }
       // 避免重复标签
       if (selectedTags.includes(newTag)) {
-        alert('该标签已存在')
+        setTagError('该标签已存在')
         return
       }
       setSelectedTags(prev => [...prev, newTag])
       setCurrentTag('')
     }
-  }
+  }, [currentTag, selectedTags, setTagError])
 
   const handleRemoveTag = (tagToRemove: string) => {
     setSelectedTags(prev => prev.filter(tag => tag !== tagToRemove))
@@ -62,7 +73,7 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
 
     // 检查图片数量限制
     if (images.length + files.length > 9) {
-      alert('最多只能上传9张图片')
+      openNotification('最多只能上传9张图片', MessageType.WARNING)
       return
     }
 
@@ -90,7 +101,7 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
       setImages(prev => [...prev, ...data.urls])
     } catch (error) {
       console.error('Error uploading images:', error)
-      alert(error instanceof Error ? error.message : '图片上传失败，请重试')
+      openNotification(error instanceof Error ? error.message : '图片上传失败，请重试')
     }
   }
 
@@ -102,19 +113,19 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
     }
 
     if (selectedTags.length === 0) {
-      alert('请至少选择一个标签')
+      openNotification('请至少选择一个标签')
       return
     }
 
     // 验证标题长度
     if (title.trim().length > 30) {
-      alert('标题不能超过30个字符')
+      openNotification('标题不能超过30个字符')
       return
     }
 
     // 验证内容长度
     if (content.trim().length > 250) {
-      alert('内容不能超过250个字符')
+      openNotification('内容不能超过250个字符')
       return
     }
 
@@ -138,9 +149,9 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
       if (!response.ok) {
         const data = await response.json()
         throw new Error(data.error || '发布失败')
+      }else{
+        openNotification('发布成功')
       }
-
-      const data = await response.json()
       setTitle('')
       setContent('')
       setSelectedTags([])
@@ -150,7 +161,7 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
       router.refresh()
     } catch (error) {
       console.error('Error creating post:', error)
-      alert(error instanceof Error ? error.message : '发布失败，请重试')
+      openNotification(error instanceof Error ? error.message : '发布失败，请重试')
     } finally {
       setIsSubmitting(false)
     }
