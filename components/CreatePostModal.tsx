@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { CloudUploadOutlined } from '@ant-design/icons'
-import { useMessageAlert,MessageType } from './useMessageAlert'
+import { message } from 'antd'
 
 interface CreatePostModalProps {
   isOpen: boolean
@@ -22,14 +22,13 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
   const [isSubmitting, setIsSubmitting] = useState(false)
   const tagInputRef = useRef<HTMLInputElement>(null)
   const { data: session } = useSession()
-  const { openNotification } = useMessageAlert()
   const router = useRouter()
 
   const [tagError, setTagError] = useState<string | null>(null)
 
   useEffect(() => {
     if (tagError) {
-      openNotification(tagError)
+      message.warning(tagError)
       setTagError(null)
     }
   }, [tagError])
@@ -73,7 +72,7 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
 
     // 检查图片数量限制
     if (images.length + files.length > 9) {
-      openNotification('最多只能上传9张图片', MessageType.WARNING)
+      message.warning('最多只能上传9张图片')
       return
     }
 
@@ -101,7 +100,7 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
       setImages(prev => [...prev, ...data.urls])
     } catch (error) {
       console.error('Error uploading images:', error)
-      openNotification(error instanceof Error ? error.message : '图片上传失败，请重试')
+      message.warning('图片上传失败，请重试')
     }
   }
 
@@ -113,19 +112,19 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
     }
 
     if (selectedTags.length === 0) {
-      openNotification('请至少选择一个标签')
+     message.warning('请添加标签')
       return
     }
 
     // 验证标题长度
     if (title.trim().length > 30) {
-      openNotification('标题不能超过30个字符')
+      message.warning('标题不能超过30个字符')
       return
     }
 
     // 验证内容长度
     if (content.trim().length > 250) {
-      openNotification('内容不能超过250个字符')
+      message.warning('内容不能超过250个字符')
       return
     }
 
@@ -150,7 +149,7 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
         const data = await response.json()
         throw new Error(data.error || '发布失败')
       }else{
-        openNotification('发布成功')
+        message.success('发布成功')
       }
       setTitle('')
       setContent('')
@@ -161,7 +160,7 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
       router.refresh()
     } catch (error) {
       console.error('Error creating post:', error)
-      openNotification(error instanceof Error ? error.message : '发布失败，请重试')
+      message.warning('发布失败，请重试')
     } finally {
       setIsSubmitting(false)
     }

@@ -9,11 +9,16 @@ import Link from "next/link";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { EyeOutlined, MessageOutlined, StarOutlined, ShareAltOutlined, ClockCircleOutlined } from "@ant-design/icons";
+import {
+  EyeOutlined,
+  MessageOutlined,
+  StarOutlined,
+  ShareAltOutlined,
+  ClockCircleOutlined,
+} from "@ant-design/icons";
 import CommentSection from "@/components/CommentSection";
 import LikeButton from "@/components/LikeButton";
-import { MessageType, useMessageAlert } from "@/components/useMessageAlert";
-
+import { App, Result } from "antd";
 
 // 配置 dayjs
 dayjs.locale("zh-cn");
@@ -62,7 +67,7 @@ export default function PostDetail({ params }: any) {
   const [commentImages, setCommentImages] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: session } = useSession();
-  const { openNotification } = useMessageAlert();
+  const { message } = App.useApp();
   const router = useRouter();
 
   useEffect(() => {
@@ -116,8 +121,8 @@ export default function PostDetail({ params }: any) {
       const data = await response.json();
       setCommentImages((prev) => [...prev, ...data.urls]);
     } catch (error) {
-      console.error("Error uploading images:",error);
-      openNotification("图片上传失败，请重试", MessageType.ERROR);
+      console.error("Error uploading images:", error);
+      message.warning("图片上传失败，请重试");
     }
   };
 
@@ -158,7 +163,7 @@ export default function PostDetail({ params }: any) {
       setCommentImages([]);
     } catch (error) {
       console.error("Error submitting comment:", error);
-      openNotification("评论失败，请重试",MessageType.ERROR);
+      message.warning("评论失败，请重试");
     } finally {
       setIsSubmitting(false);
     }
@@ -174,157 +179,173 @@ export default function PostDetail({ params }: any) {
 
   if (error || !post) {
     return (
-      <div className="flex justify-center items-center min-h-screen text-primary-600">
-        {error || "帖子不存在"}
-      </div>
+      <Result
+        status="404"
+        title="暂无数据"
+        subTitle="Sorry, the page you visited does not exist."
+      />
     );
   }
 
   return (
-      <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row gap-6">
-        {/* 左侧边栏 - 作者信息和交互按钮 */}
-        <div className="w-[80px] hidden md:block flex-shrink-0">
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sticky top-6 hover:shadow-md transition-all duration-300">
-            {/* 作者信息 */}
-            <div className="flex flex-col items-center text-center mb-4 pb-4 border-b border-gray-100">
-              <div className="relative w-16 h-16 mb-3">
-                <Image
-                  src={post.author.image || "/images/default-avatar.png"}
-                  alt={post.author.name || "用户"}
-                  fill
-                  sizes="(max-width: 64px) 100vw, 64px"
-                  priority
-                  className="rounded-full object-cover border-2 border-white shadow-sm"
-                />
-              </div>
-              <div className="font-medium text-gray-900 mb-1 text-sm truncate w-full" title={post.author.name || "匿名用户"}>
-                {post.author.name ? (post.author.name.length > 5 ? `${post.author.name.slice(0, 5)}...` : post.author.name) : "匿名用户"}
-              </div>
-              <button className="w-full py-1.5 bg-primary text-white rounded-full text-xs font-medium hover:bg-primary/90 transition-colors">
-                关注
-              </button>
+    <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row gap-6">
+      {/* 左侧边栏 - 作者信息和交互按钮 */}
+      <div className="w-[80px] hidden md:block flex-shrink-0">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sticky top-6 hover:shadow-md transition-all duration-300">
+          {/* 作者信息 */}
+          <div className="flex flex-col items-center text-center mb-4 pb-4 border-b border-gray-100">
+            <div className="relative w-16 h-16 mb-3">
+              <Image
+                src={post.author.image || "/images/default-avatar.png"}
+                alt={post.author.name || "用户"}
+                fill
+                sizes="(max-width: 64px) 100vw, 64px"
+                priority
+                className="rounded-full object-cover border-2 border-white shadow-sm"
+              />
             </div>
-
-            {/* 交互按钮 */}
-            <div className="flex flex-col items-center gap-4 w-full">
-              <div className="flex flex-col items-center w-full px-2">
-                <LikeButton
-                  postId={post.id}
-                  initialLikes={post._count.postLikes}
-                  className="!flex-col w-full"
-                />
-              </div>
-              <div className="flex flex-col items-center w-full px-2 text-gray-500 hover:text-primary transition-colors cursor-pointer">
-                <MessageOutlined className="w-6 h-6" />
-                <span className="text-xs mt-1 ml-[-7px]">{post._count.comments}</span>
-              </div>
-              <div className="flex flex-col items-center w-full px-2 text-gray-500 hover:text-amber-500 transition-colors cursor-pointer">
-                <StarOutlined className="w-6 h-6" />
-                <span className="text-xs mt-1 ml-[-7px]">收藏</span>
-              </div>
-              <div className="flex flex-col items-center w-full px-2 text-gray-500 hover:text-emerald-500 transition-colors cursor-pointer">
-                <ShareAltOutlined className="w-6 h-6" />
-                <span className="text-xs mt-1 ml-[-7px]">分享</span>
-              </div>
+            <div
+              className="font-medium text-gray-900 mb-1 text-sm truncate w-full"
+              title={post.author.name || "匿名用户"}
+            >
+              {post.author.name
+                ? post.author.name.length > 5
+                  ? `${post.author.name.slice(0, 5)}...`
+                  : post.author.name
+                : "匿名用户"}
             </div>
-          </div>
-        </div>
-
-        {/* 主要内容区域 */}
-        <div className="flex-1 min-w-0">
-          {/* 帖子内容卡片 */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 hover:shadow-md transition-all duration-300">
-            {/* 帖子标题和元信息 */}
-            <div className="border-b border-gray-100 pb-4 mb-4">
-              <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">{post.title}</h1>
-              
-              {/* 标签展示 */}
-              {post.tags && post.tags.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mt-3">
-                  {post.tags.map((tag) => (
-                    <Link 
-                      key={tag} 
-                      href={`/community?tag=${encodeURIComponent(tag)}`}
-                      className="px-2.5 py-1 bg-gray-50 text-gray-600 text-xs rounded-full hover:bg-gray-100 transition-colors border border-gray-100"
-                    >
-                      {tag}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* 帖子内容 */}
-            <div className="prose max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap break-words">
-              {post.content}
-            </div>
-
-            {/* 帖子图片 */}
-            {post.images && post.images.length > 0 && (
-              <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
-                {post.images.map((image, index) => (
-                  <div key={index} className="relative aspect-square rounded-lg overflow-hidden border border-gray-100">
-                    <Image
-                      src={image}
-                      alt={`帖子图片 ${index + 1}`}
-                      fill
-                      className="object-cover hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* 移动端交互按钮 */}
-            <div className="md:hidden flex justify-around mt-6 pt-4 border-t border-gray-100">
-              <div className="flex flex-col items-center">
-                <LikeButton
-                  postId={post.id}
-                  initialLikes={post._count.postLikes}
-                  className="!flex-col !gap-1"
-                />
-              </div>
-              <div className="flex flex-col items-center text-gray-500">
-                <MessageOutlined className="w-6 h-6" />
-                <span className="text-xs mt-1">{post._count.comments}</span>
-              </div>
-              <div className="flex flex-col items-center text-gray-500">
-                <StarOutlined className="w-6 h-6" />
-                <span className="text-xs mt-1">收藏</span>
-              </div>
-              <div className="flex flex-col items-center text-gray-500">
-                <ShareAltOutlined className="w-6 h-6" />
-                <span className="text-xs mt-1">分享</span>
-              </div>
-            </div>
+            <button className="w-full py-1.5 bg-primary text-white rounded-full text-xs font-medium hover:bg-primary/90 transition-colors">
+              关注
+            </button>
           </div>
 
-          {/* 评论区 */}
-          <div className="mt-4 sm:mt-6 bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
-            <h2 className="text-lg font-medium text-gray-900 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
-              <span className="w-1 h-4 bg-primary rounded-full"></span>
-              评论区 ({post._count.comments})
-            </h2>
-            <CommentSection
-              postId={post.id}
-              comments={post.comments}
-              onCommentAdded={(newComment) => {
-                setPost((prev) =>
-                  prev
-                    ? {
-                        ...prev,
-                        comments: [...prev.comments, newComment],
-                        _count: {
-                          ...prev._count,
-                          comments: prev._count.comments + 1,
-                        },
-                      }
-                    : null
-                );
-              }}
-            />
+          {/* 交互按钮 */}
+          <div className="flex flex-col items-center gap-4 w-full">
+            <div className="flex flex-col items-center w-full px-2">
+              <LikeButton
+                postId={post.id}
+                initialLikes={post._count.postLikes}
+                className="!flex-col w-full"
+              />
+            </div>
+            <div className="flex flex-col items-center w-full px-2 text-gray-500 hover:text-primary transition-colors cursor-pointer">
+              <MessageOutlined className="w-6 h-6" />
+              <span className="text-xs mt-1 ml-[-7px]">
+                {post._count.comments}
+              </span>
+            </div>
+            <div className="flex flex-col items-center w-full px-2 text-gray-500 hover:text-amber-500 transition-colors cursor-pointer">
+              <StarOutlined className="w-6 h-6" />
+              <span className="text-xs mt-1 ml-[-7px]">收藏</span>
+            </div>
+            <div className="flex flex-col items-center w-full px-2 text-gray-500 hover:text-emerald-500 transition-colors cursor-pointer">
+              <ShareAltOutlined className="w-6 h-6" />
+              <span className="text-xs mt-1 ml-[-7px]">分享</span>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* 主要内容区域 */}
+      <div className="flex-1 min-w-0">
+        {/* 帖子内容卡片 */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 hover:shadow-md transition-all duration-300">
+          {/* 帖子标题和元信息 */}
+          <div className="border-b border-gray-100 pb-4 mb-4">
+            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">
+              {post.title}
+            </h1>
+
+            {/* 标签展示 */}
+            {post.tags && post.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mt-3">
+                {post.tags.map((tag) => (
+                  <Link
+                    key={tag}
+                    href={`/community?tag=${encodeURIComponent(tag)}`}
+                    className="px-2.5 py-1 bg-gray-50 text-gray-600 text-xs rounded-full hover:bg-gray-100 transition-colors border border-gray-100"
+                  >
+                    {tag}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* 帖子内容 */}
+          <div className="prose max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap break-words">
+            {post.content}
+          </div>
+
+          {/* 帖子图片 */}
+          {post.images && post.images.length > 0 && (
+            <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {post.images.map((image, index) => (
+                <div
+                  key={index}
+                  className="relative aspect-square rounded-lg overflow-hidden border border-gray-100"
+                >
+                  <Image
+                    src={image}
+                    alt={`帖子图片 ${index + 1}`}
+                    fill
+                    className="object-cover hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* 移动端交互按钮 */}
+          <div className="md:hidden flex justify-around mt-6 pt-4 border-t border-gray-100">
+            <div className="flex flex-col items-center">
+              <LikeButton
+                postId={post.id}
+                initialLikes={post._count.postLikes}
+                className="!flex-col !gap-1"
+              />
+            </div>
+            <div className="flex flex-col items-center text-gray-500">
+              <MessageOutlined className="w-6 h-6" />
+              <span className="text-xs mt-1">{post._count.comments}</span>
+            </div>
+            <div className="flex flex-col items-center text-gray-500">
+              <StarOutlined className="w-6 h-6" />
+              <span className="text-xs mt-1">收藏</span>
+            </div>
+            <div className="flex flex-col items-center text-gray-500">
+              <ShareAltOutlined className="w-6 h-6" />
+              <span className="text-xs mt-1">分享</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 评论区 */}
+        <div className="mt-4 sm:mt-6 bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
+          <h2 className="text-lg font-medium text-gray-900 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
+            <span className="w-1 h-4 bg-primary rounded-full"></span>
+            评论区 ({post._count.comments})
+          </h2>
+          <CommentSection
+            postId={post.id}
+            comments={post.comments}
+            onCommentAdded={(newComment) => {
+              setPost((prev) =>
+                prev
+                  ? {
+                      ...prev,
+                      comments: [...prev.comments, newComment],
+                      _count: {
+                        ...prev._count,
+                        comments: prev._count.comments + 1,
+                      },
+                    }
+                  : null
+              );
+            }}
+          />
+        </div>
+      </div>
+    </div>
   );
 }
