@@ -1,4 +1,5 @@
 'use client'
+import React from 'react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -44,13 +45,17 @@ const doctorDetailData = {
 };
 
 export default function DoctorDetailPage({ params }: any) {
+  // 使用React.use()解包params
+  const resolvedParams: any = React.use(params);
+  const doctorId = resolvedParams.id;
+  
   const [doctor, setDoctor] = useState<any>(null);
 
   useEffect(() => {
     // 这里应该是从API获取数据
     // 暂时使用示例数据
     setDoctor(doctorDetailData);
-  }, [params.id]);
+  }, [doctorId]);
 
   if (!doctor) {
     return <div>Loading...</div>;
@@ -170,4 +175,4 @@ export default function DoctorDetailPage({ params }: any) {
       </div>
     </div>
   );
-} 
+}
