@@ -3,38 +3,20 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { Form, Input, Button, Select, Card, Alert, message } from 'antd';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 
 export default function DoctorRegisterPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState({ type: '', content: '' });
+  const [formStatus, setFormStatus] = useState({ type: '', content: '' });
+  const [form] = Form.useForm();
+  const [messageApi, contextHolder] = message.useMessage();
   
-  // 表单数据
-  const [formData, setFormData] = useState({
-    name: '',
-    department: '',
-    hospital: '',
-    specialty: '',
-    phone: '',
-    province: '',
-    introduction: '',
-    avatar: ''
-  });
-
-  // 处理输入变化
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-  };
-
   // 处理表单提交
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onFinish = async (values: any) => {
     setIsSubmitting(true);
-    setMessage({ type: '', content: '' });
+    setFormStatus({ type: '', content: '' });
 
     try {
       const response = await fetch('/api/doctors', {
@@ -42,38 +24,38 @@ export default function DoctorRegisterPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(values),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setMessage({ type: 'success', content: '提交成功！您的信息已经提交，我们会尽快审核。' });
+        setFormStatus({ type: 'success', content: '提交成功！您的信息已经提交，我们会尽快审核。' });
+        messageApi.success('提交成功！');
         // 重置表单
-        setFormData({
-          name: '',
-          department: '',
-          hospital: '',
-          specialty: '',
-          phone: '',
-          province: '',
-          introduction: '',
-          avatar: ''
-        });
+        form.resetFields();
         // 延迟跳转
         setTimeout(() => {
           router.push('/doctors');
         }, 2000);
       } else {
-        setMessage({ type: 'error', content: data.error || '提交失败，请稍后再试。' });
+        setFormStatus({ type: 'error', content: data.error || '提交失败，请稍后再试。' });
+        messageApi.error(data.error || '提交失败，请稍后再试。');
       }
     } catch (error) {
       console.error('提交出错:', error);
-      setMessage({ type: 'error', content: '提交过程中出现错误，请稍后再试。' });
+      setFormStatus({ type: 'error', content: '提交过程中出现错误，请稍后再试。' });
+      messageApi.error('提交过程中出现错误，请稍后再试。');
     } finally {
       setIsSubmitting(false);
     }
   };
+  
+  const onFinishFailed = (errorInfo: any) => {
+    messageApi.error('表单验证失败，请检查输入内容');
+    console.log('Failed:', errorInfo);
+  };
+
 
   // 省份列表
   const provinces = [
@@ -88,152 +70,162 @@ export default function DoctorRegisterPage() {
 
   return (
     <div className="min-h-screen bg-neutral-50 py-12">
+      {contextHolder}
       <div className="max-w-3xl mx-auto px-4">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold text-neutral-800">名医入驻申请</h1>
-          <Link href="/doctors" className="text-primary hover:underline">
-            返回名医列表
-          </Link>
-        </div>
-
-        <div className="bg-white rounded-lg shadow-md p-8">
-          {message.content && (
-            <div className={`mb-6 p-4 rounded-md ${message.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
-              {message.content}
+        <Card
+          title={
+            <div className="flex justify-between items-center">
+              <h1 className="text-2xl font-bold text-neutral-800">名医入驻申请</h1>
+              <Link href="/doctors">
+                <Button type="link" icon={<ArrowLeftOutlined />}>返回名医列表</Button>
+              </Link>
             </div>
+          }
+          className="shadow-md"
+        >
+          {formStatus.content && (
+            <Alert
+              message={formStatus.content}
+              type={formStatus.type as 'success' | 'error' | 'info' | 'warning'}
+              showIcon
+              className="mb-6"
+            />
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <Form
+            form={form}
+            layout="vertical"
+            onFinish={onFinish}
+            onFinishFailed={onFinishFailed}
+            requiredMark
+          >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* 姓名 */}
-              <div>
-                <label htmlFor="name" className="block text-sm font-medium text-neutral-700 mb-1">姓名 <span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  id="name"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
+              <Form.Item
+                label="姓名"
+                name="name"
+                rules={[{ required: true, message: '请输入姓名' }]}
+              >
+                <Input placeholder="请输入姓名" />
+              </Form.Item>
 
               {/* 科室 */}
-              <div>
-                <label htmlFor="department" className="block text-sm font-medium text-neutral-700 mb-1">科室 <span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  id="department"
-                  name="department"
-                  value={formData.department}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
+              <Form.Item
+                label="科室"
+                name="department"
+                rules={[{ required: true, message: '请输入科室' }]}
+              >
+                <Input placeholder="请输入科室" />
+              </Form.Item>
 
               {/* 医院 */}
-              <div>
-                <label htmlFor="hospital" className="block text-sm font-medium text-neutral-700 mb-1">医院 <span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  id="hospital"
-                  name="hospital"
-                  value={formData.hospital}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
+              <Form.Item
+                label="医院"
+                name="hospital"
+                rules={[{ required: true, message: '请输入医院名称' }]}
+              >
+                <Input placeholder="请输入医院名称" />
+              </Form.Item>
 
               {/* 专长 */}
-              <div>
-                <label htmlFor="specialty" className="block text-sm font-medium text-neutral-700 mb-1">专长 <span className="text-red-500">*</span></label>
-                <input
-                  type="text"
-                  id="specialty"
-                  name="specialty"
-                  value={formData.specialty}
-                  onChange={handleChange}
-                  required
-                  placeholder="例如：内科、肿瘤科"
-                  className="w-full px-4 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+              <Form.Item
+                label="专长"
+                name="specialty"
+                rules={[{ required: true, message: '请选择专长' }]}
+              >
+                <Select
+                  mode="multiple"
+                  showSearch
+                  allowClear
+                  placeholder="请选择专长"
+                  optionFilterProp="children"
+                  filterOption={(input, option) =>
+                    (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
+                  }
+                  options={[
+                    { value: '中医内科', label: '中医内科' },
+                    { value: '中医外科', label: '中医外科' },
+                    { value: '中医妇科', label: '中医妇科' },
+                    { value: '中医儿科', label: '中医儿科' },
+                    { value: '中医骨伤科', label: '中医骨伤科' },
+                    { value: '针灸科', label: '针灸科' },
+                    { value: '推拿科', label: '推拿科' },
+                    { value: '中医肿瘤科', label: '中医肿瘤科' },
+                    { value: '中医皮肤科', label: '中医皮肤科' },
+                    { value: '中医男科', label: '中医男科' },
+                    { value: '中医养生', label: '中医养生' },
+                    { value: '中医康复', label: '中医康复' },
+                    { value: '中医心理', label: '中医心理' },
+                    { value: '中医眼科', label: '中医眼科' },
+                    { value: '中医耳鼻喉科', label: '中医耳鼻喉科' },
+                    { value: '中医肝病科', label: '中医肝病科' },
+                    { value: '中医脾胃病科', label: '中医脾胃病科' },
+                    { value: '中医肾病科', label: '中医肾病科' },
+                    { value: '中医心脑血管科', label: '中医心脑血管科' },
+                    { value: '中医糖尿病科', label: '中医糖尿病科' }
+                  ]}
                 />
-              </div>
+              </Form.Item>
 
               {/* 联系电话 */}
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-neutral-700 mb-1">联系电话 <span className="text-red-500">*</span></label>
-                <input
-                  type="tel"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
+              <Form.Item
+                label="联系电话"
+                name="phone"
+                rules={[
+                  { required: true, message: '请输入联系电话' },
+                  { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号码' }
+                ]}
+              >
+                <Input placeholder="请输入联系电话" />
+              </Form.Item>
 
               {/* 所在省份 */}
-              <div>
-                <label htmlFor="province" className="block text-sm font-medium text-neutral-700 mb-1">所在省份 <span className="text-red-500">*</span></label>
-                <select
-                  id="province"
-                  name="province"
-                  value={formData.province}
-                  onChange={handleChange}
-                  required
-                  className="w-full px-4 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                >
-                  <option value="">请选择省份</option>
-                  {provinces.map(province => (
-                    <option key={province} value={province}>{province}</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* 头像URL */}
-              <div className="md:col-span-2">
-                <label htmlFor="avatar" className="block text-sm font-medium text-neutral-700 mb-1">头像URL</label>
-                <input
-                  type="text"
-                  id="avatar"
-                  name="avatar"
-                  value={formData.avatar}
-                  onChange={handleChange}
-                  placeholder="请输入头像图片链接"
-                  className="w-full px-4 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                />
-              </div>
-
-              {/* 个人简介 */}
-              <div className="md:col-span-2">
-                <label htmlFor="introduction" className="block text-sm font-medium text-neutral-700 mb-1">个人简介 <span className="text-red-500">*</span></label>
-                <textarea
-                  id="introduction"
-                  name="introduction"
-                  value={formData.introduction}
-                  onChange={handleChange}
-                  required
-                  rows={5}
-                  className="w-full px-4 py-2 border border-neutral-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
-                ></textarea>
-              </div>
-            </div>
-
-            <div className="flex justify-center pt-4">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={`px-8 py-3 rounded-md text-white font-medium ${isSubmitting ? 'bg-neutral-400' : 'bg-primary hover:bg-primary-dark'} transition-colors`}
+              <Form.Item
+                label="所在省份"
+                name="province"
+                rules={[{ required: true, message: '请选择所在省份' }]}
               >
-                {isSubmitting ? '提交中...' : '提交申请'}
-              </button>
+                <Select placeholder="请选择省份">
+                  {provinces.map(province => (
+                    <Select.Option key={province} value={province}>{province}</Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
             </div>
-          </form>
-        </div>
+
+            {/* 头像URL */}
+            <Form.Item
+              label="头像URL"
+              name="avatar"
+            >
+              <Input placeholder="请输入头像图片链接" />
+            </Form.Item>
+
+            {/* 个人简介 */}
+            <Form.Item
+              label="个人简介"
+              name="introduction"
+              rules={[{ required: true, message: '请输入个人简介' }]}
+            >
+              <Input.TextArea 
+                rows={5} 
+                placeholder="请简要介绍您的专业背景、从医经历和擅长治疗的疾病等"
+              />
+            </Form.Item>
+
+            <Form.Item className="flex justify-end">
+              <Button
+                color="default" 
+                variant='solid'
+                htmlType="submit"
+                loading={isSubmitting}
+                size="large"
+              >
+                提交申请
+              </Button>
+            </Form.Item>
+          </Form>
+        </Card>
       </div>
     </div>
   );

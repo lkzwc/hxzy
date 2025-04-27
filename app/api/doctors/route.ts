@@ -72,13 +72,16 @@ export async function POST(request: Request) {
       }
     }
     
+    // 处理specialty字段，如果是数组则转换为字符串
+    const specialty = Array.isArray(body.specialty) ? body.specialty.join(', ') : body.specialty
+    
     // 创建新医生记录
     const newDoctor = await prisma.doctor.create({
       data: {
         name: body.name,
         department: body.department,
         hospital: body.hospital,
-        specialty: body.specialty,
+        specialty: specialty,
         phone: body.phone,
         province: body.province,
         introduction: body.introduction,

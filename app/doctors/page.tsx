@@ -1,6 +1,12 @@
-'use client'
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
+"use client";
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { Button, Input, Card, Pagination, Empty, Spin, Tag } from "antd";
+import {
+  PlusCircleOutlined,
+  RedoOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 
 // 定义医生数据类型
 interface Doctor {
@@ -25,87 +31,138 @@ interface Doctor {
 const doctorsData: Doctor[] = [
   {
     id: 1,
-    name: '张三丰',
-    title: '主任医师',
-    hospital: '北京中医医院',
-    region: '北京',
-    specialty: ['内科', '肿瘤科'],
-    avatar: '/doctors/doctor1.jpg',
-    description: '从医40余年，擅长治疗各种疑难杂症大撒的撒的撒的撒的撒的撒打算.dd..',
-    province: '',
-    ability: ''
+    name: "张三丰",
+    title: "主任医师",
+    hospital: "北京中医医院",
+    region: "北京",
+    specialty: ["内科", "肿瘤科"],
+    avatar: "/doctors/doctor1.jpg",
+    description:
+      "从医40余年，擅长治疗各种疑难杂症大撒的撒的撒的撒的撒的撒打算.dd..",
+    province: "",
+    ability: "",
   },
   // 添加更多医生数据...
 ];
 
 // 地区数据
 const regions = [
-  "北京", "天津", "河北", "山西", "内蒙古",
-  "辽宁", "吉林", "黑龙江", "上海", "江苏",
-  "浙江", "安徽", "福建", "江西", "山东",
-  "河南", "湖北", "湖南", "广东", "广西",
-  "海南", "重庆", "四川", "贵州", "云南",
-  "西藏", "陕西", "甘肃", "青海", "宁夏",
-  "新疆", "香港", "澳门"
+  "北京",
+  "天津",
+  "河北",
+  "山西",
+  "内蒙古",
+  "辽宁",
+  "吉林",
+  "黑龙江",
+  "上海",
+  "江苏",
+  "浙江",
+  "安徽",
+  "福建",
+  "江西",
+  "山东",
+  "河南",
+  "湖北",
+  "湖南",
+  "广东",
+  "广西",
+  "海南",
+  "重庆",
+  "四川",
+  "贵州",
+  "云南",
+  "西藏",
+  "陕西",
+  "甘肃",
+  "青海",
+  "宁夏",
+  "新疆",
+  "香港",
+  "澳门",
 ];
 // 专科数据
-const specialties = ['全部','全科', '内科', '外科', '妇科', '儿科', '肿瘤科', '骨科', '针灸科'];
+const specialties = [
+  "全部",
+  "全科",
+  "内科",
+  "外科",
+  "妇科",
+  "儿科",
+  "肿瘤科",
+  "骨科",
+  "针灸科",
+];
 
 export default function DoctorsPage() {
-  const [selectedRegion, setSelectedRegion] = useState('全部');
-  const [selectedSpecialty, setSelectedSpecialty] = useState('全部');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedRegion, setSelectedRegion] = useState("全部");
+  const [selectedSpecialty, setSelectedSpecialty] = useState("全部");
+  const [searchQuery, setSearchQuery] = useState("");
   const [doctors, setDoctors] = useState<any>([]);
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(12);
+  const [total, setTotal] = useState(0);
 
   // 定义获取医生数据的函数
   const fetchDoctors = async () => {
     try {
+      setLoading(true);
       // 构建带有筛选参数的URL
-      let url = '/api/doctors';
+      let url = "/api/doctors";
       const params = new URLSearchParams();
-      
-      if (selectedRegion !== '全部') {
-        params.append('province', selectedRegion);
+
+      if (selectedRegion !== "全部") {
+        params.append("province", selectedRegion);
       }
-      
-      if (selectedSpecialty !== '全部') {
-        params.append('specialty', selectedSpecialty);
+
+      if (selectedSpecialty !== "全部") {
+        params.append("specialty", selectedSpecialty);
       }
-      
+
       if (searchQuery) {
-        params.append('search', searchQuery);
+        params.append("search", searchQuery);
       }
       
+      // 添加分页参数
+      params.append("page", currentPage.toString());
+      params.append("pageSize", pageSize.toString());
+
       // 如果有参数，添加到URL
       const queryString = params.toString();
       if (queryString) {
         url = `${url}?${queryString}`;
       }
-      
+
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
-      const {data} = await response.json();
+      const { data, total: totalCount } = await response.json();
       setDoctors(data);
+      setTotal(totalCount || data.length);
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // 当筛选条件变化时获取数据
+  // 当筛选条件或分页变化时获取数据
   useEffect(() => {
     fetchDoctors();
-  }, [selectedRegion, selectedSpecialty]);
+  }, [selectedRegion, selectedSpecialty, currentPage, pageSize]);
 
   // 筛选医生 - 只根据搜索关键词筛选，地区和专科筛选已经在API请求中处理
   const filteredDoctors = doctors.filter((doctor: Doctor) => {
     if (!searchQuery) return true;
-    
-    return doctor.name?.includes(searchQuery) || 
-           doctor.hospital?.includes(searchQuery) ||
-           doctor.description?.includes(searchQuery) ||
-           doctor.province?.includes(searchQuery);
+
+    return (
+      doctor.name?.includes(searchQuery) ||
+      doctor.hospital?.includes(searchQuery) ||
+      doctor.description?.includes(searchQuery) ||
+      doctor.province?.includes(searchQuery)
+    );
   });
 
   return (
@@ -113,23 +170,19 @@ export default function DoctorsPage() {
       {/* 筛选区域 */}
       <div className="max-w-7xl mx-auto p-4">
         {/* 顶部搜索区域 */}
-        <div className="bg-white rounded-lg shadow-md p-2 space-y-6">
+        <div className="bg-white rounded-lg shadow-md p-6 space-y-6 border border-teal-50">
           {/* 搜索框 */}
           <div className="relative">
             <div className="flex items-center">
-              <input
-                type="text"
+              <Input.Search
                 placeholder="搜索疾病名称、专科、医生名称、医院名称..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-4 py-3 border border-neutral-200 rounded-l-md focus:outline-none focus:ring-2 focus:ring-primary"
+                onSearch={() => fetchDoctors()}
+                enterButton={<Button color="cyan" variant="outlined" type="primary" icon={<SearchOutlined />} className="bg-gradient-to-r from-green-500 to-teal-500 border-0">搜索</Button>}
+                size="large"
+                className="w-full"
               />
-              <button 
-                onClick={() => fetchDoctors()} 
-                className="bg-primary py-[1px] px-10 text-white rounded-r-md hover:bg-primary-dark transition-colors"
-              >
-                🔍 搜索
-              </button>
             </div>
           </div>
 
@@ -137,50 +190,57 @@ export default function DoctorsPage() {
           <div className="space-y-4">
             {/* 地区筛选 */}
             <div>
-              <h3 className="text-neutral-800 font-medium mb-2">按地区筛选：</h3>
+              <h3 className="text-neutral-800 font-medium mb-2">
+                按地区筛选：
+              </h3>
               <div className="flex flex-wrap gap-2">
-                <button
-                  onClick={() => setSelectedRegion('全部')}
-                  className={`px-4 py-1 rounded-full text-sm transition-colors
-                    ${selectedRegion === '全部'
-                      ? 'bg-primary text-white'
-                      : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
-                    }`}
+                <Tag.CheckableTag
+                  checked={selectedRegion === "全部"}
+                  onChange={() => setSelectedRegion("全部")}
+                  className={`px-4 py-1 rounded-full text-sm transition-all duration-300 ${
+                    selectedRegion === "全部" 
+                      ? "bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-sm" 
+                      : "hover:bg-teal-50"
+                  }`}
                 >
                   全部
-                </button>
+                </Tag.CheckableTag>
                 {regions.map((region) => (
-                  <button
+                  <Tag.CheckableTag
                     key={region}
-                    onClick={() => setSelectedRegion(region)}
-                    className={`px-4 py-1 rounded-full text-sm transition-colors
-                      ${selectedRegion === region
-                        ? 'bg-primary text-white'
-                        : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
-                      }`}
+                    checked={selectedRegion === region}
+                    onChange={() => setSelectedRegion(region)}
+                    className={`px-4 py-1 rounded-full text-sm transition-all duration-300 ${
+                      selectedRegion === region 
+                        ? "bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-sm" 
+                        : "hover:bg-teal-50"
+                    }`}
                   >
                     {region}
-                  </button>
+                  </Tag.CheckableTag>
                 ))}
               </div>
             </div>
 
             {/* 专科筛选 */}
             <div>
-              <h3 className="text-neutral-800 font-medium mb-2">按专科筛选：</h3>
+              <h3 className="text-neutral-800 font-medium mb-2">
+                按专科筛选：
+              </h3>
               <div className="flex flex-wrap gap-2">
                 {specialties.map((specialty) => (
-                  <button
+                  <Tag.CheckableTag
                     key={specialty}
-                    onClick={() => setSelectedSpecialty(specialty)}
-                    className={`px-4 py-1 rounded-full text-sm transition-colors
-                      ${selectedSpecialty === specialty
-                        ? 'bg-primary text-white'
-                        : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
-                      }`}
+                    checked={selectedSpecialty === specialty}
+                    onChange={() => setSelectedSpecialty(specialty)}
+                    className={`px-4 py-1 rounded-full text-sm transition-all duration-300 ${
+                      selectedSpecialty === specialty 
+                        ? "bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-sm" 
+                        : "hover:bg-teal-50"
+                    }`}
                   >
                     {specialty}
-                  </button>
+                  </Tag.CheckableTag>
                 ))}
               </div>
             </div>
@@ -188,62 +248,128 @@ export default function DoctorsPage() {
         </div>
 
         {/* 医生列表 */}
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {filteredDoctors.length > 0 ? (
-            filteredDoctors.map((doctor: Doctor) => (
-              <div key={doctor.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                <div className="p-6">
-                  <div className="flex items-start space-x-4">
-                    <div className="w-24 h-24 rounded-full bg-neutral-100 flex-shrink-0">
-                      {doctor.avatar && (
-                        <img 
-                          src={doctor.avatar} 
-                          alt={doctor.name} 
-                          className="w-full h-full object-cover rounded-full"
-                        />
-                      )}
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-xl font-bold text-neutral-800">{doctor.name}</h3>
-                      <p className="text-primary-600">{doctor.ability || doctor.title}</p>
-                      <p className="text-neutral-600">{doctor.province}</p>
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        {doctor.specialty && (typeof doctor.specialty === 'string' ? 
-                          <span className="px-2 py-1 bg-primary-50 rounded-full text-xs text-primary-600">
-                            {doctor.specialty}
-                          </span>
-                          : 
-                          Array.isArray(doctor.specialty) && doctor.specialty.map((spec) => (
-                            <span key={spec} className="px-2 py-1 bg-primary-50 rounded-full text-xs text-primary-600">
-                              {spec}
-                            </span>
-                          ))
+        <Spin spinning={loading} tip="加载中...">
+          <div className="mt-8 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {filteredDoctors.length > 0 ? (
+              filteredDoctors.map((doctor: Doctor) => (
+                <Card
+                  key={doctor.id}
+                  hoverable
+                  className="overflow-hidden rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border-0 bg-gradient-to-b from-white to-teal-50"
+                  actions={[
+                    <Link key="view" href={`/doctors/${doctor.id}`} className="px-3 pb-2">
+                      <Button color="cyan" variant="outlined" block className="rounded-full shadow-sm hover:shadow-md transition-all duration-300 bg-gradient-to-r from-green-500 to-teal-500 border-0 h-8 text-sm">
+                        查看详情
+                      </Button>
+                    </Link>
+                  ]}
+                >
+                  <div className="flex p-3">
+                    {/* 左侧头像 */}
+                    <div className="mr-4 flex-shrink-0">
+                      <div className="w-16 h-16 rounded-full bg-white p-1 shadow-sm border border-teal-100">
+                        {doctor.avatar ? (
+                          <img
+                            src={doctor.avatar}
+                            alt={doctor.name}
+                            className="w-full h-full object-cover rounded-full"
+                          />
+                        ) : (
+                          <div className="w-full h-full rounded-full bg-gradient-to-r from-green-200 to-teal-200 flex items-center justify-center text-lg font-bold text-white">
+                            {doctor.name?.charAt(0)}
+                          </div>
                         )}
                       </div>
                     </div>
+                    
+                    {/* 右侧内容 */}
+                    <div className="flex-1">
+                      <div className="mb-1">
+                        <h3 className="text-lg font-bold text-gray-800">{doctor.name}</h3>
+                        <p className="text-teal-600 font-medium text-sm">{doctor.ability || doctor.title}</p>
+                      </div>
+                      
+                      <div>
+                        <p className="text-gray-600 text-xs flex items-center gap-1">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                          {doctor.province || doctor.hospital}
+                        </p>
+                        
+                        <div className="mt-2 flex flex-wrap gap-1">
+                          {doctor.specialty &&
+                            (typeof doctor.specialty === "string" ? (
+                              <Tag color="cyan" className="rounded-full px-2 py-0 border-0 bg-gradient-to-r from-teal-100 to-green-100 text-teal-700 text-xs">
+                                {doctor.specialty}
+                              </Tag>
+                            ) : (
+                              Array.isArray(doctor.specialty) &&
+                              doctor.specialty.slice(0, 2).map((spec, index) => (
+                                <Tag 
+                                  key={spec} 
+                                  color={index % 3 === 0 ? "green" : index % 3 === 1 ? "cyan" : "teal"}
+                                  className="rounded-full px-2 py-0 border-0 bg-gradient-to-r from-teal-100 to-green-100 text-teal-700 text-xs"
+                                >
+                                  {spec}
+                                </Tag>
+                              ))
+                            ))}
+                            {Array.isArray(doctor.specialty) && doctor.specialty.length > 2 && (
+                              <Tag color="default" className="rounded-full px-1 border-0 text-xs">
+                                +{doctor.specialty.length - 2}
+                              </Tag>
+                            )}
+                        </div>
+                        
+                        <div className="mt-2 text-gray-600 line-clamp-2 text-xs bg-white bg-opacity-70 p-1 rounded-lg">
+                          {doctor.description || doctor.introduction}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <p className="mt-4 text-neutral-600 line-clamp-3">{doctor.description || doctor.introduction}</p>
-                  <Link 
-                    href={`/doctors/${doctor.id}`}
-                    className="mt-4 block w-full py-2 bg-primary text-white rounded-md hover:bg-primary-600 transition-colors text-center"
-                  >
-                    查看详情
-                  </Link>
-                </div>
+                </Card>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <Empty description="没有找到符合条件的医生" />
               </div>
-            ))
-          ) : (
-            <div className="col-span-3 text-center py-12">
-              <p className="text-neutral-500">没有找到符合条件的医生</p>
+            )}
+          </div>
+          
+          {/* 分页 */}
+          {filteredDoctors.length > 0 && (
+            <div className="mt-8 flex justify-center">
+              <Pagination
+                current={currentPage}
+                pageSize={pageSize}
+                total={total}
+                onChange={(page, pageSize) => {
+                  setCurrentPage(page);
+                  setPageSize(pageSize);
+                }}
+                showSizeChanger
+                showQuickJumper
+                showTotal={(total) => `共 ${total} 条记录`}
+              />
             </div>
           )}
-        </div>
+        </Spin>
       </div>
-      
+
       {/* 右下角固定的名医入驻按钮 */}
       <div className="fixed bottom-8 right-8 z-10">
-        <Link href="/doctors/register" className="px-4 py-3 bg-primary text-white rounded-md shadow-lg hover:bg-primary-dark transition-colors flex items-center">
-          <span>名医入驻</span>
+        <Link href="/doctors/register">
+          <Button 
+            color="cyan" 
+            variant="solid"
+            size="large"
+            icon={<PlusCircleOutlined />}
+            className="shadow-lg rounded-full h-12 px-6 bg-gradient-to-r from-green-500 to-teal-500 border-0 hover:shadow-xl transition-all duration-300"
+          >
+            名医入驻
+          </Button>
         </Link>
       </div>
     </div>

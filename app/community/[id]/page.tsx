@@ -256,43 +256,58 @@ export default function PostDetail({ params }: any) {
               {post.title}
             </h1>
 
-            {/* 标签展示 */}
+            {/* 标签展示 - 优化样式 */}
             {post.tags && post.tags.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mt-3">
-                {post.tags.map((tag) => (
-                  <Link
-                    key={tag}
-                    href={`/community?tag=${encodeURIComponent(tag)}`}
-                    className="px-2.5 py-1 bg-gray-50 text-gray-600 text-xs rounded-full hover:bg-gray-100 transition-colors border border-gray-100"
-                  >
-                    {tag}
-                  </Link>
-                ))}
+              <div className="flex flex-wrap gap-2 mt-3">
+                {post.tags.map((tag, index) => {
+                  // 为标签分配不同的颜色
+                  const colors = ['primary', 'rose', 'amber', 'emerald', 'blue', 'purple'];
+                  const color = colors[index % colors.length];
+                  
+                  return (
+                    <Link
+                      key={tag}
+                      href={`/community?tag=${encodeURIComponent(tag)}`}
+                      className={`px-3 py-1.5 bg-${color}/10 text-${color}-600 text-xs font-medium rounded-full 
+                        hover:bg-${color}/20 transition-all duration-300 border border-${color}/20 
+                        hover:shadow-sm transform hover:-translate-y-0.5`}
+                    >
+                      {tag}
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </div>
 
-          {/* 帖子内容 */}
-          <div className="prose max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap break-words">
+          {/* 帖子内容 - 优化排版 */}
+          <div className="prose max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap break-words p-2 sm:p-4 rounded-lg bg-gray-50/50 border border-gray-100/80 my-4">
             {post.content}
           </div>
 
-          {/* 帖子图片 */}
+          {/* 帖子图片 - 优化布局和效果 */}
           {post.images && post.images.length > 0 && (
-            <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {post.images.map((image, index) => (
-                <div
-                  key={index}
-                  className="relative aspect-square rounded-lg overflow-hidden border border-gray-100"
-                >
-                  <Image
-                    src={image}
-                    alt={`帖子图片 ${index + 1}`}
-                    fill
-                    className="object-cover hover:scale-105 transition-transform duration-300"
-                  />
-                </div>
-              ))}
+            <div className="mt-6 mb-2">
+              <h3 className="text-sm font-medium text-gray-500 mb-3 flex items-center gap-2">
+                <span className="w-1 h-3 bg-primary/70 rounded-full"></span>
+                图片附件 ({post.images.length})
+              </h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {post.images.map((image, index) => (
+                  <div
+                    key={index}
+                    className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 group"
+                  >
+                    <Image
+                      src={image}
+                      alt={`帖子图片 ${index + 1}`}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
@@ -320,11 +335,12 @@ export default function PostDetail({ params }: any) {
           </div>
         </div>
 
-        {/* 评论区 */}
-        <div className="mt-4 sm:mt-6 bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6">
+        {/* 评论区 - 优化样式 */}
+        <div className="mt-4 sm:mt-6 bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 hover:shadow-md transition-all duration-300">
           <h2 className="text-lg font-medium text-gray-900 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
             <span className="w-1 h-4 bg-primary rounded-full"></span>
-            评论区 ({post._count.comments})
+            <MessageOutlined className="text-primary mr-1" />
+            评论区 <span className="ml-1.5 bg-primary/10 text-primary px-2 py-0.5 rounded-full text-sm">{post._count.comments}</span>
           </h2>
           <CommentSection
             postId={post.id}

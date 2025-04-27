@@ -86,18 +86,18 @@ export default function LikeButton({ postId, initialLikes = 0, className = '' }:
     <button
       onClick={handleLike}
       disabled={isLoading}
-      className={`group h-8 w-8 flex items-center text-gray-500 hover:text-primary transition-colors ${className}`}
+      className={`group flex items-center gap-1 transition-colors ${className}`}
     >
       {isLiked ? (
         <HeartFilled
-          className="w-6 h-6 flex-shrink-0 transition-colors text-primary"
+          className="w-3 h-3 flex-shrink-0 transition-colors text-rose-500"
         />
       ) : (
         <HeartOutlined
-          className="w-6 h-6 flex-shrink-0 transition-colors group-hover:text-primary"
+          className="w-3 h-3 flex-shrink-0 transition-colors group-hover:text-rose-500"
         />
       )}
-      { className !== '' ? <span className='text-sm flex ml-[-7px]'>{likes}</span> : <span className='text-sm flex'>{likes}</span>}
+      <span>{likes}</span>
     </button>
   )
 }

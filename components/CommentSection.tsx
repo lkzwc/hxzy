@@ -6,7 +6,7 @@ import Image from 'next/image'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import 'dayjs/locale/zh-cn'
-import { PlusCircleOutlined, RedoOutlined } from '@ant-design/icons'
+import { PlusCircleOutlined, RedoOutlined,MessageOutlined } from '@ant-design/icons'
 
 // 配置 dayjs
 dayjs.extend(relativeTime)
@@ -303,7 +303,7 @@ export default function CommentSection({
                   onClick={() => handleReply(comment)}
                   className="flex items-center gap-1 text-gray-500 hover:text-primary transition-colors"
                 >
-                  <RedoOutlined className="w-5 h-5" />
+                  <MessageOutlined className="w-5 h-5"/>
                   回复
                 </button>
               </div>
@@ -348,7 +348,7 @@ export default function CommentSection({
                         onClick={() => handleReply(reply)}
                         className="flex items-center gap-1 text-gray-500 hover:text-primary transition-colors"
                       >
-                        <RedoOutlined className="w-5 h-5" />
+                        <MessageOutlined className="w-5 h-5" />
                         回复
                       </button>
                     </div>

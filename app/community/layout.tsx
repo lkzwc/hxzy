@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { RightOutlined } from "@ant-design/icons";
 import QrCodeCarousel from "@/components/QrCodeCarousel";
-import useSWR from "swr";
+import useSWR, { mutate as globalMutate } from "swr";
 import TagCloudContainer from "@/components/TagCloudContainer";
 import { usePathname } from "next/navigation";
 
@@ -65,13 +65,29 @@ export default function CommunityLayout({
               </h3>
               <div className="flex flex-col gap-2">
                 {categories.map((category) => (
-                  <Link
+                  <button
                     key={category.id || category.name}
-                    href={
-                      category.name === "全部"
-                        ? "/community"
-                        : `/community?tag=${category.name}`
-                    }
+                    onClick={() => {
+                      const params = new URLSearchParams(window.location.search);
+                      if (category.name === "全部") {
+                        // 清空所有筛选条件
+                        params.delete('tag');
+                        params.delete('search');
+                      } else {
+                        params.set('tag', category.name);
+                      }
+                      const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
+                      window.history.pushState({}, '', newUrl);
+                      // 使用SWR的mutate函数重新获取数据
+                      // 强制刷新所有帖子相关的数据
+                      globalMutate(
+                        (key) => typeof key === 'string' && key.startsWith('/api/posts'),
+                        undefined,
+                        { revalidate: true }
+                      );
+                      // 确保页面上的状态也被重置
+                      document.dispatchEvent(new CustomEvent('categoryChanged', { detail: category.name }));
+                    }}
                     className={`px-3 py-2 rounded-md transition-colors text-sm hover:bg-gray-50 ${
                       pathname === '/community' && new URLSearchParams(window.location.search).get('tag') === category.name
                         ? 'bg-primary/10 text-primary font-medium'
@@ -79,7 +95,7 @@ export default function CommunityLayout({
                     }`}
                   >
                     {category.name}
-                  </Link>
+                  </button>
                 ))}
               </div>
             </div>

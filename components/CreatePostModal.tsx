@@ -5,7 +5,7 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { CloudUploadOutlined } from '@ant-design/icons'
-import { message } from 'antd'
+import { App } from 'antd'
 
 interface CreatePostModalProps {
   isOpen: boolean
@@ -23,15 +23,7 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
   const tagInputRef = useRef<HTMLInputElement>(null)
   const { data: session } = useSession()
   const router = useRouter()
-
-  const [tagError, setTagError] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (tagError) {
-      message.warning(tagError)
-      setTagError(null)
-    }
-  }, [tagError])
+  const { message } = App.useApp();
 
   const handleAddTag = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && currentTag.trim()) {
@@ -39,23 +31,23 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
       const newTag = currentTag.trim()
       // 标签长度限制
       if (newTag.length > 20) {
-        setTagError('标签长度不能超过20个字符')
+        message.warning('标签长度不能超过20个字符');
         return
       }
       // 标签数量限制
       if (selectedTags.length >= 3) {
-        setTagError('最多只能添加3个标签')
+        message.warning('最多只能添加3个标签');
         return
       }
       // 避免重复标签
       if (selectedTags.includes(newTag)) {
-        setTagError('该标签已存在')
+        message.warning('该标签已存在');
         return
       }
       setSelectedTags(prev => [...prev, newTag])
       setCurrentTag('')
     }
-  }, [currentTag, selectedTags, setTagError])
+  }, [currentTag, selectedTags, message])
 
   const handleRemoveTag = (tagToRemove: string) => {
     setSelectedTags(prev => prev.filter(tag => tag !== tagToRemove))
@@ -72,7 +64,7 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
 
     // 检查图片数量限制
     if (images.length + files.length > 9) {
-      message.warning('最多只能上传9张图片')
+      message.warning('最多只能上传9张图片');
       return
     }
 
@@ -100,7 +92,7 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
       setImages(prev => [...prev, ...data.urls])
     } catch (error) {
       console.error('Error uploading images:', error)
-      message.warning('图片上传失败，请重试')
+      message.warning('图片上传失败，请重试');
     }
   }
 
@@ -112,19 +104,19 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
     }
 
     if (selectedTags.length === 0) {
-     message.warning('请添加标签')
+      message.warning('请添加标签');
       return
     }
 
     // 验证标题长度
     if (title.trim().length > 30) {
-      message.warning('标题不能超过30个字符')
+      message.warning('标题不能超过30个字符');
       return
     }
 
     // 验证内容长度
     if (content.trim().length > 250) {
-      message.warning('内容不能超过250个字符')
+      message.warning('内容不能超过250个字符');
       return
     }
 
@@ -149,7 +141,7 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
         const data = await response.json()
         throw new Error(data.error || '发布失败')
       }else{
-        message.success('发布成功')
+        message.success('发布成功'); // 使用 message.success 提示成功
       }
       setTitle('')
       setContent('')
@@ -160,7 +152,7 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
       router.refresh()
     } catch (error) {
       console.error('Error creating post:', error)
-      message.warning('发布失败，请重试')
+      message.warning('发布失败，请重试');
     } finally {
       setIsSubmitting(false)
     }
