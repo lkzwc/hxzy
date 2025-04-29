@@ -1,17 +1,11 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, NextRequest } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/app/api/auth/[...nextauth]/auth'
 
-interface RouteParams {
-  params: {
-    id: string;
-  };
-}
-
 export async function GET(
-  request: Request,
-  { params }: RouteParams
+  request: NextRequest,
+ params :any
 ) {
   try {
     const session = await getServerSession(authOptions)
@@ -61,8 +55,8 @@ export async function GET(
 }
 
 export async function POST(
-  request: Request,
-  { params }: RouteParams
+  request: NextRequest,
+  params :any
 ) {
   try {
     const session = await getServerSession(authOptions)

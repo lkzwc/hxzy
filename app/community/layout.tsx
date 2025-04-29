@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { RightOutlined } from "@ant-design/icons";
 import QrCodeCarousel from "@/components/QrCodeCarousel";
 import useSWR, { mutate as globalMutate } from "swr";
 import TagCloudContainer from "@/components/TagCloudContainer";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 // 定义获取数据的fetcher函数
 const fetcher = async (url: string) => {
@@ -17,13 +17,32 @@ const fetcher = async (url: string) => {
   return res.json();
 };
 
+// 创建一个包含useSearchParams的组件
+function SearchParamsProvider({
+  children,
+}: {
+  children: (props: {
+    searchParams: ReturnType<typeof useSearchParams>;
+    pathname: string;
+    router: ReturnType<typeof useRouter>;
+  }) => React.ReactNode;
+}) {
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const router = useRouter();
+  
+  return <>{children({ searchParams, pathname, router })}</>;
+}
+
 export default function CommunityLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const [qrCodes, setQrCodes] = useState([]);
-  const pathname = usePathname()
+  const pathname = usePathname(); // 这个可以保留在外层，不需要Suspense
+  const router = useRouter(); // 这个也可以保留在外层
+  
   // 获取分类数据
   const { data: categoriesData } = useSWR<
     Array<{ name: string; id: number; order: number }>
@@ -31,12 +50,15 @@ export default function CommunityLayout({
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
+  
+  // 使用Suspense包裹SearchParamsProvider组件
+
 
   // 处理分类数据，确保始终有"全部"选项
   const categories = categoriesData
     ? [{ name: "全部", id: 0, order: 0 }, ...categoriesData]
     : [{ name: "全部", id: 0, order: 0 }];
-
+    
   useEffect(() => {
     // 获取二维码数据
     fetch("/api/qrcodes")
@@ -50,8 +72,9 @@ export default function CommunityLayout({
       .then((data) => setQrCodes(data))
       .catch((error) => console.error("Error fetching QR codes:", error));
   }, []);
-
-  return (
+  
+   // 渲染主要内容
+   const renderContent = ({ searchParams }: { searchParams: ReturnType<typeof useSearchParams> }) => (
     <div className="container mx-auto max-w-7xl">
       <div className="flex gap-4 mt-4 sm:ml-16">
         {/* 左侧筛选区 - 固定位置 */}
@@ -68,7 +91,8 @@ export default function CommunityLayout({
                   <button
                     key={category.id || category.name}
                     onClick={() => {
-                      const params = new URLSearchParams(window.location.search);
+                      // 创建新的URLSearchParams对象
+                      const params = new URLSearchParams(searchParams.toString());
                       if (category.name === "全部") {
                         // 清空所有筛选条件
                         params.delete('tag');
@@ -76,8 +100,8 @@ export default function CommunityLayout({
                       } else {
                         params.set('tag', category.name);
                       }
-                      const newUrl = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
-                      window.history.pushState({}, '', newUrl);
+                      // 使用Next.js的router.push方法进行导航
+                      router.push(`/community${params.toString() ? `?${params.toString()}` : ''}`);
                       // 使用SWR的mutate函数重新获取数据
                       // 强制刷新所有帖子相关的数据
                       globalMutate(
@@ -89,7 +113,7 @@ export default function CommunityLayout({
                       document.dispatchEvent(new CustomEvent('categoryChanged', { detail: category.name }));
                     }}
                     className={`px-3 py-2 rounded-md transition-colors text-sm hover:bg-gray-50 ${
-                      pathname === '/community' && new URLSearchParams(window.location.search).get('tag') === category.name
+                      pathname === '/community' && searchParams.get('tag') === category.name
                         ? 'bg-primary/10 text-primary font-medium'
                         : 'text-gray-600'
                     }`}
@@ -164,4 +188,14 @@ export default function CommunityLayout({
       </div>
     </div>
   );
+  // 使用Suspense包裹SearchParamsProvider组件
+  return (
+    <Suspense fallback={<div>加载中...</div>}>
+      <SearchParamsProvider>
+        {(params) => renderContent(params)}
+      </SearchParamsProvider>
+    </Suspense>
+  );
+
+ 
 }

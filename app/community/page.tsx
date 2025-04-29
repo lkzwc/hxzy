@@ -411,27 +411,6 @@ export default function Community() {
           mutate();
         }}
       />
-
-      {/* 返回顶部按钮 */}
-      <button
-        onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 p-2.5 sm:p-3.5 bg-white rounded-full shadow-lg hover:shadow-xl
-          border border-gray-200 hover:border-primary/30 transition-all group z-50 transform hover:-translate-y-1 duration-300"
-      >
-        <svg
-          className="w-4 h-4 sm:w-5 sm:h-5 text-gray-500 group-hover:text-primary transition-colors"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M5 10l7-7m0 0l7 7m-7-7v18"
-          />
-        </svg>
-      </button>
     </div>
   )
 }
