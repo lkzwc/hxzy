@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import TagCloud from "./TagCloud";
 import useSWR, { mutate as globalMutate } from "swr";
 import { useRouter } from "next/navigation";
-import { Tag } from "antd";
+import { Empty, Tag } from "antd";
 
 interface TagType {
   text: string;
@@ -97,11 +97,7 @@ const TagCloudContainer = () => {
   }
 
   if (error || !data) {
-    return (
-      <div className="w-full h-64 bg-white rounded-lg shadow-sm border border-gray-100 flex justify-center items-center text-gray-500">
-        无法加载标签云
-      </div>
-    );
+    return null;
   }
 
   return (

@@ -56,7 +56,7 @@ const Compass = () => {
               key={index}
               className={`absolute text-lg font-bold transition-all duration-300
                 ${element.type === 'wuxing' ? 'text-primary-800' : ''}
-                ${element.type === 'bagua' ? 'text-blue-800' : ''}
+                ${element.type === 'bagua' ? 'text-primary-800' : ''}
                 ${element.type === 'dizhi' ? 'text-green-800' : ''}`}
               style={{
                 transform: `translate(${x + 250}px, ${y + 250}px) rotate(${-rotation}deg)`,
@@ -74,4 +74,4 @@ const Compass = () => {
   );
 };
 
-export default Compass; 
+export default Compass;

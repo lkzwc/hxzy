@@ -7,12 +7,18 @@ import Link from "next/link";
 import dayjs from "dayjs";
 import "dayjs/locale/zh-cn";
 import relativeTime from "dayjs/plugin/relativeTime";
-import {EyeOutlined, MessageOutlined, PlusOutlined, HeartOutlined, ClockCircleOutlined } from "@ant-design/icons";
+import {
+  EyeOutlined,
+  MessageOutlined,
+  PlusOutlined,
+  HeartOutlined,
+  ClockCircleOutlined,
+} from "@ant-design/icons";
 import CreatePostModal from "@/components/CreatePostModal";
 import LikeButton from "@/components/LikeButton";
 import useSWR from "swr";
 import useSWRInfinite from "swr/infinite";
-import { Tag } from "antd";
+import { Button, Empty, Result, Tag } from "antd";
 
 // 配置 dayjs
 dayjs.locale("zh-cn");
@@ -79,13 +85,17 @@ export default function Community() {
   const pathname = usePathname();
 
   // 获取分类数据
-  const { data: categoriesData, error: categoriesError } = useSWR<Array<{ name: string, id: number, order: number }>>("/api/categories", fetcher, {
+  const { data: categoriesData, error: categoriesError } = useSWR<
+    Array<{ name: string; id: number; order: number }>
+  >("/api/categories", fetcher, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
-  
+
   // 处理分类数据，确保始终有"全部"选项
-  const categories = categoriesData ? [{ name: "全部", id: 0, order: 0 }, ...categoriesData] : [{ name: "全部", id: 0, order: 0 }];
+  const categories = categoriesData
+    ? [{ name: "全部", id: 0, order: 0 }, ...categoriesData]
+    : [{ name: "全部", id: 0, order: 0 }];
 
   // 构建查询参数
   const getQueryParams = (pageNum: number) => {
@@ -98,7 +108,14 @@ export default function Community() {
   };
 
   // 使用SWR获取帖子数据
-  const { data, error, isLoading: postsLoading, size, setSize, mutate } = useSWRInfinite<PostsResponse>(
+  const {
+    data,
+    error,
+    isLoading: postsLoading,
+    size,
+    setSize,
+    mutate,
+  } = useSWRInfinite<PostsResponse>(
     (index) => `/api/posts?${getQueryParams(index + 1)}`,
     fetcher,
     {
@@ -109,25 +126,28 @@ export default function Community() {
   );
 
   // 合并所有页面的数据
-  const posts = data ? data.flatMap(page => page.posts) : [];
+  const posts = data ? data.flatMap((page) => page.posts) : [];
   const hasMore = data ? data[data.length - 1]?.hasMore : true;
-  const isLoadingMore = postsLoading || (size > 0 && data && typeof data[size - 1] === "undefined");
+  const isLoadingMore =
+    postsLoading || (size > 0 && data && typeof data[size - 1] === "undefined");
 
   // 处理搜索和分类筛选
   const handleSearch = () => {
     const trimmedInput = searchInput.trim();
     setSearchQuery(trimmedInput);
     setActiveCategory("全部"); // 重置分类为全部
-    
+
     // 更新 URL 参数，使用 Next.js 的路由 API 而不是直接操作 window
     const params = new URLSearchParams();
     if (trimmedInput) {
       params.set("search", trimmedInput);
     }
     // 移除tag参数，因为已重置为全部
-    const newUrl = `${pathname}${params.toString() ? `?${params.toString()}` : ''}`;
+    const newUrl = `${pathname}${
+      params.toString() ? `?${params.toString()}` : ""
+    }`;
     router.push(newUrl, { scroll: false });
-    
+
     // 重置页码并重新获取数据
     setSize(1);
   };
@@ -137,15 +157,17 @@ export default function Community() {
     setActiveCategory(category);
     setSearchInput(""); // 清空搜索框
     setSearchQuery(""); // 清空搜索查询
-    
+
     // 更新 URL 参数，使用 Next.js 的路由 API
     const params = new URLSearchParams();
     if (category !== "全部") {
       params.set("tag", category);
     }
-    const newUrl = `${pathname}${params.toString() ? `?${params.toString()}` : ''}`;
+    const newUrl = `${pathname}${
+      params.toString() ? `?${params.toString()}` : ""
+    }`;
     router.push(newUrl, { scroll: false });
-    
+
     // 重置页码并重新获取数据
     setSize(1);
     mutate(); // 直接触发重新获取数据，不需要清空缓存
@@ -153,7 +175,7 @@ export default function Community() {
 
   // 处理回车搜索
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       e.preventDefault();
       handleSearch();
     }
@@ -166,7 +188,7 @@ export default function Community() {
     if (tag) {
       setSearchInput("");
       setActiveCategory(tag);
-    } else if (!tag && pathname === '/community') {
+    } else if (!tag && pathname === "/community") {
       // 如果URL中没有tag参数，重置为"全部"
       setActiveCategory("全部");
     }
@@ -175,7 +197,7 @@ export default function Community() {
       setSearchQuery(search);
     }
   }, [searchParams]);
-  
+
   // 监nfromlayout.tsx发出的分类变更事件
   useEffect(() => {
     const handleCategoryEvent = (event: CustomEvent) => {
@@ -187,10 +209,16 @@ export default function Community() {
       setSize(1);
     };
 
-    document.addEventListener('categoryChanged', handleCategoryEvent as EventListener);
-    
+    document.addEventListener(
+      "categoryChanged",
+      handleCategoryEvent as EventListener
+    );
+
     return () => {
-      document.removeEventListener('categoryChanged', handleCategoryEvent as EventListener);
+      document.removeEventListener(
+        "categoryChanged",
+        handleCategoryEvent as EventListener
+      );
     };
   }, [setSize]);
 
@@ -202,7 +230,7 @@ export default function Community() {
       (entries) => {
         const first = entries[0];
         if (first.isIntersecting && hasMore && !isLoadingMore) {
-          setSize(size => size + 1);
+          setSize((size) => size + 1);
         }
       },
       { threshold: 0.1 }
@@ -215,12 +243,18 @@ export default function Community() {
     return () => observer.disconnect();
   }, [hasMore, isLoadingMore]);
 
-
   if (error) {
     return (
-      <div className="flex justify-center items-center min-h-[200px] text-primary-600">
-        获取帖子列表失败
-      </div>
+      <Result
+        status="500"
+        title="500"
+        subTitle="Sorry, something went wrong."
+        extra={
+          <Button type="primary" onClick={() => router.refresh()}>
+            刷新
+          </Button>
+        }
+      />
     );
   }
 
@@ -233,8 +267,19 @@ export default function Community() {
           <div className="flex flex-col sm:flex-row gap-2.5">
             <div className="flex-1 flex items-center gap-2">
               <div className="flex-1 flex items-center gap-2 bg-gray-50 rounded-lg px-3 focus-within:ring-2 focus-within:ring-primary/30 hover:bg-gray-100 transition-all border border-gray-200/50">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-3.5 w-3.5 text-gray-400"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
                 <input
                   type="text"
@@ -253,7 +298,9 @@ export default function Community() {
               </button>
             </div>
             <button
-              onClick={() => session ? setIsModalOpen(true) : router.push('/api/auth/signin')}
+              onClick={() =>
+                session ? setIsModalOpen(true) : router.push("/api/auth/signin")
+              }
               className="flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow"
             >
               <PlusOutlined className="w-3.5 h-3.5 flex-shrink-0" />
@@ -269,8 +316,8 @@ export default function Community() {
                 onClick={() => handleCategoryChange(category.name)}
                 className={`flex-shrink-0 px-3 py-1 rounded-full text-xs whitespace-nowrap transition-colors shadow-sm ${
                   activeCategory === category.name
-                    ? 'bg-primary text-white font-medium'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200/50'
+                    ? "bg-primary text-white font-medium"
+                    : "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200/50"
                 }`}
               >
                 {category.name}
@@ -291,58 +338,59 @@ export default function Community() {
           ) : posts.length === 0 ? (
             <div className="text-center py-12 sm:py-16 bg-white rounded-lg sm:rounded-xl border border-gray-100 shadow-sm">
               <div className="text-gray-400 mb-3 text-4xl sm:text-5xl">📝</div>
-              <div className="text-gray-600 px-4 text-sm sm:text-base font-medium">暂无帖子，来发布第一篇吧</div>
+              <div className="text-gray-600 px-4 text-sm sm:text-base font-medium">
+                暂无帖子，来发布第一篇吧
+              </div>
             </div>
           ) : (
             <>
               {posts.map((post) => (
-                <div key={post.id} className="relative bg-white hover:bg-gray-50/50 transition-all duration-300 group overflow-hidden">
-                  <div className="p-2.5 sm:p-3.5">
-                    {/* 右上角互动数据区域 - 统一样式设计 */}
-                    <div className="absolute top-2.5 right-2.5 flex items-center gap-2 text-gray-500">
-                      {/* 评论数 */}
-                      <Link href={`/community/${post.id}`} className="flex items-center gap-1 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-full px-2 py-0.5 text-xs transition-colors">
-                        <MessageOutlined className="w-3 h-3" />
-                        <span>{post._count.comments}</span>
-                      </Link>
-                      {/* 点赞按钮 */}
-                      <div className="flex items-center">
-                        <LikeButton 
-                          postId={Number(post.id)} 
-                          initialLikes={post._count.likes} 
-                          className="flex items-center gap-1 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-full px-2 py-0.5 text-xs transition-colors"
-                        />
+                <div
+                  key={post.id}
+                  className="relative bg-white hover:bg-gray-50/50 transition-all duration-300 group overflow-hidden hover:scale-[1.03] hover:shadow-lg hover:z-10"
+                >
+                  <div className="p-2 sm:p-3">
+                    {/* 内容区域和图片区域的弹性布局 */}
+                    <div className="flex flex-row gap-3">
+                      {/* 左侧内容区域 */}
+                      <div className="flex-1 min-w-0">
+                        {/* 标题 - 增加视觉层次感 */}
+                        <Link href={`/community/${post.id}`} className="block">
+                          <h2 className="text-sm sm:text-base font-semibold text-gray-900 group-hover:text-primary transition-colors line-clamp-1 pr-2">
+                            {post.title}
+                          </h2>
+                        </Link>
+
+                        {/* 内容预览 - 改进排版 */}
+                        <Link href={`/community/${post.id}`} className="block">
+                          <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-gray-600 line-clamp-2 leading-relaxed">
+                            {post.content}
+                          </p>
+                        </Link>
                       </div>
-                      {/* 浏览量 */}
-                      <div className="flex items-center gap-1 bg-gray-50 hover:bg-gray-100 text-gray-600 rounded-full px-2 py-0.5 text-xs transition-colors">
-                        <EyeOutlined className="w-3 h-3" />
-                        <span>{post.views}</span>
-                      </div>
+                      
+                      {/* 右侧图片区域 */}
+                      {post.images && post.images.length > 0 && (
+                        <Link href={`/community/${post.id}`} className="block flex-shrink-0 w-16 sm:w-20 md:w-24 mt-0">
+                          <div className="relative overflow-hidden rounded-lg aspect-square bg-gray-100 h-full">
+                            <img 
+                              src={post.images[0]} 
+                              alt="帖子图片" 
+                              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                            />
+                            {post.images.length > 1 && (
+                              <div className="absolute top-1 right-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded-md">
+                                +{post.images.length - 1}
+                              </div>
+                            )}
+                          </div>
+                        </Link>
+                      )}
                     </div>
-                    
-                    {/* 标题 - 增加视觉层次感 */}
-                    <Link
-                      href={`/community/${post.id}`}
-                      className="block"
-                    >
-                      <h2 className="text-sm sm:text-base font-semibold text-gray-900 group-hover:text-primary transition-colors line-clamp-1 pr-24">
-                        {post.title}
-                      </h2>
-                    </Link>
-                    
-                    {/* 内容预览 - 改进排版 */}
-                    <Link
-                      href={`/community/${post.id}`}
-                      className="block"
-                    >
-                      <p className="mt-1 sm:mt-1.5 text-xs sm:text-sm text-gray-600 line-clamp-2 leading-relaxed">
-                        {post.content}
-                      </p>
-                    </Link>
-                    
-                    <div className="mt-1.5 sm:mt-2 flex flex-wrap items-center justify-between gap-1.5">
+
+                    <div className="mt-1 sm:mt-1.5 flex flex-wrap items-center justify-between gap-1">
                       {/* 左下角作者和日期信息 - 改进布局 */}
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5">
                         <div className="flex items-center gap-1.5">
                           {post.author.image ? (
                             <img
@@ -353,25 +401,42 @@ export default function Community() {
                           ) : (
                             <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-primary/10 border-2 border-primary/20 shadow-sm" />
                           )}
-                          <span className="text-xs font-medium text-gray-800">{post.author.name || "匿名用户"}</span>
+                          <span className="text-xs font-medium text-gray-800">
+                            {post.author.name || "匿名用户"}
+                          </span>
                         </div>
-                        
+
                         {/* 日期 - 改进样式 */}
                         <div className="flex items-center gap-1 text-gray-400 text-xs bg-gray-50 px-1.5 py-0.5 rounded-full">
                           <ClockCircleOutlined className="w-2 h-2" />
                           <span>{dayjs(post.createdAt).fromNow()}</span>
                         </div>
+                        
+                        {/* 评论数 */}
+                        <Link
+                          href={`/community/${post.id}`}
+                          className="flex items-center gap-1 bg-gray-50 hover:bg-gray-100 text-gray-400 rounded-full px-1.5 py-0.5 text-xs transition-colors"
+                        >
+                          <MessageOutlined className="w-2 h-2" />
+                          <span>{post._count.comments}</span>
+                        </Link>
+                        
+                        {/* 浏览量 */}
+                        <div className="flex items-center gap-1 bg-gray-50 hover:bg-gray-100 text-gray-400 rounded-full px-1.5 py-0.5 text-xs transition-colors">
+                          <EyeOutlined className="w-2 h-2" />
+                          <span>{post.views}</span>
+                        </div>
                       </div>
-                      
+
                       {/* 右下角标签展示 - 改进标签样式 */}
                       {post.tags && post.tags.length > 0 && (
                         <div className="flex flex-wrap items-center gap-1 ml-auto">
                           {post.tags.map((tag, index) => (
-                            <Tag 
-                              key={index} 
+                            <Tag
+                              key={index}
                               bordered={false}
                               // color="lime"
-                              style={{color:'gray'}}
+                              style={{ color: "gray" }}
                               className="text-xs rounded-sm px-1 py-0 bg-gray-50"
                               onClick={(e) => {
                                 e.preventDefault();
@@ -412,6 +477,5 @@ export default function Community() {
         }}
       />
     </div>
-  )
+  );
 }
-

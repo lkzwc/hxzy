@@ -470,9 +470,9 @@ export default function ZiWei() {
 
             {/* 神煞 */}
             {palace.lifeStars.length > 0 && (
-              <div className="border border-blue-100 rounded bg-blue-50/50">
-                <div className="text-blue-500 border-b border-blue-100 px-1 py-0.5">神煞</div>
-                <div className="text-blue-700 leading-normal px-1 py-0.5">
+              <div className="border border-amber-100 rounded bg-amber-50/50">
+                <div className="text-primary border-b border-amber-100 px-1 py-0.5">神煞</div>
+                <div className="text-primary-700 leading-normal px-1 py-0.5">
                   {palace.lifeStars.map((star, index) => (
                     <div key={index}>
                       {star}
@@ -603,7 +603,7 @@ export default function ZiWei() {
             </div>
             <div>
               <span className="text-orange-700">●</span> 杂耀
-              <span className="text-blue-700 ml-2">●</span> 神煞
+              <span className="text-primary-700 ml-2">●</span> 神煞
             </div>
             <div>
               <span className="text-pink-700">●</span> 四化
@@ -922,7 +922,7 @@ export default function ZiWei() {
                           )}
                           {palace.lifeStars.length > 0 && (
                             <div>
-                              <span className="text-blue-600 font-medium">长生解读：</span>
+                              <span className="text-primary-600 font-medium">长生解读：</span>
                               <ul className="list-disc list-inside ml-4">
                                 {palace.lifeStars.map((star, idx) => (
                                   <li key={idx}>{star}：{LIFE_STAR_INTERPRETATIONS[star]}</li>

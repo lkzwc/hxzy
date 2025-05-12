@@ -1,21 +1,29 @@
 'use client'
 import { useState, useEffect } from 'react';
 import { useSession, signIn } from "next-auth/react"
-import { UserSwitchOutlined, QrcodeOutlined, GithubOutlined, CloseOutlined } from '@ant-design/icons'
+import { UserSwitchOutlined, QrcodeOutlined, GithubOutlined, CloseOutlined, GoogleOutlined} from '@ant-design/icons'
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import useSWR from 'swr';
 
 function SocialLogin() {
   return (
-    <div className="mt-4 flex justify-center space-x-4">
+    <div className="mt-4 flex justify-around space-x-4">
       <button
         type="button"
         className="w-10 h-10 flex items-center justify-center rounded-full border hover:bg-primary-50 transition-colors duration-200"
         title="使用 GitHub 登录"
         onClick={() => signIn('github')}
       >
-        <GithubOutlined className="w-6 h-6 text-primary" />
+        <GithubOutlined className=" text-primary" />
+      </button>
+      <button
+        type="button"
+        className="w-10 h-10 flex items-center justify-center rounded-full border hover:bg-primary-50 transition-colors duration-200"
+        title="使用 Google 登录"
+        onClick={() => signIn('google')}
+      >
+        <GoogleOutlined className=" text-primary" />
       </button>
     </div>
   );

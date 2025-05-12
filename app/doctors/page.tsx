@@ -179,7 +179,7 @@ export default function DoctorsPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onSearch={() => fetchDoctors()}
-                enterButton={<Button color="cyan" variant="outlined" type="primary" icon={<SearchOutlined />} className="bg-gradient-to-r from-green-500 to-teal-500 border-0">搜索</Button>}
+                enterButton={<Button color="cyan" variant="outlined" type="primary" icon={<SearchOutlined />} className="bg-gradient-to-r from-primary-500 to-primary-600 border-0">搜索</Button>}
                 size="large"
                 className="w-full"
               />
@@ -199,8 +199,8 @@ export default function DoctorsPage() {
                   onChange={() => setSelectedRegion("全部")}
                   className={`px-4 py-1 rounded-full text-sm transition-all duration-300 ${
                     selectedRegion === "全部" 
-                      ? "bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-sm" 
-                      : "hover:bg-teal-50"
+                      ? "!bg-gradient-to-r !from-primary-500 !to-primary-600 !text-white shadow-sm" 
+                      : "hover:bg-primary-50"
                   }`}
                 >
                   全部
@@ -212,8 +212,8 @@ export default function DoctorsPage() {
                     onChange={() => setSelectedRegion(region)}
                     className={`px-4 py-1 rounded-full text-sm transition-all duration-300 ${
                       selectedRegion === region 
-                        ? "bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-sm" 
-                        : "hover:bg-teal-50"
+                        ? "!bg-gradient-to-r !from-primary-500 !to-primary-600 !text-white shadow-sm" 
+                        : "hover:bg-primary-50"
                     }`}
                   >
                     {region}
@@ -235,8 +235,8 @@ export default function DoctorsPage() {
                     onChange={() => setSelectedSpecialty(specialty)}
                     className={`px-4 py-1 rounded-full text-sm transition-all duration-300 ${
                       selectedSpecialty === specialty 
-                        ? "bg-gradient-to-r from-green-500 to-teal-500 text-white shadow-sm" 
-                        : "hover:bg-teal-50"
+                        ? "!bg-gradient-to-r !from-primary-500 !to-primary-600 !text-white shadow-sm" 
+                        : "hover:bg-primary-50"
                     }`}
                   >
                     {specialty}
@@ -255,10 +255,10 @@ export default function DoctorsPage() {
                 <Card
                   key={doctor.id}
                   hoverable
-                  className="overflow-hidden rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border-0 bg-gradient-to-b from-white to-teal-50"
+                  className="overflow-hidden rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border-0 bg-gradient-to-b from-white to-primary-50"
                   actions={[
                     <Link key="view" href={`/doctors/${doctor.id}`} className="px-3 pb-2">
-                      <Button color="cyan" variant="outlined" block className="rounded-full shadow-sm hover:shadow-md transition-all duration-300 bg-gradient-to-r from-green-500 to-teal-500 border-0 h-8 text-sm">
+                      <Button color="orange" variant="outlined" block className="rounded-full shadow-sm hover:shadow-md transition-all duration-300 bg-gradient-to-r from-primary-500 to-primary-600 border-0 h-8 text-sm">
                         查看详情
                       </Button>
                     </Link>
@@ -267,7 +267,7 @@ export default function DoctorsPage() {
                   <div className="flex p-3">
                     {/* 左侧头像 */}
                     <div className="mr-4 flex-shrink-0">
-                      <div className="w-16 h-16 rounded-full bg-white p-1 shadow-sm border border-teal-100">
+                      <div className="w-16 h-16 rounded-full bg-white p-1 shadow-sm border border-primary-100">
                         {doctor.avatar ? (
                           <img
                             src={doctor.avatar}
@@ -275,7 +275,7 @@ export default function DoctorsPage() {
                             className="w-full h-full object-cover rounded-full"
                           />
                         ) : (
-                          <div className="w-full h-full rounded-full bg-gradient-to-r from-green-200 to-teal-200 flex items-center justify-center text-lg font-bold text-white">
+                          <div className="w-full h-full rounded-full bg-gradient-to-r from-primary-200 to-accent-200 flex items-center justify-center text-lg font-bold text-white">
                             {doctor.name?.charAt(0)}
                           </div>
                         )}
@@ -286,7 +286,7 @@ export default function DoctorsPage() {
                     <div className="flex-1">
                       <div className="mb-1">
                         <h3 className="text-lg font-bold text-gray-800">{doctor.name}</h3>
-                        <p className="text-teal-600 font-medium text-sm">{doctor.ability || doctor.title}</p>
+                        <p className="text-primary-600 font-medium text-sm">{doctor.ability || doctor.title}</p>
                       </div>
                       
                       <div>
@@ -301,7 +301,7 @@ export default function DoctorsPage() {
                         <div className="mt-2 flex flex-wrap gap-1">
                           {doctor.specialty &&
                             (typeof doctor.specialty === "string" ? (
-                              <Tag color="cyan" className="rounded-full px-2 py-0 border-0 bg-gradient-to-r from-teal-100 to-green-100 text-teal-700 text-xs">
+                              <Tag color="orange" className="rounded-full px-2 py-0 border-0 bg-gradient-to-r from-primary-100 to-accent-100 text-primary-700 text-xs">
                                 {doctor.specialty}
                               </Tag>
                             ) : (
@@ -309,8 +309,8 @@ export default function DoctorsPage() {
                               doctor.specialty.slice(0, 2).map((spec, index) => (
                                 <Tag 
                                   key={spec} 
-                                  color={index % 3 === 0 ? "green" : index % 3 === 1 ? "cyan" : "teal"}
-                                  className="rounded-full px-2 py-0 border-0 bg-gradient-to-r from-teal-100 to-green-100 text-teal-700 text-xs"
+                                  color={index % 3 === 0 ? "orange" : index % 3 === 1 ? "amber" : "yellow"}
+                                  className="rounded-full px-2 py-0 border-0 bg-gradient-to-r from-primary-100 to-accent-100 text-primary-700 text-xs"
                                 >
                                   {spec}
                                 </Tag>
@@ -366,7 +366,7 @@ export default function DoctorsPage() {
             variant="solid"
             size="large"
             icon={<PlusCircleOutlined />}
-            className="shadow-lg rounded-full h-12 px-6 bg-gradient-to-r from-green-500 to-teal-500 border-0 hover:shadow-xl transition-all duration-300"
+            className="shadow-lg rounded-full h-12 px-6 bg-gradient-to-r from-primary-500 to-primary-600 border-0 hover:shadow-xl transition-all duration-300"
           >
             名医入驻
           </Button>

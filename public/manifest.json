@@ -4,8 +4,8 @@
   "description": "传承国粹，弘扬中医文化",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FBF6F1",
-  "theme_color": "#F5EDE4",
+  "background_color": "#faf7f2",
+  "theme_color": "#c17f46",
   "orientation": "portrait",
   "icons": [
     {
@@ -50,4 +50,4 @@
       "type": "image/png"
     }
   ]
-} 
+}

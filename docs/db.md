@@ -21,8 +21,10 @@ volumes:
 
 ```
 docker-compose up -d
+或者直接运行
+docker run --name postgres_container -e POSTGRES_USER=admin -e POSTGRES_PASSWORD=admin -e POSTGRES_DB=hxzydb -p 5432:5432 -d postgres:latest
 ### 修改env配置
-DATABASE_URL="postgresql://myuser:mypassword@localhost:5432/mydb"
+DATABASE_URL="postgresql://user:pass@localhost:5432/db"
 
 ### 初始化数据库
 npx prisma migrate dev --name init

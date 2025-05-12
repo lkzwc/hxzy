@@ -4,8 +4,8 @@ import { useState, useRef, useCallback, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
-import { CloudUploadOutlined } from '@ant-design/icons'
-import { App } from 'antd'
+import { CloudUploadOutlined, PlusOutlined, CloseOutlined, TagOutlined, SendOutlined, PictureOutlined } from '@ant-design/icons'
+import { App, Input, Modal, Form, Button, Upload, Tag, Avatar, Tooltip, Space, Divider } from 'antd'
 
 interface CreatePostModalProps {
   isOpen: boolean
@@ -14,17 +14,28 @@ interface CreatePostModalProps {
 }
 
 export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePostModalProps) {
-  const [title, setTitle] = useState('')
-  const [content, setContent] = useState('')
+  const [form] = Form.useForm();
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [currentTag, setCurrentTag] = useState('')
   const [images, setImages] = useState<string[]>([])
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const tagInputRef = useRef<HTMLInputElement>(null)
+  const [showImageUploader, setShowImageUploader] = useState(false)
+  const tagInputRef = useRef<any>(null)
   const { data: session } = useSession()
   const router = useRouter()
   const { message } = App.useApp();
+  
+  // 重置表单和状态
+  useEffect(() => {
+    if (isOpen) {
+      form.resetFields();
+      setSelectedTags([]);
+      setImages([]);
+      setCurrentTag('');
+    }
+  }, [isOpen, form]);
 
+  // 处理标签添加
   const handleAddTag = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && currentTag.trim()) {
       e.preventDefault()
@@ -46,32 +57,35 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
       }
       setSelectedTags(prev => [...prev, newTag])
       setCurrentTag('')
+      // 确保添加标签后重新聚焦输入框
+      setTimeout(() => {
+        if (tagInputRef.current) {
+          tagInputRef.current.focus()
+        }
+      }, 0)
     }
   }, [currentTag, selectedTags, message])
 
+  // 处理标签移除
   const handleRemoveTag = (tagToRemove: string) => {
     setSelectedTags(prev => prev.filter(tag => tag !== tagToRemove))
   }
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (!files?.length) return
-
+  // 处理图片上传
+  const handleImageUpload = async (file: File) => {
     if (!session?.user) {
       router.push('/login')
-      return
+      return false
     }
 
     // 检查图片数量限制
-    if (images.length + files.length > 9) {
+    if (images.length >= 9) {
       message.warning('最多只能上传9张图片');
-      return
+      return false
     }
 
     const formData = new FormData()
-    for (let i = 0; i < files.length; i++) {
-      formData.append('files', files[i])
-    }
+    formData.append('files', file)
 
     try {
       const response = await fetch('/api/upload', {
@@ -90,37 +104,47 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
 
       const data = await response.json()
       setImages(prev => [...prev, ...data.urls])
+      return false // 阻止默认上传行为
     } catch (error) {
       console.error('Error uploading images:', error)
       message.warning('图片上传失败，请重试');
+      return false
     }
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!session?.user) {
-      router.push('/login')
-      return
-    }
+  // 处理图片移除
+  const handleRemoveImage = (index: number) => {
+    setImages(prev => prev.filter((_, i) => i !== index))
+  }
 
-    if (selectedTags.length === 0) {
-      message.warning('请添加标签');
-      return
-    }
-
-    // 验证标题长度
-    if (title.trim().length > 30) {
-      message.warning('标题不能超过30个字符');
-      return
-    }
-
-    // 验证内容长度
-    if (content.trim().length > 250) {
-      message.warning('内容不能超过250个字符');
-      return
-    }
-
+  // 处理表单提交
+  const handleSubmit = async () => {
     try {
+      const values = await form.validateFields();
+      const { title, content } = values;
+      
+      if (!session?.user) {
+        router.push('/login')
+        return
+      }
+
+      if (selectedTags.length === 0) {
+        message.warning('请添加标签');
+        return
+      }
+
+      // 验证标题长度
+      if (title.trim().length > 30) {
+        message.warning('标题不能超过30个字符');
+        return
+      }
+
+      // 验证内容长度
+      if (content.trim().length > 250) {
+        message.warning('内容不能超过250个字符');
+        return
+      }
+
       setIsSubmitting(true)
       const response = await fetch('/api/posts', {
         method: 'POST',
@@ -140,16 +164,26 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
       if (!response.ok) {
         const data = await response.json()
         throw new Error(data.error || '发布失败')
-      }else{
-        message.success('发布成功'); // 使用 message.success 提示成功
+      } else {
+        message.success('发布成功');
       }
-      setTitle('')
-      setContent('')
+      
+      // 清理表单和状态
+      form.resetFields()
       setSelectedTags([])
       setImages([])
+      setCurrentTag('')
+      
+      // 关闭模态框并刷新页面
       onClose()
-      onSuccess?.()
-      router.refresh()
+      if (onSuccess) {
+        onSuccess()
+      }
+      
+      // 确保页面刷新
+      setTimeout(() => {
+        router.refresh()
+      }, 100)
     } catch (error) {
       console.error('Error creating post:', error)
       message.warning('发布失败，请重试');
@@ -158,131 +192,206 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
     }
   }
 
-  if (!isOpen) return null
+  // 重置表单
+  const handleCancel = () => {
+    form.resetFields()
+    setSelectedTags([])
+    setImages([])
+    onClose()
+  }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
-      <div className="w-full max-w-3xl mx-4" onClick={e => e.stopPropagation()}>
-        <div className="bg-white rounded-xl shadow-xl">
-          <div className="p-0">
-            {/* 顶部标题栏 */}
-            <div className="flex items-center justify-between p-4 border-b">
-              <div className="flex items-center gap-3">
-                <img
-                  src={session?.user?.image || '/images/default-avatar.png'}
-                  alt="avatar"
-                  className="w-8 h-8 rounded-full"
-                />
-                <input
-                  type="text"
-                  placeholder="输入标题..."
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  className="text-lg font-medium bg-transparent border-b border-gray-200 hover:border-gray-400 focus:border-primary px-2 py-1.5 w-80 focus:outline-none transition-colors placeholder:text-gray-400"
-                />
-              </div>
-              <button onClick={onClose} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 transition-colors">
-                <span className="text-xl text-gray-500">×</span>
-              </button>
-            </div>
+    <Modal
+      open={isOpen}
+      onCancel={handleCancel}
+      footer={null}
+      width={800}
+      centered
+      destroyOnClose
+      styles={{ 
+        body: { padding: 0 },
+        content: { 
+          borderRadius: '12px',
+          overflow: 'hidden',
+          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)' 
+        }
+      }}
+    >
+      <Form 
+        form={form} 
+        layout="vertical" 
+        initialValues={{ title: '', content: '' }}
+        preserve={false}
+        name="createPostForm"
+      >
 
-            {/* 标签输入区 */}
-            <div className="relative px-4 py-2 border-b bg-gray-50/80">
-              <div className="flex flex-wrap gap-2 items-center min-h-[32px]">
-                {selectedTags.map(tag => (
-                  <span
-                    key={tag}
-                    className="inline-flex items-center gap-1 px-2 py-1 bg-primary/10 text-primary rounded-lg text-sm"
-                  >
-                    {tag}
-                    <button
-                      type="button"
-                      className="w-4 h-4 flex items-center justify-center hover:bg-primary/20 rounded-full transition-colors"
-                      onClick={() => handleRemoveTag(tag)}
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-                <input
-                  ref={tagInputRef}
-                  type="text"
-                  placeholder={selectedTags.length === 0 ? "添加标签以便他人快速找到，输入标签回车（最多3个）" : "继续添加标签..."}
-                  value={currentTag}
-                  onChange={(e) => setCurrentTag(e.target.value)}
-                  onKeyDown={handleAddTag}
-                  className="flex-1 bg-transparent border-none text-sm focus:outline-none min-w-[120px]"
-                  disabled={selectedTags.length >= 3}
-                />
-              </div>
-            </div>
-
-            {/* 内容编辑区 */}
-            <div className="p-4 min-h-[300px]">
-              <textarea
-                placeholder="写下你的想法..."
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
-                className="w-full h-full min-h-[280px] bg-transparent border-none resize-none focus:outline-none text-base leading-relaxed"
+        <div className="flex items-center justify-between p-2">
+          <div className="flex items-center gap-3 w-[-webkit-fill-available]">
+            <Avatar 
+              src={session?.user?.image || '/images/default-avatar.png'} 
+              size={32} 
+              style={{ objectFit: 'cover' }} 
+            />
+            <Form.Item name="title" noStyle>
+              <Input 
+                placeholder="输入标题..."
+                bordered={false}
+                style={{
+                  fontSize: '1.125rem',
+                  fontWeight: 500,
+                  borderBottom: '1px solid #e5e7eb',
+                  padding: '0.375rem 0.5rem',
+                  width: '100%',
+                }}
               />
-            </div>
-
-            {/* 底部操作栏 */}
-            <div className="flex items-center justify-between px-4 py-3 border-t bg-gray-50/80">
-              <div className="flex items-center gap-2">
-                <label className="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded-lg cursor-pointer transition-colors">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={handleImageUpload}
-                    className="hidden"
-                  />
-                  <CloudUploadOutlined className="w-4 h-4" />
-                  添加图片
-                </label>
-                {/* 显示已上传的图片预览 */}
-                <div className="flex gap-2">
-                  {images.map((url, index) => (
-                    <div key={index} className="relative w-12 h-12">
-                      <Image
-                        src={url}
-                        alt={`上传的图片 ${index + 1}`}
-                        fill
-                        sizes="48px"
-                        className="object-cover rounded-lg"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setImages(prev => prev.filter((_, i) => i !== index))}
-                        className="absolute -top-1 -right-1 w-4 h-4 bg-black/50 hover:bg-black/70 text-white rounded-full flex items-center justify-center text-xs transition-colors"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  className="px-4 py-1.5 text-sm text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
-                  onClick={onClose}
-                >
-                  取消
-                </button>
-                <button
-                  onClick={handleSubmit}
-                  disabled={isSubmitting || !title.trim() || !content.trim() || selectedTags.length === 0}
-                  className="px-6 py-1.5 text-sm bg-primary text-white rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  {isSubmitting ? '发布中...' : '发布'}
-                </button>
-              </div>
-            </div>
+            </Form.Item>
           </div>
         </div>
-      </div>
-    </div>
+
+        {/* 标签输入区 */}
+        <div className="px-4 py-2 bg-gray-50 rounded-xl">
+          <Space className="flex flex-wrap gap-2 items-center min-h-[32px]" size={[8, 8]}>
+            <TagOutlined className="text-primary" />
+            {selectedTags.map(tag => (
+              <Tag
+                key={tag}
+                style={{ 
+                  padding: '4px 8px', 
+                  backgroundColor: 'rgba(var(--primary-rgb), 0.1)', 
+                  color: 'var(--primary-color)',
+                  borderRadius: '8px',
+                  marginRight: 0,
+                  border: 'none',
+                  transition: 'all 0.2s ease'
+                }}
+                closeIcon={<CloseOutlined className="text-xs" />}
+                onClose={() => handleRemoveTag(tag)}
+              >
+                {tag}
+              </Tag>
+            ))}
+            <Input
+              ref={tagInputRef}
+              placeholder={selectedTags.length === 0 ? "添加标签以便他人快速找到，输入标签回车（最多3个）" : "继续添加标签..."}
+              value={currentTag}
+              onChange={(e) => setCurrentTag(e.target.value)}
+              onKeyDown={handleAddTag}
+              bordered={false}
+              style={{
+                flex: 1,
+                minWidth: '100px',
+                backgroundColor: 'transparent',
+              }}
+              disabled={selectedTags.length >= 3}
+            />
+          </Space>
+        </div>
+
+        {/* 内容编辑区 */}
+        <div className="p-4">
+          <Form.Item name="content" noStyle>
+            <Input.TextArea
+              placeholder="写下你的想法..."
+              autoSize={{ minRows: 10, maxRows: 15 }}
+              maxLength={500}
+              showCount
+              variant="borderless"
+              style={{
+                fontSize: '1rem',
+                lineHeight: '1.5',
+              }}
+            />
+          </Form.Item>
+        </div>
+
+
+
+        {/* 底部操作栏 */}
+        <div className="flex items-center justify-between mt-2 px-4 py-3 border-t bg-gray-50/80">
+          <div className="flex items-center gap-3 w-[-webkit-fill-available]">
+            <Upload
+              accept="image/*"
+              multiple
+              showUploadList={false}
+              beforeUpload={handleImageUpload}
+              disabled={images.length >= 9}
+            >
+              <Button 
+                icon={<CloudUploadOutlined />} 
+                type='link'
+                style={{
+                  opacity: images.length >= 9 ? 0.5 : 1,
+                  cursor: images.length >= 9 ? 'not-allowed' : 'pointer',
+                  borderRadius: '8px',
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                添加图片 ({images.length}/9)
+              </Button>
+            </Upload>
+            
+            {/* 图片预览区 - 移到上传按钮后面 */}
+            {images.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {images.map((url, index) => (
+                  <div key={index} className="relative w-16 h-16">
+                    <Image
+                      src={url}
+                      alt={`上传的图片 ${index + 1}`}
+                      fill
+                      sizes="64px"
+                      className="object-cover rounded-lg"
+                    />
+                    <div 
+                      className="absolute inset-0 rounded-lg flex items-center justify-center"
+                      style={{
+                        backgroundColor: 'rgba(0, 0, 0, 0)',
+                        transition: 'all 0.2s ease',
+                        opacity: 0,
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
+                        e.currentTarget.style.opacity = '1';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+                        e.currentTarget.style.opacity = '0';
+                      }}
+                    >
+                      <Button 
+                        type="text" 
+                        icon={<CloseOutlined />} 
+                        size="small" 
+                        style={{
+                          color: 'white',
+                          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        }}
+                        onClick={() => handleRemoveImage(index)}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+          <Button 
+            type="primary" 
+            onClick={handleSubmit}
+            loading={isSubmitting}
+            icon={<SendOutlined />}
+            style={{
+              backgroundColor: '#1890ff',
+              borderColor: '#1890ff',
+              color: 'white',
+              fontWeight: 'bold'
+            }}
+            disabled={form.getFieldValue('title')?.trim() === '' || 
+                     form.getFieldValue('content')?.trim() === ''}
+          >
+            {isSubmitting ? '发布中...' : '发布'}
+          </Button>
+        </div>
+      </Form>
+    </Modal>
   )
 }

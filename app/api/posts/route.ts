@@ -38,7 +38,15 @@ export async function GET(request: NextRequest) {
     const [posts, nextPagePosts] = await Promise.all([
       prisma.post.findMany({
         where: where as any, // 使用类型断言避免类型错误
-        include: {
+        select: {
+          id: true,
+          title: true,
+          content: true,
+          createdAt: true,
+          views: true,
+          tags: true,
+          images: true,
+          published: true,
           author: {
             select: {
               id: true,
@@ -183,4 +191,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     )
   }
-} 
+}
