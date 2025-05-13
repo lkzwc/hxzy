@@ -9,7 +9,7 @@ datasource db {
 
 model User {
   id        Int        @id @default(autoincrement())
-  otherId   String?    @unique
+  otherId   String?    @unique //标识唯一ID
   name      String?
   email     String?    @unique 
   image     String?

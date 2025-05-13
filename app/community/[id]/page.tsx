@@ -229,18 +229,18 @@ export default function PostDetail({ params }: any) {
               />
             </div>
             <div className="flex flex-col items-center w-full px-2 text-gray-500 hover:text-primary transition-colors cursor-pointer">
-              <MessageOutlined className="w-6 h-6" />
-              <span className="text-xs mt-1 ml-[-7px]">
+              <MessageOutlined className="w-4 h-4" />
+              <span className="text-xs mt-1 ">
                 {post._count.comments}
               </span>
             </div>
             <div className="flex flex-col items-center w-full px-2 text-gray-500 hover:text-amber-500 transition-colors cursor-pointer">
-              <StarOutlined className="w-6 h-6" />
-              <span className="text-xs mt-1 ml-[-7px]">收藏</span>
+              <StarOutlined className="w-4 h-4" />
+              <span className="text-xs mt-1 ">收藏</span>
             </div>
             <div className="flex flex-col items-center w-full px-2 text-gray-500 hover:text-emerald-500 transition-colors cursor-pointer">
-              <ShareAltOutlined className="w-6 h-6" />
-              <span className="text-xs mt-1 ml-[-7px]">分享</span>
+              <ShareAltOutlined className="w-4 h-4" />
+              <span className="text-xs mt-1">分享</span>
             </div>
           </div>
         </div>

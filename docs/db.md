@@ -26,6 +26,8 @@ docker run --name postgres_container -e POSTGRES_USER=admin -e POSTGRES_PASSWORD
 ### 修改env配置
 DATABASE_URL="postgresql://user:pass@localhost:5432/db"
 
+DATABASE_URL="postgresql://user:pass@localhost:5432/db"
+
 ### 初始化数据库
 npx prisma migrate dev --name init
 

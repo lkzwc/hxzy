@@ -239,6 +239,7 @@ export async function POST(request: NextRequest) {
     if (contentType.includes("xml")) {
       // 处理微信服务器的XML推送
       const xmlData = await request.text();
+      console.log("Received XML message:", xmlData);
       return handleWeChatMessage(xmlData);
     } else {
       // 处理前端获取二维码的请求
@@ -253,7 +254,7 @@ export async function POST(request: NextRequest) {
 export async function PUT(request: NextRequest) {
   try {
     const { sceneStr } = await request.json();
-    const loginState = verifyLoginToken(tokenMap.get(sceneStr), sceneStr);
+    const loginState = verifyLoginToken(tokenMap.get(sceneStr), sceneStr);;
     return NextResponse.json(loginState);
   } catch (error) {
     if (error instanceof Error) {

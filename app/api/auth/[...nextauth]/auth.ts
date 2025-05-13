@@ -47,28 +47,16 @@ export const authOptions: NextAuthOptions = {
 
         const userData = {
           name: user.name,
-          image: user.image,
-          otherId: "",
+          image: user.image || user.avatar_url,
+          email: user.email,
+          otherId: user?.id,
           lastLoginAt: new Date(),
         };
 
-        // 根据不同登录方式补充特定字段
-        if (account?.provider === "github") {
-          Object.assign(userData, {
-            email: user.email,
-            image: user.image || (profile as any)?.avatar_url,
-            otherId: user?.id,
-          });
-        } else if (account?.provider === "credentials") {
-          // 微信登录
-          Object.assign(userData, {
-            otherId: user.id,
-          });
-        }
 
         // 使用 upsert 统一处理用户数据
         const dbUser = await prisma.user.upsert({
-          where: { otherId: userData?.otherId },
+          where: { otherId: user?.id },
           update: userData,
           create: userData,
         });
@@ -84,7 +72,7 @@ export const authOptions: NextAuthOptions = {
       }
     },
     async jwt({ token, user }) {
-      console.log("jwt", token, user);
+
       if (user) {
         token.id = user.id;
       }

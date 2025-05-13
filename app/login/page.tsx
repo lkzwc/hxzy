@@ -8,22 +8,22 @@ import useSWR from 'swr';
 
 function SocialLogin() {
   return (
-    <div className="mt-4 flex justify-around space-x-4">
+    <div className="mt-4 grid grid-cols-2 gap-4 w-full">
       <button
         type="button"
-        className="w-10 h-10 flex items-center justify-center rounded-full border hover:bg-primary-50 transition-colors duration-200"
-        title="使用 GitHub 登录"
+        className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg border border-[#333333] bg-[#333333] text-white hover:bg-[#444444] transition-all duration-200 shadow-sm hover:shadow-md"
         onClick={() => signIn('github')}
       >
-        <GithubOutlined className=" text-primary" />
+        <GithubOutlined className="text-lg" />
+        <span className="font-medium">GitHub 登录</span>
       </button>
       <button
         type="button"
-        className="w-10 h-10 flex items-center justify-center rounded-full border hover:bg-primary-50 transition-colors duration-200"
-        title="使用 Google 登录"
+        className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg border border-[#4285F4] bg-white text-[#4285F4] hover:bg-blue-50 transition-all duration-200 shadow-sm hover:shadow-md"
         onClick={() => signIn('google')}
       >
-        <GoogleOutlined className=" text-primary" />
+        <GoogleOutlined className="text-lg" />
+        <span className="font-medium">Google 登录</span>
       </button>
     </div>
   );
@@ -155,23 +155,23 @@ export default function Login() {
               <div className="flex-1 flex flex-col">
                 <div className="flex-1 flex flex-col items-center justify-center">
                   {qrCode?.qrCodeUrl ? (
-                    <div className="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-4 bg-primary-50 rounded-lg flex items-center justify-center">
+                    <div className="w-36 h-36 sm:w-44 sm:h-44 mx-auto mb-5 bg-primary-50 rounded-xl flex items-center justify-center shadow-md border border-primary-100 p-2 transition-all duration-300 hover:shadow-lg">
                       <Image 
                         src={qrCode.qrCodeUrl}
                         alt="微信登录二维码"
-                        width={150}
-                        height={150}
+                        width={160}
+                        height={160}
                         className="rounded-lg"
                         unoptimized
                       />
                     </div>
                   ) : (
-                    <div className="w-32 h-32 sm:w-40 sm:h-40 mx-auto mb-4 bg-primary-50 rounded-lg flex items-center justify-center">
-                      <QrcodeOutlined className="w-16 h-16 text-primary" />
+                    <div className="w-36 h-36 sm:w-44 sm:h-44 mx-auto mb-5 bg-primary-50 rounded-xl flex items-center justify-center shadow-md border border-primary-100 animate-pulse">
+                      <QrcodeOutlined className="w-20 h-20 text-primary" />
                     </div>
                   )}
-                  <p className="text-neutral-600 text-sm sm:text-base mb-2">请使用微信扫码登录</p>
-                  <p className="text-neutral-400 text-xs">扫码后自动登录</p>
+                  <p className="text-neutral-700 text-sm sm:text-base mb-2 font-medium">请使用微信扫码登录</p>
+                  <p className="text-neutral-500 text-xs">扫码后自动登录</p>
                 </div>
                 <div className="mt-auto">
                   <div className="relative">
@@ -240,7 +240,7 @@ export default function Login() {
                   <div className="mt-6">
                     <button
                       type="submit"
-                      className="w-full h-10 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg hover:opacity-90 transition-opacity duration-200 text-sm sm:text-base font-medium"
+                      className="w-full h-11 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg hover:opacity-90 transition-all duration-300 text-sm sm:text-base font-medium shadow-md hover:shadow-lg hover:scale-[1.01]"
                     >
                       {isRegister ? "注册" : "登录"}
                     </button>
@@ -252,7 +252,7 @@ export default function Login() {
                         <div className="w-full border-t border-primary-200"></div>
                       </div>
                       <div className="relative flex justify-center text-xs sm:text-sm">
-                        <span className="px-4 text-primary bg-neutral-50">其他登录方式</span>
+                        <span className="px-4 text-primary bg-neutral-50 font-medium">其他登录方式</span>
                       </div>
                     </div>
                     <SocialLogin />

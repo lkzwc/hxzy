@@ -15,6 +15,7 @@ declare module 'next-auth' {
    */
   interface User {
     id?: string
+    avatar_url?: string
   }
 }
 

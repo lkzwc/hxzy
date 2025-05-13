@@ -36,6 +36,7 @@ export function updateLoginToken(token: string, sceneStr: string, updates: Parti
 export function verifyLoginToken(token: string="", sceneStr: string): LoginState {
   try {
     const loginState = jwt.verify(token, sceneStr) as LoginState;
+    console.log("verifyLoginToken", token, sceneStr,loginState);
     return loginState;
   } catch (error) {
     console.error('verifyLoginToken 失败:', error);

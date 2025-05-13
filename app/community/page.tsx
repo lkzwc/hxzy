@@ -344,7 +344,7 @@ export default function Community() {
             </div>
           ) : (
             <>
-              {posts.map((post) => (
+              {posts.map((post: any) => (
                 <div
                   key={post.id}
                   className="relative bg-white hover:bg-gray-50/50 transition-all duration-300 group overflow-hidden hover:scale-[1.03] hover:shadow-lg hover:z-10"
@@ -431,7 +431,7 @@ export default function Community() {
                       {/* 右下角标签展示 - 改进标签样式 */}
                       {post.tags && post.tags.length > 0 && (
                         <div className="flex flex-wrap items-center gap-1 ml-auto">
-                          {post.tags.map((tag, index) => (
+                          {post.tags.map((tag:string, index: number) => (
                             <Tag
                               key={index}
                               bordered={false}
