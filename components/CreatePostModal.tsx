@@ -42,7 +42,7 @@ export default function CreatePostModal({
   categories = [],
 }: CreatePostModalProps) {
   const [form] = Form.useForm();
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [selectedTags, setSelectedTags] = useState<any[]>([]);
   const [images, setImages] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: session } = useSession();
@@ -76,7 +76,7 @@ export default function CreatePostModal({
     }
 
     // 处理标签长度限制
-    const validTags = values.map((tag) => {
+    const validTags = values.map((tag: any) => {
       const trimmedTag = tag.trim();
       if (trimmedTag.length > 20) {
         messageApi.warning("标签长度不能超过20个字符");
@@ -86,7 +86,7 @@ export default function CreatePostModal({
     });
 
     // 过滤掉空标签
-    const filteredTags = validTags.filter((tag) => tag.length > 0);
+    const filteredTags = validTags.filter((tag: any) => tag.length > 0);
 
     // 去重
     const uniqueTags = [...new Set(filteredTags)];
