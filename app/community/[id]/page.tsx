@@ -18,7 +18,7 @@ import {
 } from "@ant-design/icons";
 import CommentSection from "@/components/CommentSection";
 import LikeButton from "@/components/LikeButton";
-import { App, Result } from "antd";
+import { message, Result } from "antd";
 
 // 配置 dayjs
 dayjs.locale("zh-cn");
@@ -67,7 +67,7 @@ export default function PostDetail({ params }: any) {
   const [commentImages, setCommentImages] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: session } = useSession();
-  const { message } = App.useApp();
+  const [messageApi, contextHolder] = message.useMessage();
   const router = useRouter();
 
   useEffect(() => {
@@ -190,6 +190,7 @@ export default function PostDetail({ params }: any) {
   return (
     <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row gap-6">
       {/* 左侧边栏 - 作者信息和交互按钮 */}
+      {contextHolder}
       <div className="w-[80px] hidden md:block flex-shrink-0">
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sticky top-6 hover:shadow-md transition-all duration-300">
           {/* 作者信息 */}

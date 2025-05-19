@@ -14,7 +14,7 @@ interface Doctor {
   name: string;
   department?: string;
   hospital: string;
-  specialty: string | string[];
+  specialty: string;
   phone?: string;
   province: string;
   introduction?: string;
@@ -26,24 +26,6 @@ interface Doctor {
   createdAt?: string;
   updatedAt?: string;
 }
-
-// 示例数据
-const doctorsData: Doctor[] = [
-  {
-    id: 1,
-    name: "张三丰",
-    title: "主任医师",
-    hospital: "北京中医医院",
-    region: "北京",
-    specialty: ["内科", "肿瘤科"],
-    avatar: "/doctors/doctor1.jpg",
-    description:
-      "从医40余年，擅长治疗各种疑难杂症大撒的撒的撒的撒的撒的撒打算.dd..",
-    province: "",
-    ability: "",
-  },
-  // 添加更多医生数据...
-];
 
 // 地区数据
 const regions = [
@@ -166,7 +148,7 @@ export default function DoctorsPage() {
   });
 
   return (
-    <div className="min-h-screen bg-neutral-50 relative p-8">
+    <div className="min-h-screen bg-neutral-50 relative md:p-8">
       {/* 筛选区域 */}
       <div className="max-w-7xl mx-auto p-4">
         {/* 顶部搜索区域 */}
@@ -299,28 +281,11 @@ export default function DoctorsPage() {
                         </p>
                         
                         <div className="mt-2 flex flex-wrap gap-1">
-                          {doctor.specialty &&
-                            (typeof doctor.specialty === "string" ? (
-                              <Tag color="orange" className="rounded-full px-2 py-0 border-0 bg-gradient-to-r from-primary-100 to-accent-100 text-primary-700 text-xs">
-                                {doctor.specialty}
-                              </Tag>
-                            ) : (
-                              Array.isArray(doctor.specialty) &&
-                              doctor.specialty.slice(0, 2).map((spec, index) => (
-                                <Tag 
-                                  key={spec} 
-                                  color={index % 3 === 0 ? "orange" : index % 3 === 1 ? "amber" : "yellow"}
-                                  className="rounded-full px-2 py-0 border-0 bg-gradient-to-r from-primary-100 to-accent-100 text-primary-700 text-xs"
-                                >
-                                  {spec}
-                                </Tag>
-                              ))
-                            ))}
-                            {Array.isArray(doctor.specialty) && doctor.specialty.length > 2 && (
-                              <Tag color="default" className="rounded-full px-1 border-0 text-xs">
-                                +{doctor.specialty.length - 2}
-                              </Tag>
-                            )}
+                          {doctor.specialty?.split(',').map((item: string, index: number) => (
+                            <Tag key={index}  className="rounded-sm text-primary-600 border-secondary-500">
+                              {item}
+                            </Tag>
+                          ))}
                         </div>
                         
                         <div className="mt-2 text-gray-600 line-clamp-2 text-xs bg-white bg-opacity-70 p-1 rounded-lg">
@@ -366,7 +331,7 @@ export default function DoctorsPage() {
             variant="solid"
             size="large"
             icon={<PlusCircleOutlined />}
-            className="shadow-lg rounded-full h-12 px-6 bg-gradient-to-r from-primary-500 to-primary-600 border-0 hover:shadow-xl transition-all duration-300"
+            className="text-primary !bg-orange-400 rounded-full h-12 px-6 bg-gradient-to-r from-amber-500 to-amber-600 border-0 hover:shadow-xl transition-all duration-300 hover:from-amber-600 hover:to-amber-700"
           >
             名医入驻
           </Button>

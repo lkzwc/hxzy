@@ -244,7 +244,10 @@ export default function ZhongYiDBPage() {
             </button>
             <button 
               className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[100px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'kecheng' ? 'btn-primary' : 'btn-ghost'}`}
-              onClick={() => setActiveTab('kecheng')}
+              onClick={() => {
+                // setActiveTab('kecheng')
+                window.open('https://yhcpiigo.ap-southeast-1.clawcloudrun.com/', '_blank')
+              }}
             >
               <VideoCameraOutlined className={`sm:w-5 sm:h-5 ${activeTab === 'kecheng' ? 'text-current' : 'text-gray-600'}`} />
               课程

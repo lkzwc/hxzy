@@ -471,8 +471,9 @@ export default function Community() {
       <CreatePostModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
+        categories={categories}
         onSuccess={() => {
-          setIsModalOpen(false);
+          // 刷新数据
           mutate();
         }}
       />

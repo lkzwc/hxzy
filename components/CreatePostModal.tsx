@@ -1,204 +1,226 @@
-'use client'
+"use client";
 
-import { useState, useRef, useCallback, useEffect } from 'react'
-import { useSession } from 'next-auth/react'
-import { useRouter } from 'next/navigation'
-import Image from 'next/image'
-import { CloudUploadOutlined, PlusOutlined, CloseOutlined, TagOutlined, SendOutlined, PictureOutlined } from '@ant-design/icons'
-import { App, Input, Modal, Form, Button, Upload, Tag, Avatar, Tooltip, Space, Divider } from 'antd'
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import {
+  CloudUploadOutlined,
+  PlusOutlined,
+  CloseOutlined,
+  TagOutlined,
+  SendOutlined,
+  PictureOutlined,
+} from "@ant-design/icons";
+import {
+  message,
+  Input,
+  Modal,
+  Form,
+  Button,
+  Upload,
+  Tag,
+  Avatar,
+  Tooltip,
+  Space,
+  Divider,
+  Select,
+  Empty,
+} from "antd";
 
 interface CreatePostModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSuccess?: () => void
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess?: () => void;
+  categories?: Array<{ name: string; id: number; order: number }>;
 }
 
-export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePostModalProps) {
+export default function CreatePostModal({
+  isOpen,
+  onClose,
+  onSuccess,
+  categories = [],
+}: CreatePostModalProps) {
   const [form] = Form.useForm();
-  const [selectedTags, setSelectedTags] = useState<string[]>([])
-  const [currentTag, setCurrentTag] = useState('')
-  const [images, setImages] = useState<string[]>([])
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showImageUploader, setShowImageUploader] = useState(false)
-  const tagInputRef = useRef<any>(null)
-  const { data: session } = useSession()
-  const router = useRouter()
-  const { message } = App.useApp();
-  
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [images, setImages] = useState<string[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  // 将分类数据转换为 Select 选项
+  const tagOptions = categories
+    .filter((category) => category.name !== "全部") // 排除"全部"选项
+    .map((category) => ({
+      value: category.name,
+      label: category.name,
+    }));
+
   // 重置表单和状态
   useEffect(() => {
     if (isOpen) {
       form.resetFields();
       setSelectedTags([]);
       setImages([]);
-      setCurrentTag('');
     }
   }, [isOpen, form]);
 
-  // 处理标签添加
-  const handleAddTag = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && currentTag.trim()) {
-      e.preventDefault()
-      const newTag = currentTag.trim()
-      // 标签长度限制
-      if (newTag.length > 20) {
-        message.warning('标签长度不能超过20个字符');
-        return
-      }
-      // 标签数量限制
-      if (selectedTags.length >= 3) {
-        message.warning('最多只能添加3个标签');
-        return
-      }
-      // 避免重复标签
-      if (selectedTags.includes(newTag)) {
-        message.warning('该标签已存在');
-        return
-      }
-      setSelectedTags(prev => [...prev, newTag])
-      setCurrentTag('')
-      // 确保添加标签后重新聚焦输入框
-      setTimeout(() => {
-        if (tagInputRef.current) {
-          tagInputRef.current.focus()
-        }
-      }, 0)
+  // 处理标签变更
+  const handleTagChange = (value:any,values: any) => {
+    console.log("dsad",value,values);
+    // 标签数量限制
+    if (values.length > 3) {
+      messageApi.warning("最多只能添加3个标签");
+      return;
     }
-  }, [currentTag, selectedTags, message])
 
-  // 处理标签移除
-  const handleRemoveTag = (tagToRemove: string) => {
-    setSelectedTags(prev => prev.filter(tag => tag !== tagToRemove))
-  }
+    // 处理标签长度限制
+    const validTags = values.map((tag) => {
+      const trimmedTag = tag.trim();
+      if (trimmedTag.length > 20) {
+        messageApi.warning("标签长度不能超过20个字符");
+        return trimmedTag.substring(0, 20);
+      }
+      return trimmedTag;
+    });
+
+    // 过滤掉空标签
+    const filteredTags = validTags.filter((tag) => tag.length > 0);
+
+    // 去重
+    const uniqueTags = [...new Set(filteredTags)];
+
+    setSelectedTags(uniqueTags.slice(0, 3));
+  };
 
   // 处理图片上传
   const handleImageUpload = async (file: File) => {
     if (!session?.user) {
-      router.push('/login')
-      return false
+      router.push("/login");
+      return false;
     }
 
     // 检查图片数量限制
     if (images.length >= 9) {
-      message.warning('最多只能上传9张图片');
-      return false
+      messageApi.warning("最多只能上传9张图片");
+      return false;
     }
 
-    const formData = new FormData()
-    formData.append('files', file)
+    const formData = new FormData();
+    formData.append("files", file);
 
     try {
-      const response = await fetch('/api/upload', {
-        method: 'POST',
+      const response = await fetch("/api/upload", {
+        method: "POST",
         body: formData,
-        credentials: 'include',
+        credentials: "include",
         headers: {
-          'Accept': 'application/json',
+          Accept: "application/json",
         },
-      })
+      });
 
       if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || '上传失败')
+        const data = await response.json();
+        throw new Error(data.error || "上传失败");
       }
 
-      const data = await response.json()
-      setImages(prev => [...prev, ...data.urls])
-      return false // 阻止默认上传行为
+      const data = await response.json();
+      setImages((prev) => [...prev, ...data.urls]);
+      return false; // 阻止默认上传行为
     } catch (error) {
-      console.error('Error uploading images:', error)
-      message.warning('图片上传失败，请重试');
-      return false
+      console.error("Error uploading images:", error);
+      messageApi.warning("图片上传失败，请重试");
+      return false;
     }
-  }
+  };
 
   // 处理图片移除
   const handleRemoveImage = (index: number) => {
-    setImages(prev => prev.filter((_, i) => i !== index))
-  }
+    setImages((prev) => prev.filter((_, i) => i !== index));
+  };
 
   // 处理表单提交
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
       const { title, content } = values;
-      
+
       if (!session?.user) {
-        router.push('/login')
-        return
+        router.push("/login");
+        return;
       }
 
       if (selectedTags.length === 0) {
-        message.warning('请添加标签');
-        return
+        messageApi.warning("请添加标签");
+        return;
       }
 
       // 验证标题长度
       if (title.trim().length > 30) {
-        message.warning('标题不能超过30个字符');
-        return
+        messageApi.warning("标题不能超过30个字符");
+        return;
       }
 
       // 验证内容长度
       if (content.trim().length > 250) {
-        message.warning('内容不能超过250个字符');
-        return
+        messageApi.warning("内容不能超过250个字符");
+        return;
       }
 
-      setIsSubmitting(true)
-      const response = await fetch('/api/posts', {
-        method: 'POST',
+      setIsSubmitting(true);
+      const response = await fetch("/api/posts", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
+          "Content-Type": "application/json",
+          Accept: "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify({
           title,
           content,
           tags: selectedTags,
           images,
         }),
-      })
+      });
 
       if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || '发布失败')
+        const data = await response.json();
+        throw new Error(data.error || "发布失败");
       } else {
-        message.success('发布成功');
+        messageApi.success("发布成功");
       }
-      
+
       // 清理表单和状态
-      form.resetFields()
-      setSelectedTags([])
-      setImages([])
-      setCurrentTag('')
-      
+      form.resetFields();
+      setSelectedTags([]);
+      setImages([]);
+
       // 关闭模态框并刷新页面
-      onClose()
+      onClose();
       if (onSuccess) {
-        onSuccess()
+        onSuccess();
       }
-      
+
       // 确保页面刷新
       setTimeout(() => {
-        router.refresh()
-      }, 100)
+        router.refresh();
+      }, 100);
     } catch (error) {
-      console.error('Error creating post:', error)
-      message.warning('发布失败，请重试');
+      console.error("Error creating post:", error);
+      messageApi.warning("发布失败，请重试");
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   // 重置表单
   const handleCancel = () => {
-    form.resetFields()
-    setSelectedTags([])
-    setImages([])
-    onClose()
-  }
+    form.resetFields();
+    setSelectedTags([]);
+    setImages([]);
+    onClose();
+  };
 
   return (
     <Modal
@@ -208,88 +230,99 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
       width={800}
       centered
       destroyOnClose
-      styles={{ 
+      styles={{
         body: { padding: 0 },
-        content: { 
-          borderRadius: '12px',
-          overflow: 'hidden',
-          boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)' 
-        }
+        content: {
+          borderRadius: "16px",
+          overflow: "hidden",
+          boxShadow: "0 10px 30px rgba(0, 0, 0, 0.12)",
+        },
+        header: {
+          borderBottom: "1px solid #f0f0f0",
+          padding: "16px 24px",
+        },
+        mask: {
+          backdropFilter: "blur(4px)",
+          background: "rgba(0, 0, 0, 0.45)",
+        },
       }}
+      
     >
-      <Form 
-        form={form} 
-        layout="vertical" 
-        initialValues={{ title: '', content: '' }}
+      {contextHolder}
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={{ title: "", content: "" }}
         preserve={false}
         name="createPostForm"
       >
-
-        <div className="flex items-center justify-between p-2">
-          <div className="flex items-center gap-3 w-[-webkit-fill-available]">
-            <Avatar 
-              src={session?.user?.image || '/images/default-avatar.png'} 
-              size={32} 
-              style={{ objectFit: 'cover' }} 
+        <div className="p-4 bg-white border-b border-gray-100">
+          <div className="flex items-center gap-4 w-full">
+            <Avatar
+              src={session?.user?.image || "/images/default-avatar.png"}
+              size={70}
+              style={{ objectFit: "cover", boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)" }}
             />
-            <Form.Item name="title" noStyle>
-              <Input 
-                placeholder="输入标题..."
-                bordered={false}
-                style={{
-                  fontSize: '1.125rem',
-                  fontWeight: 500,
-                  borderBottom: '1px solid #e5e7eb',
-                  padding: '0.375rem 0.5rem',
-                  width: '100%',
-                }}
-              />
-            </Form.Item>
+            <div className="flex-1 w-full">
+              <Form.Item name="title" className="!mb-2">
+                <Input
+                  placeholder="输入标题..."
+                  variant="borderless"
+                  style={{
+                    fontSize: "1.25rem",
+                    fontWeight: 500,
+                    borderBottom: "1px solid #e5e7eb",
+                    borderRadius: "0px",
+                    width: "100%",
+                    padding: "4px"
+                  }}
+                  className="hover:border-primary focus:border-primary"
+                />
+              </Form.Item>
+              <Form.Item name="tags" className="!mb-0">
+                <Select
+                  mode="tags"
+                  style={{ width: "100%",borderBottom:"1px solid #e5e7eb" }}
+                  placeholder="可输入 可选择 最多三个标签"
+                  onChange={handleTagChange}
+                  value={selectedTags}
+                  options={tagOptions}
+                  variant="borderless"
+                  maxTagCount={3}
+                  tokenSeparators={[","]}
+                  dropdownStyle={{ borderRadius: "8px" }}
+                  className="tag-select-custom"
+                  notFoundContent={null}
+                  suffixIcon={<TagOutlined className="text-gray-400" />}
+                  tagRender={(props) => {
+                    const { label, value, closable, onClose } = props;
+                    return (
+                      <Tag
+                        closable={closable}
+                        onClose={onClose}
+                        style={{
+                          marginRight: 6,
+                          padding: '4px 10px',
+                          borderRadius: '16px',
+                          backgroundColor: 'var(--primary-color)',
+                          color: 'text-gray-400',
+                          border: 'none',
+                          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                        }}
+                      >
+                        {label}
+                      </Tag>
+                    );
+                  }}
+                />
+              </Form.Item>
+            </div>
           </div>
         </div>
 
-        {/* 标签输入区 */}
-        <div className="px-4 py-2 bg-gray-50 rounded-xl">
-          <Space className="flex flex-wrap gap-2 items-center min-h-[32px]" size={[8, 8]}>
-            <TagOutlined className="text-primary" />
-            {selectedTags.map(tag => (
-              <Tag
-                key={tag}
-                style={{ 
-                  padding: '4px 8px', 
-                  backgroundColor: 'rgba(var(--primary-rgb), 0.1)', 
-                  color: 'var(--primary-color)',
-                  borderRadius: '8px',
-                  marginRight: 0,
-                  border: 'none',
-                  transition: 'all 0.2s ease'
-                }}
-                closeIcon={<CloseOutlined className="text-xs" />}
-                onClose={() => handleRemoveTag(tag)}
-              >
-                {tag}
-              </Tag>
-            ))}
-            <Input
-              ref={tagInputRef}
-              placeholder={selectedTags.length === 0 ? "添加标签以便他人快速找到，输入标签回车（最多3个）" : "继续添加标签..."}
-              value={currentTag}
-              onChange={(e) => setCurrentTag(e.target.value)}
-              onKeyDown={handleAddTag}
-              bordered={false}
-              style={{
-                flex: 1,
-                minWidth: '100px',
-                backgroundColor: 'transparent',
-              }}
-              disabled={selectedTags.length >= 3}
-            />
-          </Space>
-        </div>
-
         {/* 内容编辑区 */}
-        <div className="p-4">
-          <Form.Item name="content" noStyle>
+        <div className="px-4 py-3 bg-white">
+          <Form.Item name="content" className="mb-0">
             <Input.TextArea
               placeholder="写下你的想法..."
               autoSize={{ minRows: 10, maxRows: 15 }}
@@ -297,17 +330,19 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
               showCount
               variant="borderless"
               style={{
-                fontSize: '1rem',
-                lineHeight: '1.5',
+                fontSize: "1rem",
+                lineHeight: "1.6",
+                color: "#333",
+                width: "100%",
+                padding: "8px 4px"
               }}
+              className="custom-textarea w-full"
             />
           </Form.Item>
         </div>
 
-
-
         {/* 底部操作栏 */}
-        <div className="flex items-center justify-between mt-2 px-4 py-3 border-t bg-gray-50/80">
+        <div className="flex items-center justify-between px-4 py-4 border-t bg-gray-50/90 shadow-inner w-full">
           <div className="flex items-center gap-3 w-[-webkit-fill-available]">
             <Upload
               accept="image/*"
@@ -316,20 +351,20 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
               beforeUpload={handleImageUpload}
               disabled={images.length >= 9}
             >
-              <Button 
-                icon={<CloudUploadOutlined />} 
-                type='link'
+              <Button
+                icon={<CloudUploadOutlined />}
+                type="link"
                 style={{
                   opacity: images.length >= 9 ? 0.5 : 1,
-                  cursor: images.length >= 9 ? 'not-allowed' : 'pointer',
-                  borderRadius: '8px',
-                  transition: 'all 0.2s ease',
+                  cursor: images.length >= 9 ? "not-allowed" : "pointer",
+                  borderRadius: "8px",
+                  transition: "all 0.2s ease",
                 }}
               >
                 添加图片 ({images.length}/9)
               </Button>
             </Upload>
-            
+
             {/* 图片预览区 - 移到上传按钮后面 */}
             {images.length > 0 && (
               <div className="flex flex-wrap gap-2">
@@ -342,29 +377,31 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
                       sizes="64px"
                       className="object-cover rounded-lg"
                     />
-                    <div 
+                    <div
                       className="absolute inset-0 rounded-lg flex items-center justify-center"
                       style={{
-                        backgroundColor: 'rgba(0, 0, 0, 0)',
-                        transition: 'all 0.2s ease',
+                        backgroundColor: "rgba(0, 0, 0, 0)",
+                        transition: "all 0.2s ease",
                         opacity: 0,
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
-                        e.currentTarget.style.opacity = '1';
+                        e.currentTarget.style.backgroundColor =
+                          "rgba(0, 0, 0, 0.2)";
+                        e.currentTarget.style.opacity = "1";
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0)';
-                        e.currentTarget.style.opacity = '0';
+                        e.currentTarget.style.backgroundColor =
+                          "rgba(0, 0, 0, 0)";
+                        e.currentTarget.style.opacity = "0";
                       }}
                     >
-                      <Button 
-                        type="text" 
-                        icon={<CloseOutlined />} 
-                        size="small" 
+                      <Button
+                        type="text"
+                        icon={<CloseOutlined />}
+                        size="small"
                         style={{
-                          color: 'white',
-                          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                          color: "white",
+                          backgroundColor: "rgba(0, 0, 0, 0.5)",
                         }}
                         onClick={() => handleRemoveImage(index)}
                       />
@@ -374,24 +411,27 @@ export default function CreatePostModal({ isOpen, onClose, onSuccess }: CreatePo
               </div>
             )}
           </div>
-          <Button 
-            type="primary" 
+          <Button
+            type="primary"
             onClick={handleSubmit}
             loading={isSubmitting}
             icon={<SendOutlined />}
+            className="rounded-full px-5 py-1 h-auto flex items-center justify-center"
             style={{
-              backgroundColor: '#1890ff',
-              borderColor: '#1890ff',
-              color: 'white',
-              fontWeight: 'bold'
+              background: "var(--primary-color)",
+              boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+              transition: "all 0.3s ease",
             }}
-            disabled={form.getFieldValue('title')?.trim() === '' || 
-                     form.getFieldValue('content')?.trim() === ''}
+            disabled={
+              form.getFieldValue("title")?.trim() === "" ||
+              form.getFieldValue("content")?.trim() === "" ||
+              selectedTags.length === 0
+            }
           >
-            {isSubmitting ? '发布中...' : '发布'}
+            <span className="ml-1">{isSubmitting ? "发布中..." : "发布"}</span>
           </Button>
         </div>
       </Form>
     </Modal>
-  )
+  );
 }

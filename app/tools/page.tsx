@@ -10,26 +10,30 @@ import AI from '@/components/tools/AI';
 // 工具列表
 const tools = [
   {
-    id: 'ai-assistant',
+    id: 'ai',
     name: 'AI 中医助手',
     description: '智能问诊，辅助诊断',
     icon: <RobotOutlined className="w-8 h-8 text-primary" />,
-    link: '/tools/ai-assistant'
   },
   {
     id: 'diagnosis',
     name: '辅助诊断',
     description: '症状分析，证候辨识',
     icon: <CompassOutlined className="w-8 h-8 text-primary" />,
-    link: '/tools/diagnosis'
   },
   {
-    id: 'favorites',
-    name: '收藏夹',
-    description: '收藏的工具和资料',
+    id: 'liuren',
+    name: '小六壬',
+    description: '当断不断就来卜一卦',
     icon: <StarOutlined className="w-8 h-8 text-primary" />,
-    link: '/tools/favorites'
+  },
+  {
+    id: 'ziwei',
+    name: '紫微斗数',
+    description: '当断不断就来卜一卦',
+    icon: <div style={{margin:'0px 7px'}}>🧭</div>,
   }
+  
 ];
 
 export default function ToolsPage() {
@@ -48,7 +52,7 @@ export default function ToolsPage() {
             {/* 左侧工具导航 */}
             <div className="bg-white rounded-lg shadow-md p-4">
               <h2 className="text-lg font-bold text-primary mb-4 pb-2 border-b border-gray-200">
-                工具导航
+                工具导航🌠
               </h2>
               <div className="flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0">
                 {tools.map((tool) => (

@@ -6,6 +6,7 @@ import { useState } from "react";
 
 export function LoginMenu() {
   const { data: session, status } = useSession();
+  console.log("dddd", session,status)
   const [showDropdown, setShowDropdown] = useState(false);
 
   // 处理加载状态
@@ -55,7 +56,7 @@ export function LoginMenu() {
 
       {showDropdown && (
         <div 
-          className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-primary ring-opacity-5 divide-y divide-neutral-100 focus:outline-none z-50"
+          className="flex md:grid absolute md:right-0 mt-2 w-40 rounded-md shadow-lg bg-white ring-1 ring-primary ring-opacity-5 divide-y divide-neutral-100 focus:outline-none z-50"
           role="menu"
           aria-orientation="vertical"
           aria-labelledby="user-menu"

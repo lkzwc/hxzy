@@ -169,7 +169,7 @@ async function createLoginQrCode(request: NextRequest) {
 
     const { ticket, expire_seconds } = await response.json();
 
-    // 创建登录令牌并存储映射关系
+    // 创建登录令牌并存储映射关系【绑定场景值 和 tokene】
     const loginToken = createLoginToken(sceneStr);
     tokenMap.set(sceneStr, loginToken);
 
@@ -239,7 +239,7 @@ export async function POST(request: NextRequest) {
     if (contentType.includes("xml")) {
       // 处理微信服务器的XML推送
       const xmlData = await request.text();
-      console.log("Received XML message:", xmlData);
+      console.log("服务器推送message:", xmlData);
       return handleWeChatMessage(xmlData);
     } else {
       // 处理前端获取二维码的请求
