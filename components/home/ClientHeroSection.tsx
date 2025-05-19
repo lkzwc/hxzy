@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -21,12 +21,25 @@ interface Props {
 
 export default function ClientHeroSection({ features }: Props) {
   const [activeFeature, setActiveFeature] = useState(0)
+  const [isLoaded, setIsLoaded] = useState(false)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
 
+  // 延迟启动轮播，减少初始加载时的性能消耗
   useEffect(() => {
-    const timer = setInterval(() => {
-      setActiveFeature((prev) => (prev + 1) % features.length)
-    }, 6000)
-    return () => clearInterval(timer)
+    // 先标记组件已加载
+    setIsLoaded(true)
+    
+    // 延迟2秒后再开始轮播，减轻初始加载压力
+    const startTimer = setTimeout(() => {
+      timerRef.current = setInterval(() => {
+        setActiveFeature((prev) => (prev + 1) % features.length)
+      }, 6000)
+    }, 2000)
+    
+    return () => {
+      clearTimeout(startTimer)
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
   }, [features.length])
 
   return (
@@ -41,13 +54,13 @@ export default function ClientHeroSection({ features }: Props) {
           {features.map((feature, index) => (
             index === activeFeature && (
               <motion.div
-                key={feature.title}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 1.05 }}
-                transition={{ duration: 0.5 }}
-                className="absolute inset-0"
-              >
+                  key={feature.title}
+                  initial={index === 0 ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.05 }}
+                  transition={{ duration: index === 0 ? 0 : 0.5 }}
+                  className="absolute inset-0"
+                >
                 <div className="relative h-full rounded-3xl overflow-hidden shadow-2xl border border-white/20">
                   {/* 图片遮罩渐变 */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10" />
@@ -57,17 +70,19 @@ export default function ClientHeroSection({ features }: Props) {
                     alt={feature.title}
                     fill
                     priority={index === 0}
+                    loading={index === 0 ? "eager" : "lazy"}
                     className="object-cover"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    quality={90}
+                    quality={75}
+                    onLoad={() => index === 0 && setIsLoaded(true)}
                   />
 
                   {/* 内容覆盖层 */}
                   <motion.div 
                     className="absolute inset-0 z-20 p-8 flex flex-col justify-end"
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={index === 0 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.2, duration: 0.5 }}
+                    transition={{ delay: index === 0 ? 0 : 0.2, duration: index === 0 ? 0 : 0.5 }}
                   >
                     <h3 className="text-2xl font-bold text-white mb-3">
                       {feature.title}
@@ -79,9 +94,9 @@ export default function ClientHeroSection({ features }: Props) {
                       {feature.stats.map((stat, idx) => (
                         <motion.div
                           key={stat.label}
-                          initial={{ opacity: 0, y: 10 }}
+                          initial={index === 0 ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.4 + idx * 0.1 }}
+                          transition={{ delay: index === 0 ? 0 : 0.4 + idx * 0.1, duration: index === 0 ? 0 : 0.3 }}
                           className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center"
                         >
                           <div className="text-xl font-bold text-white">
@@ -117,4 +132,4 @@ export default function ClientHeroSection({ features }: Props) {
       </div>
     </div>
   )
-} 
+}

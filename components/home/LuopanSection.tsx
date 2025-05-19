@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface CompassRing {
@@ -110,6 +110,7 @@ const compassRings: CompassRing[] = [
   }
 ];
 
+
 export default function LuopanSection() {
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [ringRotations, setRingRotations] = useState<Record<string, number>>(
@@ -117,12 +118,30 @@ export default function LuopanSection() {
   );
   const [isMobile, setIsMobile] = useState(false);
   
-  // 检测屏幕尺寸
+  // 使用useRef跟踪组件是否已挂载，减少初始渲染的工作量
+  const isMounted = useRef(false);
+  
+  // 检测屏幕尺寸 - 优化事件监听
   useEffect(() => {
+    // 标记组件已挂载
+    isMounted.current = true;
+    
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    
+    // 使用防抖函数优化resize事件
+    let resizeTimer: NodeJS.Timeout;
+    const handleResize = () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(checkMobile, 100);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      clearTimeout(resizeTimer);
+      isMounted.current = false;
+    };
   }, []);
 
   // 处理五行元素点击

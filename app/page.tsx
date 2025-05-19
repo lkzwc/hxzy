@@ -1,12 +1,13 @@
-import { Suspense } from 'react'
+import { Suspense, lazy } from 'react'
 import Image from 'next/image'
+import dynamic from 'next/dynamic'
 
-// 静态数据
+// 静态数据 - 使用更小的图片尺寸和webp格式
 const features = [
   {
     title: '传统医学智慧',
     desc: '探索中医理论体系，传承千年医药智慧',
-    image: 'https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?q=80&w=2070',
+    image: 'https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?q=80&w=1080&fm=webp',
     stats: [
       { label: '历史传承', value: '5000+', unit: '年' },
       { label: '经典著作', value: '300+', unit: '部' },
@@ -16,7 +17,7 @@ const features = [
   {
     title: '现代科技融合',
     desc: '结合现代科技，创新中医药发展',
-    image: 'https://images.unsplash.com/photo-1512290746430-3ffb4fab31bc?q=80&w=2940',
+    image: 'https://images.unsplash.com/photo-1512290746430-3ffb4fab31bc?q=80&w=1080&fm=webp',
     stats: [
       { label: '数字化医案', value: '100万+', unit: '例' },
       { label: 'AI 辅助诊断', value: '95%+', unit: '准确率' },
@@ -25,26 +26,38 @@ const features = [
   },
 ]
 
-// 客户端组件
+// 客户端组件 - 使用动态导入
 import ClientHeroSection from '@/components/home/ClientHeroSection'
-import FeaturesSection from '@/components/home/FeaturesSection'
 import HomeButtons from '@/components/home/HomeButtons'
-import LuopanSection from '@/components/home/LuopanSection'
+import { LazyFeatureSection, LazyLuopanSection } from '@/components/home/LazyComponents'
+
+// 优化的骨架屏组件
+function HeroSkeleton() {
+  return (
+    <div className="aspect-square relative rounded-2xl overflow-hidden shadow-lg bg-neutral-100">
+      <div className="absolute inset-0 bg-gradient-to-b from-neutral-200/50 to-neutral-300/50 animate-pulse" />
+      <div className="absolute bottom-0 left-0 right-0 h-1/3 p-6">
+        <div className="h-6 w-1/3 bg-white/60 rounded-md mb-4 animate-pulse" />
+        <div className="h-4 w-2/3 bg-white/40 rounded-md animate-pulse" />
+      </div>
+    </div>
+  );
+}
 
 export default async function Home() {
   return (
     <main className="bg-gradient-to-b from-primary-50 via-white to-neutral-50">
-      {/* Hero Section */}
+      {/* Hero Section - 首屏内容优先加载 */}
       <section className="relative">
-        {/* 装饰背景 */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary-100/40 rounded-full filter blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-accent-100/30 rounded-full filter blur-2xl" />
+        {/* 装饰背景 - 简化初始渲染 */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary-100/30 rounded-full filter blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-accent-100/20 rounded-full filter blur-2xl" />
         </div>
 
         <div className="container mx-auto px-4 h-full pt-24 lg:pt-32">
           <div className="relative grid lg:grid-cols-12 gap-8 lg:gap-16 items-center">
-            {/* 左侧内容 */}
+            {/* 左侧内容 - 关键内容优先渲染 */}
             <div className="lg:col-span-6 lg:pl-8 text-center lg:text-left relative z-10">
               <div 
                 className="inline-flex items-center px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full 
@@ -80,13 +93,9 @@ export default async function Home() {
               </div>
             </div>
 
-            {/* 右侧特色内容 */}
+            {/* 右侧特色内容 - 使用优化的骨架屏 */}
             <div className="lg:col-span-6 relative mt-12 lg:mt-0">
-              <Suspense 
-                fallback={
-                  <div className="aspect-square relative rounded-2xl overflow-hidden shadow-2xl bg-neutral-100 animate-pulse" />
-                }
-              >
+              <Suspense fallback={<HeroSkeleton />}>
                 <ClientHeroSection features={features} />
               </Suspense>
             </div>
@@ -94,20 +103,12 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Features Section */}
-      <Suspense 
-        fallback={
-          <div className="h-96 flex items-center justify-center">
-            <div className="w-32 h-32 rounded-lg bg-neutral-100 animate-pulse" />
-          </div>
-        }
-      >
-        <FeaturesSection />
-      </Suspense>
+      {/* 非首屏内容 - 使用懒加载 */}
+      <LazyFeatureSection />
       
-      {/* WuXing Section */}
+      {/* WuXing Section - 最后加载 */}
       <div className="bg-gradient-to-b from-primary-50 to-primary-100/50">
-        <LuopanSection />
+        <LazyLuopanSection />
       </div>
     </main>
   )
