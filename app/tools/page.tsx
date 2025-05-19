@@ -59,7 +59,7 @@ export default function ToolsPage() {
                   <button
                     key={tool.id}
                     onClick={() => setActiveTool(tool.id)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-md transition-colors shrink-0 md:shrink w-full
+                    className={`flex items-center gap-3 px-4 py-3 rounded-md transition-colors shrink-0 md:shrink md:w-full
                       ${activeTool === tool.id 
                         ? 'bg-primary/10 text-primary' 
                         : 'hover:bg-gray-100 text-gray-600'}`}

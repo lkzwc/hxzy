@@ -12,35 +12,43 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }),
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? ''
+      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
     }),
     // 自定义微信登录
     CredentialsProvider({
       name: "WeChat",
       credentials: {
         openid: { label: "OpenID", type: "text" },
+        email: { label: "Email", type: "email" },
       },
       async authorize(credentials) {
-        if (!credentials?.openid) return null;
+        if (credentials?.openid) {
+          return {
+            id: credentials.openid,
+            name: `微信用户${crypto
+              .createHash("sha1")
+              .update(credentials.openid)
+              .digest("hex")
+              .slice(0, 6)}`,
+          };
+        }
 
-        // 只是做登陆逻辑不写库
-        // 返回用户信息，这些信息会被传递给 jwt 回调
-        return {
-          id: credentials.openid,
-          name: `微信用户${crypto
-            .createHash("sha1")
-            .update(credentials.openid)
-            .digest("hex")
-            .slice(0, 6)}`,
-        };
+        if (credentials?.email) {
+          return {
+            id: credentials.email,
+            name: `邮箱用户${credentials.email}`,
+          };
+        }
+
+        return null;
       },
     }),
   ],
   callbacks: {
     async signIn({ user, account, profile }) {
       console.log("signIn", user, account, profile);
-      
+
       try {
         // 黑名单
         if ([""].includes(user?.id as string)) return false;
@@ -52,7 +60,6 @@ export const authOptions: NextAuthOptions = {
           otherId: user?.id,
           lastLoginAt: new Date(),
         };
-
 
         // 使用 upsert 统一处理用户数据
         const dbUser = await prisma.user.upsert({
@@ -72,7 +79,6 @@ export const authOptions: NextAuthOptions = {
       }
     },
     async jwt({ token, user }) {
-
       if (user) {
         token.id = user.id;
       }

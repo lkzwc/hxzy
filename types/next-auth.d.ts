@@ -14,8 +14,9 @@ declare module 'next-auth' {
    * 扩展默认的User类型
    */
   interface User {
-    id?: string
-    avatar_url?: string
+    id?: string;
+    avatar_url?: string;
+    email?: string;
   }
 }
 

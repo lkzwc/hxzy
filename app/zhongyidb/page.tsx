@@ -227,23 +227,23 @@ export default function ZhongYiDBPage() {
       <div className="container mx-auto px-4 -mt-8">
         {/* 标签页导航 */}
         <div className="flex justify-center mb-12 overflow-x-auto hide-scrollbar">
-          <div className="join bg-base-100 shadow-lg rounded-full p-2 flex-nowrap">
+          <div className="bg-base-100 mb-10 shadow-lg rounded-full p-1 flex-nowrap">
             <button 
-              className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[100px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'zhongyao' ? 'btn-primary' : 'btn-ghost'}`}
+              className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[80px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'zhongyao' ? 'btn-primary' : 'btn-ghost'}`}
               onClick={() => setActiveTab('zhongyao')}
             >
               <span className={`sm:w-5 sm:h-5 ${activeTab === 'zhongyao' ? 'text-current' : 'text-gray-600'}`}>🌿</span>
               中药
             </button>
             <button 
-              className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[100px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'jingfang' ? 'btn-primary' : 'btn-ghost'}`}
+              className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[80px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'jingfang' ? 'btn-primary' : 'btn-ghost'}`}
               onClick={() => setActiveTab('jingfang')}
             >
               <FileTextOutlined className={`sm:w-5 sm:h-5 ${activeTab === 'jingfang' ? 'text-current' : 'text-gray-600'}`} />
               经方
             </button>
             <button 
-              className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[100px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'kecheng' ? 'btn-primary' : 'btn-ghost'}`}
+              className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[80px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'kecheng' ? 'btn-primary' : 'btn-ghost'}`}
               onClick={() => {
                 // setActiveTab('kecheng')
                 window.open('https://yhcpiigo.ap-southeast-1.clawcloudrun.com/', '_blank')
@@ -253,7 +253,7 @@ export default function ZhongYiDBPage() {
               课程
             </button>
             <button 
-              className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[100px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'dianzishu' ? 'btn-primary' : 'btn-ghost'}`}
+              className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[80px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'dianzishu' ? 'btn-primary' : 'btn-ghost'}`}
               onClick={() => setActiveTab('dianzishu')}
             >
               <BookOutlined className={`sm:w-5 sm:h-5 ${activeTab === 'dianzishu' ? 'text-current' : 'text-gray-600'}`} />

@@ -143,6 +143,7 @@ export default function CreatePostModal({
   // 处理表单提交
   const handleSubmit = async () => {
     try {
+      // 先验证表单字段
       const values = await form.validateFields();
       const { title, content } = values;
 
@@ -151,6 +152,19 @@ export default function CreatePostModal({
         return;
       }
 
+      // 验证标题是否为空
+      if (!title || title.trim() === "") {
+        messageApi.warning("请输入标题");
+        return;
+      }
+
+      // 验证内容是否为空
+      if (!content || content.trim() === "") {
+        messageApi.warning("请输入内容");
+        return;
+      }
+
+      // 验证标签
       if (selectedTags.length === 0) {
         messageApi.warning("请添加标签");
         return;
@@ -422,11 +436,6 @@ export default function CreatePostModal({
               boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
               transition: "all 0.3s ease",
             }}
-            disabled={
-              form.getFieldValue("title")?.trim() === "" ||
-              form.getFieldValue("content")?.trim() === "" ||
-              selectedTags.length === 0
-            }
           >
             <span className="ml-1">{isSubmitting ? "发布中..." : "发布"}</span>
           </Button>
