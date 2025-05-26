@@ -23,10 +23,11 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "email" },
       },
       async authorize(credentials) {
+        console.log("credentials", credentials);
         if (credentials?.openid) {
           return {
             id: credentials.openid,
-            name: `微信用户${crypto
+            name: `微信${crypto
               .createHash("sha1")
               .update(credentials.openid)
               .digest("hex")
@@ -37,7 +38,7 @@ export const authOptions: NextAuthOptions = {
         if (credentials?.email) {
           return {
             id: credentials.email,
-            name: `邮箱用户${credentials.email}`,
+            name: `📮${credentials.email}`,
           };
         }
 

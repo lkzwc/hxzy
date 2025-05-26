@@ -19,6 +19,7 @@ model User {
   posts     Post[]
   postLikes PostLike[]
   lastLoginAt DateTime? @default(now())
+  notifications Notification[] // 用户收到的通知
 
   @@index([email])
   @@index([id])
@@ -38,6 +39,7 @@ model Post {
   comments  Comment[]
   author    User       @relation(fields: [authorId], references: [id])
   postLikes PostLike[]
+  notifications Notification[] // 与帖子相关的通知
 
   @@index([authorId])
   @@index([createdAt])
@@ -57,6 +59,7 @@ model Comment {
   parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
   replies   Comment[] @relation("CommentReplies")
   post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  notifications Notification[] // 与评论相关的通知
 
   @@index([postId])
   @@index([authorId])
@@ -73,6 +76,30 @@ model PostLike {
   @@id([userId, postId])
   @@index([userId])
   @@index([postId])
+}
+
+// 通知模型
+model Notification {
+  id        Int       @id @default(autoincrement())
+  content   String    // 通知内容
+  isRead    Boolean   @default(false) // 是否已读
+  createdAt DateTime  @default(now())
+  
+  // 关联接收通知的用户
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id])
+  
+  // 关联相关帖子
+  postId    Int
+  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  
+  // 关联相关评论（可选）
+  commentId Int?
+  comment   Comment?  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([postId])
+  @@index([commentId])
 }
 
 model Doctor {

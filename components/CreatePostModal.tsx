@@ -62,21 +62,26 @@ export default function CreatePostModal({
     if (isOpen) {
       form.resetFields();
       setSelectedTags([]);
+      setIsSubmitting(false);
       setImages([]);
     }
   }, [isOpen, form]);
 
   // 处理标签变更
-  const handleTagChange = (value:any,values: any) => {
-    console.log("dsad",value,values);
+  const handleTagChange = (value: any, values: any) => {
+    console.log("dsad", value, values);
     // 标签数量限制
-    if (values.length > 3) {
+    if (value.length > 3) {
       messageApi.warning("最多只能添加3个标签");
+      // 只保留前3个标签
+      const limitedTags = value.slice(0, 3);
+      setSelectedTags(limitedTags);
+      form.setFieldValue('tags', limitedTags); // 更新表单值
       return;
     }
 
     // 处理标签长度限制
-    const validTags = values.map((tag: any) => {
+    const validTags = value.map((tag: any) => {
       const trimmedTag = tag.trim();
       if (trimmedTag.length > 20) {
         messageApi.warning("标签长度不能超过20个字符");
@@ -91,7 +96,7 @@ export default function CreatePostModal({
     // 去重
     const uniqueTags = [...new Set(filteredTags)];
 
-    setSelectedTags(uniqueTags.slice(0, 3));
+    setSelectedTags(uniqueTags);
   };
 
   // 处理图片上传
@@ -273,7 +278,7 @@ export default function CreatePostModal({
         <div className="p-4 bg-white border-b border-gray-100">
           <div className="flex items-center gap-4 w-full">
             <Avatar
-              src={session?.user?.image || "/images/default-avatar.png"}
+              src={session?.user?.image || "/images/defaultAvatar.jpg"}
               size={70}
               style={{ objectFit: "cover", boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)" }}
             />
@@ -296,18 +301,26 @@ export default function CreatePostModal({
               <Form.Item name="tags" className="!mb-0">
                 <Select
                   mode="tags"
-                  style={{ width: "100%",borderBottom:"1px solid #e5e7eb" }}
+                  style={{ width: "100%", borderBottom:"1px solid #e5e7eb" }}
                   placeholder="可输入 可选择 最多三个标签"
                   onChange={handleTagChange}
                   value={selectedTags}
                   options={tagOptions}
                   variant="borderless"
                   maxTagCount={3}
+                  maxTagTextLength={20} // 添加标签文本长度限制
                   tokenSeparators={[","]}
                   dropdownStyle={{ borderRadius: "8px" }}
                   className="tag-select-custom"
                   notFoundContent={null}
                   suffixIcon={<TagOutlined className="text-gray-400" />}
+                  // 添加这个属性来限制选择的数量
+                  onSelect={(value) => {
+                    if (selectedTags.length >= 3) {
+                      messageApi.warning("最多只能添加3个标签");
+                      return;
+                    }
+                  }}
                   tagRender={(props) => {
                     const { label, value, closable, onClose } = props;
                     return (
@@ -432,12 +445,12 @@ export default function CreatePostModal({
             icon={<SendOutlined />}
             className="rounded-full px-5 py-1 h-auto flex items-center justify-center"
             style={{
-              background: "var(--primary-color)",
+              background: "burlywood",
               boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
               transition: "all 0.3s ease",
             }}
           >
-            <span className="ml-1">{isSubmitting ? "发布中..." : "发布"}</span>
+            <span className="ml-1 text-primary">{isSubmitting ? "发布中..." : "发布"}</span>
           </Button>
         </div>
       </Form>

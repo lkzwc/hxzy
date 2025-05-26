@@ -175,3 +175,14 @@ POST /api/comments/[id]/like
 6. 评论搜索功能
 7. 评论举报功能
 8. 评论数据统计 
+
+
+model Comment {
+  // ... 其他字段
+  
+  // 外键字段 - 实际存储在数据库中
+  postId    Int
+  
+  // 关系字段 - Prisma用于导航关系的虚拟字段
+  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+}

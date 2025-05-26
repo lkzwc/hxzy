@@ -3,10 +3,10 @@
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
+import NotificationBadge from "./NotificationBadge";
 
 export function LoginMenu() {
   const { data: session, status } = useSession();
-  console.log("dddd", session,status)
   const [showDropdown, setShowDropdown] = useState(false);
 
   // 处理加载状态
@@ -31,10 +31,13 @@ export function LoginMenu() {
   }
 
   return (
-    <div className="relative inline-block text-left">
+    <div className="relative inline-block text-left flex items-center">
+      {/* 通知图标 */}
+      <NotificationBadge />
+      
       <div
         onClick={() => setShowDropdown(!showDropdown)}
-        className="flex items-center space-x-2 cursor-pointer"
+        className="flex items-center space-x-2 cursor-pointer ml-2"
       >
         <div className="w-8 h-8 rounded-full bg-primary-100 flex items-center justify-center overflow-hidden">
           {session.user?.image ? (

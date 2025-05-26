@@ -81,8 +81,11 @@ export default function Login() {
     qrCode?.loginToken ? ["loginStatus", qrCode.loginToken] : null,
     () => loginStatusFetcher(qrCode.sceneStr),
     {
-      refreshInterval: 2000, // 每2秒检查一次
+      refreshInterval: ()=>{ 
+        return isQRLogin? 0 : 2000;
+      }, // 每2秒检查一次
       revalidateOnFocus: true,
+      cancelOnUnmount: true,
     }
   );
 
@@ -94,7 +97,7 @@ export default function Login() {
         redirect: true,
       });
     }
-  }, [loginStatus, router]);
+  }, [loginStatus]);
 
   // 如果已登录，跳转到社区页面
   useEffect(() => {
@@ -122,7 +125,7 @@ export default function Login() {
       if (data.error) {
         throw new Error(data.error);
       }
-      setCodes(data.codeS);
+      setCodes(data);
 
       // 验证码发送成功，显示提示信息
       messageApi.success(`验证码已发送到您的邮箱，请查收`);
@@ -134,20 +137,32 @@ export default function Login() {
     }
   };
 
-  const handleLogin = () => {
+  const handleLogin = (e: any) => {
+    e.preventDefault(); // 防止表单默认提交行为
+    console.log(codes, Date.now() - 1000 * 60 * 5);
     // 登录逻辑
     if (email && code) {
-      if (Math.floor(101010 + codes / 1000000).toString() === code) {
-        handleClose();
+      
+      if(codes?.time < Date.now() - 1000 * 60 * 5) { // 修正判断逻辑
+        messageApi.warning("验证码已过期，请重新获取");
+        return;
+      }
+      if (Math.floor(101010 + codes.codeS / 1000000).toString() === code) {
+        
+        messageApi.success("登录成功");
         return signIn("credentials", {
           email: email,
           callbackUrl: "/community",
         });
+      } else {
+        messageApi.error("验证码错误，请重新输入");
       }
+    } else {
+      messageApi.warning("请输入邮箱和验证码");
     }
   };
   const handleClose = () => {
-    router.back();
+    router.push('/');
   };
 
   return (

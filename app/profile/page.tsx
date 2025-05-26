@@ -44,6 +44,15 @@ const features = [
     available: true
   },
   { 
+    id: 'notifications', 
+    name: '我的通知', 
+    icon: <MessageOutlined className="w-5 h-5" />,
+    description: '与我相关的消息',
+    color: 'text-blue-500',
+    available: true,
+    path: '/profile/notifications'
+  },
+  { 
     id: 'favorites', 
     name: '我的收藏', 
     icon: <StarOutlined className="w-5 h-5" />,
@@ -229,7 +238,17 @@ export default function ProfilePage() {
             {features.map((feature) => (
               <button
                 key={feature.id}
-                onClick={() => feature.available && setActiveFeature(feature.id)}
+                onClick={() => {
+                  if (feature.available) {
+                    if (feature.path) {
+                      // 如果有路径，直接跳转
+                      window.location.href = feature.path;
+                    } else {
+                      // 否则切换标签页
+                      setActiveFeature(feature.id);
+                    }
+                  }
+                }}
                 disabled={!feature.available}
                 className={`relative flex-shrink-0 flex items-center gap-2 px-8 py-5 text-sm font-medium 
                   ${activeFeature === feature.id 

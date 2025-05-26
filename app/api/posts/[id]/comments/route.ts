@@ -247,6 +247,49 @@ export async function POST(
         },
       },
     })
+    
+    // 创建通知
+    try {
+      // 如果是回复评论，通知被回复的用户
+      if (parentId) {
+        const parentComment = await prisma.comment.findUnique({
+          where: { id: parentId },
+          select: {
+            authorId: true,
+            content: true,
+          },
+        })
+        
+        // 不给自己发送通知
+        if (parentComment && parentComment.authorId !== user.id) {
+          await prisma.notification.create({
+            data: {
+              content: `${user.name || '有用户'} 回复了你的评论: ${content.length > 20 ? content.substring(0, 20) + '...' : content}`,
+              userId: parentComment.authorId,
+              postId,
+              commentId: comment.id,
+            },
+          })
+        }
+      } 
+      // 如果是评论帖子，通知帖子作者
+      else {
+        // 不给自己发送通知
+        if (post.authorId !== user.id) {
+          await prisma.notification.create({
+            data: {
+              content: `${user.name || '有用户'} 评论了你的帖子: ${content.length > 20 ? content.substring(0, 20) + '...' : content}`,
+              userId: post.authorId,
+              postId,
+              commentId: comment.id,
+            },
+          })
+        }
+      }
+    } catch (notificationError) {
+      // 通知创建失败不影响评论创建
+      console.error('创建通知失败:', notificationError)
+    }
 
 
     const response: CommentResponse = {
