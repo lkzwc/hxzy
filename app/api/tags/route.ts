@@ -27,8 +27,6 @@ export async function GET(request: NextRequest) {
     // 按频率排序
     tagCloud.sort((a, b) => b.value - a.value)
 
-    // 获取前十个热门标签
-    const topTags = tagCloud.slice(0, 10).map(tag => tag.text)
 
     // 设置缓存控制
     const headers = new Headers()
@@ -37,7 +35,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(
       {
         tags: tagCloud,
-        topTags,
       },
       {
         headers,

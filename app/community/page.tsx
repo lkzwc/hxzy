@@ -259,71 +259,51 @@ export default function Community() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-2 sm:px-4 pb-4 sm:pb-10">
+    <div>
       {/* 固定的顶部搜索栏 */}
-      <div className="sticky top-14 z-10 bg-gray-50/80 backdrop-blur-sm py-2.5">
-        <div className="bg-white rounded-lg sm:rounded-xl shadow-sm p-2.5 sm:p-3.5 border border-gray-100 hover:shadow-md transition-all duration-300">
-          {/* 搜索和发帖按钮 */}
-          <div className="flex flex-col sm:flex-row gap-2.5">
-            <div className="flex-1 flex items-center gap-2">
-              <div className="flex-1 flex items-center gap-2 bg-gray-50 rounded-lg px-3 focus-within:ring-2 focus-within:ring-primary/30 hover:bg-gray-100 transition-all border border-gray-200/50">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-3.5 w-3.5 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                  />
-                </svg>
-                <input
-                  type="text"
-                  placeholder="搜索感兴趣的内容..."
-                  className="flex-1 text-xs sm:text-sm bg-transparent focus:outline-none min-w-0 p-2"
-                  value={searchInput}
-                  onChange={(e) => setSearchInput(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                />
-              </div>
-              <button
-                onClick={handleSearch}
-                className="flex-shrink-0 px-3 sm:px-3.5 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-xs sm:text-sm shadow-sm hover:shadow"
+      <div className="sticky z-10 bg-gray-50/80 backdrop-blur-sm py-2.5">
+        <div className="flex flex-col sm:flex-row gap-2.5">
+          <div className="flex-1 flex items-center gap-2">
+            <div className="flex-1 flex items-center gap-2 bg-gray-50 rounded-lg px-3 focus-within:ring-2 focus-within:ring-primary/30 hover:bg-gray-100 transition-all border border-gray-200/50">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-3.5 w-3.5 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                搜索
-              </button>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              <input
+                type="text"
+                placeholder="搜索感兴趣的内容..."
+                className="flex-1 text-xs sm:text-sm bg-transparent focus:outline-none min-w-0 p-2"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                onKeyPress={handleKeyPress}
+              />
             </div>
             <button
-              onClick={() =>
-                session ? setIsModalOpen(true) : router.push("/api/auth/signin")
-              }
-              className="flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow"
+              onClick={handleSearch}
+              className="flex-shrink-0 px-3 sm:px-3.5 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-xs sm:text-sm shadow-sm hover:shadow"
             >
-              <PlusOutlined className="w-3.5 h-3.5 flex-shrink-0" />
-              <span className="text-xs sm:text-sm font-medium">发帖</span>
+              搜索
             </button>
           </div>
-
-          {/* 分类标签 - 移动端 */}
-          <div className="md:hidden flex items-center gap-1.5 mt-2.5 sm:mt-3 overflow-x-auto pb-1.5 hide-scrollbar">
-            {categories.map((category) => (
-              <button
-                key={category.name}
-                onClick={() => handleCategoryChange(category.name)}
-                className={`flex-shrink-0 px-3 py-1 rounded-full text-xs whitespace-nowrap transition-colors shadow-sm ${
-                  activeCategory === category.name
-                    ? "bg-primary text-white font-medium"
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200 border border-gray-200/50"
-                }`}
-              >
-                {category.name}
-              </button>
-            ))}
-          </div>
+          <button
+            onClick={() =>
+              session ? setIsModalOpen(true) : router.push("/api/auth/signin")
+            }
+            className="flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow"
+          >
+            <PlusOutlined className="w-3.5 h-3.5 flex-shrink-0" />
+            <span className="text-xs sm:text-sm font-medium">发帖</span>
+          </button>
         </div>
       </div>
 
@@ -368,14 +348,17 @@ export default function Community() {
                           </p>
                         </Link>
                       </div>
-                      
+
                       {/* 右侧图片区域 */}
                       {post.images && post.images.length > 0 && (
-                        <Link href={`/community/${post.id}`} className="block flex-shrink-0 w-16 sm:w-20 md:w-24 mt-0">
+                        <Link
+                          href={`/community/${post.id}`}
+                          className="block flex-shrink-0 w-16 sm:w-20 md:w-24 mt-0"
+                        >
                           <div className="relative overflow-hidden rounded-lg aspect-square bg-gray-100 h-full">
-                            <img 
-                              src={post.images[0]} 
-                              alt="帖子图片" 
+                            <img
+                              src={post.images[0]}
+                              alt="帖子图片"
                               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                             />
                             {post.images.length > 1 && (
@@ -411,7 +394,7 @@ export default function Community() {
                           <ClockCircleOutlined className="w-2 h-2" />
                           <span>{dayjs(post.createdAt).fromNow()}</span>
                         </div>
-                        
+
                         {/* 评论数 */}
                         <Link
                           href={`/community/${post.id}`}
@@ -420,7 +403,7 @@ export default function Community() {
                           <MessageOutlined className="w-2 h-2" />
                           <span>{post._count.comments}</span>
                         </Link>
-                        
+
                         {/* 浏览量 */}
                         <div className="flex items-center gap-1 bg-gray-50 hover:bg-gray-100 text-gray-400 rounded-full px-1.5 py-0.5 text-xs transition-colors">
                           <EyeOutlined className="w-2 h-2" />
@@ -431,7 +414,7 @@ export default function Community() {
                       {/* 右下角标签展示 - 改进标签样式 */}
                       {post.tags && post.tags.length > 0 && (
                         <div className="flex flex-wrap items-center gap-1 ml-auto">
-                          {post.tags.map((tag:string, index: number) => (
+                          {post.tags.map((tag: string, index: number) => (
                             <Tag
                               key={index}
                               bordered={false}

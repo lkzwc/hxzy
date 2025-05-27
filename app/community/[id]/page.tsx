@@ -188,92 +188,99 @@ export default function PostDetail({ params }: any) {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row gap-6">
-      {/* 左侧边栏 - 作者信息和交互按钮 */}
-      {contextHolder}
-      <div className="w-[80px] hidden md:block flex-shrink-0">
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sticky top-6 hover:shadow-md transition-all duration-300">
-          {/* 作者信息 */}
-          <div className="flex flex-col items-center text-center mb-4 pb-4 border-b border-gray-100">
-            <div className="relative w-16 h-16 mb-3">
-              <Image
-                src={post.author.image || "/images/default-avatar.png"}
-                alt={post.author.name || "用户"}
-                fill
-                sizes="(max-width: 64px) 100vw, 64px"
-                priority
-                className="rounded-full object-cover border-2 border-white shadow-sm"
-              />
-            </div>
-            <div
-              className="font-medium text-gray-900 mb-1 text-sm truncate w-full"
-              title={post.author.name || "匿名用户"}
-            >
-              {post.author.name
-                ? post.author.name.length > 5
-                  ? `${post.author.name.slice(0, 5)}...`
-                  : post.author.name
-                : "匿名用户"}
-            </div>
-            <button className="w-full py-1.5 bg-primary text-white rounded-full text-xs font-medium hover:bg-primary/90 transition-colors">
-              关注
-            </button>
-          </div>
+    <div className="flex flex-col md:flex-row gap-6 max-w-7xl mx-auto py-2">
+      {/* 返回按钮 */}
 
-          {/* 交互按钮 */}
-          <div className="flex flex-col items-center gap-4 w-full">
-            <div className="flex flex-col items-center w-full px-2">
-              <LikeButton
-                postId={post.id}
-                initialLikes={post._count.postLikes}
-                className="!flex-col w-full"
-              />
-            </div>
-            <div className="flex flex-col items-center w-full px-2 text-gray-500 hover:text-primary transition-colors cursor-pointer">
-              <MessageOutlined className="w-4 h-4" />
-              <span className="text-xs mt-1 ">
-                {post._count.comments}
-              </span>
-            </div>
-            <div className="flex flex-col items-center w-full px-2 text-gray-500 hover:text-amber-500 transition-colors cursor-pointer">
-              <StarOutlined className="w-4 h-4" />
-              <span className="text-xs mt-1 ">收藏</span>
-            </div>
-            <div className="flex flex-col items-center w-full px-2 text-gray-500 hover:text-emerald-500 transition-colors cursor-pointer">
-              <ShareAltOutlined className="w-4 h-4" />
-              <span className="text-xs mt-1">分享</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      {contextHolder}
 
       {/* 主要内容区域 */}
       <div className="flex-1 min-w-0">
+        <div className="w-full mb-2">
+          <button
+            onClick={() => router.back()}
+            className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors px-4 py-2 rounded-lg hover:bg-gray-100"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
+            </svg>
+            <span>返回帖子列表</span>
+          </button>
+        </div>
+
         {/* 帖子内容卡片 */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 hover:shadow-md transition-all duration-300">
+        <div className="bg-white rounded-xl shadow-md border border-gray-200 p-5 sm:p-7 hover:shadow-lg transition-all duration-300">
           {/* 帖子标题和元信息 */}
-          <div className="border-b border-gray-100 pb-4 mb-4">
-            <h1 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3">
+          <div className="border-b border-gray-100 pb-5 mb-5">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 leading-tight">
               {post.title}
             </h1>
+
+            {/* 作者信息和发布时间 */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center space-x-3">
+                <div className="relative h-10 w-10 rounded-full overflow-hidden border-2 border-gray-200">
+                  <Image
+                    src={post.author.image || "/images/defaultAvatar.jpg"}
+                    alt={post.author.name || "用户"}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div>
+                  <p className="font-medium text-gray-900">
+                    {post.author.name || "匿名用户"}
+                  </p>
+                  <p className="text-xs text-gray-500 flex items-center">
+                    <ClockCircleOutlined className="mr-1" />
+                    {dayjs(post.createdAt).fromNow()}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-4 text-gray-500 text-sm">
+                <span className="flex items-center">
+                  <EyeOutlined className="mr-1" /> {post.views}
+                </span>
+                <span className="flex items-center">
+                  <MessageOutlined className="mr-1" /> {post._count.comments}
+                </span>
+              </div>
+            </div>
 
             {/* 标签展示 - 优化样式 */}
             {post.tags && post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-3">
                 {post.tags.map((tag, index) => {
                   // 为标签分配不同的颜色
-                  const colors = ['primary', 'rose', 'amber', 'emerald', 'blue', 'purple'];
+                  const colors = [
+                    "primary",
+                    "rose",
+                    "amber",
+                    "emerald",
+                    "blue",
+                    "purple",
+                  ];
                   const color = colors[index % colors.length];
-                  
+
                   return (
                     <Link
                       key={tag}
                       href={`/community?tag=${encodeURIComponent(tag)}`}
-                      className={`px-3 py-1.5 bg-${color}/10 text-${color}-600 text-xs font-medium rounded-full 
-                        hover:bg-${color}/20 transition-all duration-300 border border-${color}/20 
-                        hover:shadow-sm transform hover:-translate-y-0.5`}
+                      className={`px-3 py-1.5 bg-${color}-100 text-${color}-600 text-xs font-medium rounded-full 
+                        hover:bg-${color}-200 transition-all duration-300 border border-${color}-200 
+                        hover:shadow-md transform hover:-translate-y-0.5`}
                     >
-                      {tag}
+                      #{tag}
                     </Link>
                   );
                 })}
@@ -282,66 +289,72 @@ export default function PostDetail({ params }: any) {
           </div>
 
           {/* 帖子内容 - 优化排版 */}
-          <div className="prose max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap break-words p-2 sm:p-4 rounded-lg bg-gray-50/50 border border-gray-100/80 my-4">
+          <div className="prose max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap break-words p-4 sm:p-6 rounded-lg bg-gray-50 border border-gray-200 my-6 shadow-inner">
             {post.content}
           </div>
 
           {/* 帖子图片 - 优化布局和效果 */}
           {post.images && post.images.length > 0 && (
-            <div className="mt-6 mb-2">
-              <h3 className="text-sm font-medium text-gray-500 mb-3 flex items-center gap-2">
-                <span className="w-1 h-3 bg-primary/70 rounded-full"></span>
+            <div className="mt-6 mb-4">
+              <h3 className="text-sm font-medium text-gray-600 mb-4 flex items-center gap-2">
+                <span className="w-1.5 h-4 bg-primary rounded-full"></span>
                 图片附件 ({post.images.length})
               </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                 {post.images.map((image, index) => (
                   <div
                     key={index}
-                    className="relative aspect-square rounded-lg overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 group"
+                    className="relative aspect-square rounded-xl overflow-hidden border-2 border-gray-200 shadow-sm hover:shadow-lg transition-all duration-300 group"
                   >
                     <Image
                       src={image}
                       alt={`帖子图片 ${index + 1}`}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="object-cover group-hover:scale-110 transition-transform duration-700"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-3">
+                      <span className="text-white text-xs font-medium px-3 py-1 bg-black/30 rounded-full backdrop-blur-sm">
+                        查看大图
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* 移动端交互按钮 */}
-          <div className="md:hidden flex justify-around mt-6 pt-4 border-t border-gray-100">
-            <div className="flex flex-col items-center">
+          <div className="flex justify-between w-full mt-6 border-t border-gray-200 pt-5">
+            <div className="flex items-center w-full px-2">
               <LikeButton
                 postId={post.id}
                 initialLikes={post._count.postLikes}
-                className="!flex-col !gap-1"
+                className="!flex w-full text-base"
               />
             </div>
-            <div className="flex flex-col items-center text-gray-500">
-              <MessageOutlined className="w-6 h-6" />
-              <span className="text-xs mt-1">{post._count.comments}</span>
+            <div className="flex items-center w-full px-2 text-gray-500 hover:text-primary transition-colors cursor-pointer">
+              <MessageOutlined className="w-5 h-5" />
+              <span className="text-sm ml-2">{post._count.comments}</span>
             </div>
-            <div className="flex flex-col items-center text-gray-500">
-              <StarOutlined className="w-6 h-6" />
-              <span className="text-xs mt-1">收藏</span>
+            <div className="flex items-center w-full px-2 text-gray-500 hover:text-amber-500 transition-colors cursor-pointer">
+              <StarOutlined className="w-5 h-5" />
+              <span className="text-sm ml-2">收藏</span>
             </div>
-            <div className="flex flex-col items-center text-gray-500">
-              <ShareAltOutlined className="w-6 h-6" />
-              <span className="text-xs mt-1">分享</span>
+            <div className="flex items-center w-full px-2 text-gray-500 hover:text-emerald-500 transition-colors cursor-pointer">
+              <ShareAltOutlined className="w-5 h-5" />
+              <span className="text-sm ml-2">分享</span>
             </div>
           </div>
         </div>
 
         {/* 评论区 - 优化样式 */}
-        <div className="mt-4 sm:mt-6 bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-6 hover:shadow-md transition-all duration-300">
-          <h2 className="text-lg font-medium text-gray-900 mb-4 pb-2 border-b border-gray-100 flex items-center gap-2">
-            <span className="w-1 h-4 bg-primary rounded-full"></span>
-            <MessageOutlined className="text-primary mr-1" />
-            评论区 <span className="ml-1.5 bg-primary/10 text-primary px-2 py-0.5 rounded-full text-sm">{post._count.comments}</span>
+        <div className="mt-6 sm:mt-4 bg-white rounded-xl shadow-md border border-gray-200 p-5 sm:p-7 hover:shadow-lg transition-all duration-300">
+          <h2 className="text-lg font-semibold text-gray-900 mb-5 pb-3 border-b border-gray-200 flex items-center gap-2">
+            <span className="w-1.5 h-5 bg-primary rounded-full"></span>
+            <MessageOutlined className="text-primary mr-2 text-lg" />
+            评论区{" "}
+            <span className="ml-2 bg-primary-100 text-primary px-3 py-1 rounded-full text-sm font-medium">
+              {post._count.comments}
+            </span>
           </h2>
           <CommentSection
             postId={post.id}
