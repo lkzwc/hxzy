@@ -8,23 +8,19 @@ export async function GET(req: NextRequest) {
   try {
     // 获取当前登录用户
     const session = await getServerSession(authOptions);
-    if (!session?.user?.email) {
+    if (!session?.user?.id) {
       return NextResponse.json({ error: '未登录' }, { status: 401 });
     }
 
     // 获取当前用户ID
-    const user = await prisma.user.findUnique({
-      where: { email: session.user.email },
-      select: { id: true }
-    });
-
-    if (!user) {
-      return NextResponse.json({ error: '用户不存在' }, { status: 404 });
+    const userId = Number(session.user.id);
+    if (isNaN(userId)) {
+      return NextResponse.json({ error: '无效的用户ID' }, { status: 400 });
     }
 
     // 获取用户的通知列表
     const notifications = await prisma.notification.findMany({
-      where: { userId: user.id },
+      where: { userId: userId },
       include: {
         post: {
           select: {
@@ -46,7 +42,7 @@ export async function GET(req: NextRequest) {
     // 获取未读通知数量
     const unreadCount = await prisma.notification.count({
       where: {
-        userId: user.id,
+        userId: userId,
         isRead: false,
       },
     });

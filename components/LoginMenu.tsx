@@ -59,7 +59,7 @@ export function LoginMenu() {
 
       {showDropdown && (
         <div 
-          className="flex md:grid absolute md:right-0 mt-2 w-max rounded-md shadow-lg bg-white ring-1 ring-primary ring-opacity-5 divide-y divide-neutral-100 focus:outline-none z-50"
+          className="flex md:grid absolute md:right-0 mt-40 w-max rounded-md shadow-lg bg-white ring-1 ring-primary ring-opacity-5 divide-y divide-neutral-100 focus:outline-none z-50"
           role="menu"
           aria-orientation="vertical"
           aria-labelledby="user-menu"

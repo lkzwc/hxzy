@@ -81,23 +81,31 @@ export default function Login() {
     qrCode?.loginToken ? ["loginStatus", qrCode.loginToken] : null,
     () => loginStatusFetcher(qrCode.sceneStr),
     {
-      refreshInterval: ()=>{ 
-        return isQRLogin? 0 : 2000;
-      }, // 每2秒检查一次
+      refreshInterval: ()=> isQRLogin ? 1000 : 0, // 每0.5秒检查一次
       revalidateOnFocus: true,
+      revalidateIfStale: true,
+      revalidateOnReconnect: true,
       cancelOnUnmount: true,
     }
   );
 
   // 监听登录状态
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
   useEffect(() => {
-    if (loginStatus?.status === "authorized" && loginStatus?.openid) {
-      signIn("credentials", {
-        openid: loginStatus.openid,
-        redirect: true,
-      });
+    if (loginStatus?.status === "authorized" && loginStatus?.openid && !isLoggingIn) {
+      console.log("微信扫码登录成功，正在前往首页...", loginStatus);
+      setIsLoggingIn(true);
+      // 使用短暂延迟确保状态更新
+      setTimeout(() => {
+        signIn("credentials", {
+          openid: loginStatus.openid,
+          redirect: true,
+          callbackUrl: "/community"
+        });
+      }, 100);
     }
-  }, [loginStatus]);
+  }, [loginStatus, isLoggingIn]);
 
   // 如果已登录，跳转到社区页面
   useEffect(() => {

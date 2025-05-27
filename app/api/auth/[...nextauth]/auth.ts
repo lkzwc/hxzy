@@ -38,7 +38,7 @@ export const authOptions: NextAuthOptions = {
         if (credentials?.email) {
           return {
             id: credentials.email,
-            name: `📮${credentials.email}`,
+            name: `@${credentials.email}`,
           };
         }
 
