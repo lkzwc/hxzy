@@ -77,31 +77,17 @@ export default function Community() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchInput, setSearchInput] = useState(""); // 用于输入框的值
   const [searchQuery, setSearchQuery] = useState(""); // 用于实际搜索的值
-  const [activeCategory, setActiveCategory] = useState("全部");
+  const [activeCategory, setActiveCategory] = useState<any>(undefined);
   const loadingRef = useRef<HTMLDivElement>(null);
   const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
-
-  // 获取分类数据
-  const { data: categoriesData, error: categoriesError } = useSWR<
-    Array<{ name: string; id: number; order: number }>
-  >("/api/categories", fetcher, {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-  });
-
-  // 处理分类数据，确保始终有"全部"选项
-  const categories = categoriesData
-    ? [{ name: "全部", id: 0, order: 0 }, ...categoriesData]
-    : [{ name: "全部", id: 0, order: 0 }];
-
   // 构建查询参数
   const getQueryParams = (pageNum: number) => {
     const params = new URLSearchParams();
     if (searchQuery) params.set("search", searchQuery);
-    if (activeCategory !== "全部") params.set("tag", activeCategory);
+    if (activeCategory) params.set("tag", activeCategory);
     params.set("page", pageNum.toString());
     params.set("limit", "10");
     return params.toString();
@@ -135,7 +121,7 @@ export default function Community() {
   const handleSearch = () => {
     const trimmedInput = searchInput.trim();
     setSearchQuery(trimmedInput);
-    setActiveCategory("全部"); // 重置分类为全部
+    setActiveCategory(undefined); // 重置分类为全部
 
     // 更新 URL 参数，使用 Next.js 的路由 API 而不是直接操作 window
     const params = new URLSearchParams();
@@ -150,27 +136,6 @@ export default function Community() {
 
     // 重置页码并重新获取数据
     setSize(1);
-  };
-
-  // 处理分类切换
-  const handleCategoryChange = (category: string) => {
-    setActiveCategory(category);
-    setSearchInput(""); // 清空搜索框
-    setSearchQuery(""); // 清空搜索查询
-
-    // 更新 URL 参数，使用 Next.js 的路由 API
-    const params = new URLSearchParams();
-    if (category !== "全部") {
-      params.set("tag", category);
-    }
-    const newUrl = `${pathname}${
-      params.toString() ? `?${params.toString()}` : ""
-    }`;
-    router.push(newUrl, { scroll: false });
-
-    // 重置页码并重新获取数据
-    setSize(1);
-    mutate(); // 直接触发重新获取数据，不需要清空缓存
   };
 
   // 处理回车搜索
@@ -190,7 +155,7 @@ export default function Community() {
       setActiveCategory(tag);
     } else if (!tag && pathname === "/community") {
       // 如果URL中没有tag参数，重置为"全部"
-      setActiveCategory("全部");
+      setActiveCategory(undefined);
     }
     if (search) {
       setSearchInput(search);
@@ -410,27 +375,6 @@ export default function Community() {
                           <span>{post.views}</span>
                         </div>
                       </div>
-
-                      {/* 右下角标签展示 - 改进标签样式 */}
-                      {post.tags && post.tags.length > 0 && (
-                        <div className="flex flex-wrap items-center gap-1 ml-auto">
-                          {post.tags.map((tag: string, index: number) => (
-                            <Tag
-                              key={index}
-                              bordered={false}
-                              // color="lime"
-                              style={{ color: "gray" }}
-                              className="text-xs rounded-sm px-1 py-0 bg-gray-50"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                handleCategoryChange(tag);
-                              }}
-                            >
-                              {tag}
-                            </Tag>
-                          ))}
-                        </div>
-                      )}
                     </div>
                   </div>
                 </div>
@@ -454,7 +398,6 @@ export default function Community() {
       <CreatePostModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        categories={categories}
         onSuccess={() => {
           // 刷新数据
           mutate();

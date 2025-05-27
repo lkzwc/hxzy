@@ -56,32 +56,6 @@ const tabs: Tab[] = [
   { id: 'dianzishu', name: '电子书' },
 ];
 
-const categories = [
-  {
-    id: 'books',
-    name: '经典医著',
-    icon: <BookOutlined className="w-6 h-6" />,
-    description: '探索中医经典著作'
-  },
-  {
-    id: 'herbs',
-    name: '中药材库',
-    icon: <PicCenterOutlined className="w-6 h-6" />,
-    description: '了解中药性味功效'
-  },
-  {
-    id: 'prescriptions',
-    name: '方剂大全',
-    icon: <FileTextOutlined className="w-6 h-6" />,
-    description: '学习经典方剂'
-  },
-  {
-    id: 'VideoCameraOutlineds',
-    name: '视频讲解',
-    icon: <VideoCameraOutlined className="w-6 h-6" />,
-    description: '观看教学视频'
-  }
-]
 
 export default function ZhongYiDBPage() {
   const [searchQuery, setSearchQuery] = useState('')

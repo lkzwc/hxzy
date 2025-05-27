@@ -32,11 +32,11 @@ export interface Tag {
 }
 
 export interface DataContextType {
-  tags: Tag[];
+  tags?: Tag[];
   qrData?: any[];
 }
 
-export const DataContext = createContext<DataContextType| undefined>(undefined);
+export const DataContext = createContext<DataContextType>({});
 
 // 创建一个包含useSearchParams的组件
 function SearchParamsProvider({
@@ -121,7 +121,7 @@ export default function CommunityLayout({
 
           {/* 右侧边栏 - 固定位置 */}
           <div className="w-[220px] hidden lg:block">
-            <div className="fixed w-[220px]">
+            <div className="fixed pr-2">
               {/* 热门话题 */}
               <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100 hover:shadow-md transition-all duration-300 mb-2">
                 <h3 className="text-base font-medium mb-3 pb-2 border-b border-gray-100 flex items-center gap-2">

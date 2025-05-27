@@ -62,7 +62,7 @@ export default function TopicsPage() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                {tags.map((tag) => (
+                {tags?.map((tag) => (
                   <motion.div
                     key={tag.text}
                     initial={{ scale: 0.8, opacity: 0 }}

@@ -50,12 +50,20 @@ export default function CreatePostModal({
   const [messageApi, contextHolder] = message.useMessage();
 
   // 将分类数据转换为 Select 选项
-  const tagOptions = categories
-    .filter((category) => category.name !== "全部") // 排除"全部"选项
-    .map((category) => ({
-      value: category.name,
-      label: category.name,
-    }));
+  const tagOptions = [
+    {
+    label: "祝由术",
+    value: "祝由术",
+    },
+    {
+      label: "养生保健",
+      value: "养生保健",
+    },
+    {
+      label: "跳蚤市场",
+      value: "养生保健",
+    }
+]
 
   // 重置表单和状态
   useEffect(() => {
