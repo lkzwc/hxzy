@@ -122,7 +122,7 @@ export default function NotificationsPage() {
                     className={`relative px-4 py-4 hover:bg-neutral-50/50 transition-colors ${!notification.isRead ? 'bg-primary-50/50' : ''}`}
                   >
                     <Link
-                      href={`/community/post/${notification.post.id}`}
+                      href={`/community/${notification.post.id}`}
                       className="block"
                     >
                       <p className="text-neutral-800 mb-1">{notification.content}</p>

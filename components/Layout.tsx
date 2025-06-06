@@ -5,7 +5,6 @@ import Link from "next/link";
 import Footer from "./Footer";
 import VerticalTitle from "./tools/VerticalTitle";
 
-import { LoginMenu } from "./LoginMenu";
 
 // 页面标题配置
 const pageTitles: Record<string, { title: string; subtitle: string }> = {
@@ -132,8 +131,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </li>
                 ))}
               </ul>
-              <div className="w-px h-6 bg-white/20 mx-2" />
-              <LoginMenu />
             </nav>
           </div>
         </div>
@@ -195,9 +192,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               ))}
             </ul>
           </nav>
-          <div className="p-4 min-h-40 border-t border-gray-100">
-            <LoginMenu />
-          </div>
         </div>
       </div>
 

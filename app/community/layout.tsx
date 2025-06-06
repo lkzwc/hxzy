@@ -2,6 +2,7 @@
 
 import { useState, useEffect, Suspense, createContext } from "react";
 import Link from "next/link";
+import { UserOutlined, LogoutOutlined } from "@ant-design/icons";
 import {
   RightOutlined,
   HomeOutlined,
@@ -12,8 +13,9 @@ import {
 import QrCodeCarousel from "@/components/QrCodeCarousel";
 import useSWR, { mutate as globalMutate } from "swr";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { getTagColor } from "../utils/compassData";
+import { Avatar, Button } from "antd";
 
 // 定义获取数据的fetcher函数
 const fetcher = async (url: string) => {
@@ -23,8 +25,6 @@ const fetcher = async (url: string) => {
   }
   return res.json();
 };
-
-
 
 export interface Tag {
   id?: number;
@@ -63,23 +63,22 @@ export default function CommunityLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const { data: session, status } = useSession();
 
   const { data: tagData, isLoading: tagLoading } = useSWR("/api/tags", fetcher);
   const tags: Tag[] = tagData?.tags || [];
 
   // 处理标签数据，确保始终有"全部"选项
-  const { data: qrData, isLoading: qrLoading } = useSWR("/api/tags", fetcher);
-  const qrTags: any[] = qrData?.data || [];
+  const { data: qrRes, isLoading: qrLoading } = useSWR("/api/tags", fetcher);
+  const qrData: any[] = qrRes?.data || [];
 
   // 侧边栏导航项
   const sidebarItems = [
     { name: "广场", icon: <AppstoreOutlined />, path: "/community" },
     { name: "话题", icon: <TagsOutlined />, path: "/community/topics" },
-    { name: "消息", icon: <HomeOutlined />, path: "/community/notice" },
+    { name: "消息", icon: <HomeOutlined />, path: "/community/about" },
     { name: "设置", icon: <SettingOutlined />, path: "/community/settings" },
   ];
-
-
 
   // 渲染主要内容
   const renderContent = ({
@@ -87,13 +86,13 @@ export default function CommunityLayout({
   }: {
     searchParams: ReturnType<typeof useSearchParams>;
   }) => (
-    <DataContext.Provider value={{tags,qrData}}>
-      <div className="container mx-auto max-w-7xl">
-        <div className="flex gap-4 ml-10 md:ml-20  mt-4">
+    <DataContext.Provider value={{ tags, qrData }}>
+      <div className=" bg-white">
+        <div className="flex ml-10 md:ml-20 mt-4">
           {/* 左侧导航栏 - 固定位置 */}
-          <div className="sticky w-[180px] hidden md:block">
+          <div className="sticky w-[180px] border-r-2 hidden md:block">
             {/* 导航菜单 */}
-            <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100 hover:shadow-md transition-all duration-300">
+            <div className="rounded-xl p-4 transition-all duration-300">
               <div className="flex flex-col gap-2">
                 {sidebarItems.map((item) => (
                   <Link
@@ -111,23 +110,55 @@ export default function CommunityLayout({
                 ))}
               </div>
             </div>
+            <div className="p-4">
+              {session ? (
+                <div className="flex justify-around items-center">
+                  <Avatar
+                    className="bg-primary/10 text-primary"
+                    size={30}
+                    src={session?.user?.image}
+                  >
+                    {(session?.user?.name || "用户")[0].toUpperCase()}
+                  </Avatar>
+                  <div>
+                    <div className="text-sm text-gray-500">
+                      {session?.user?.name ?? session?.user?.email}
+                    </div>
+                    <Button
+                      className="!border-none m-0 !h-2 bg-transparent !text-gray-500 hover:text-gray-600"
+                      icon={<LogoutOutlined />}
+                      onClick={() => signOut({ callbackUrl: "/" })}
+                    >
+                      退出
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <Link
+                  href="/login"
+                  className="ml-8 px-6 py-2 bg-primary text-white font-medium rounded-md hover:bg-primary-600 transition-colors"
+                >
+                  登录
+                </Link>
+              )}
+            </div>
           </div>
 
           {/* 中间内容区 */}
 
-          <div className="w-[100%] mr-10 lg:mr-0 lg:flex-1 ">{children}</div>
+          <div className="w-[100%] mr-10 lg:mr-0 lg:flex-1 border-r-2 ">{children}</div>
 
           {/* 右侧边栏 - 固定位置 */}
           <div className="w-[200px] hidden lg:block mr-24">
             <div className="fixed">
               {/* 热门话题 */}
-              <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100 hover:shadow-md transition-all duration-300 mb-2">
-                <h3 className="text-base font-medium mb-3 pb-2 border-b border-gray-100 flex items-center gap-2">
+              <div className="p-4  hover:shadow-md transition-all duration-300 mb-2">
+                <h3 className="text-base font-medium mb-3 pb-2 flex items-center gap-2">
                   <span className="w-1 h-4 bg-primary rounded-full"></span>
                   热门话题
                 </h3>
                 <div className="flex flex-col gap-2 ">
-                  {tags.map((category: Tag,index) => (
+                  {tags.map((category: Tag, index) => (
                     <div
                       key={index}
                       className="flex items-center justify-between gap-2 cursor-pointer hover:text-primary transition-colors alias"
@@ -157,14 +188,22 @@ export default function CommunityLayout({
                         );
                       }}
                     >
-                      <div className={`${getTagColor(category.value)} font-medium transition-colors`}> #{category.text}</div>
-                      <div className="text-gray-400 text-xs"> {category.value}</div>
+                      <div
+                        className={`${getTagColor(category.value)} font-medium transition-colors`}
+                      >
+                        {" "}
+                        #{category.text}
+                      </div>
+                      <div className="text-gray-400 text-xs">
+                        {" "}
+                        {category.value}
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
-              <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100 hover:shadow-md transition-all duration-300">
-                <h3 className="text-base font-medium mb-3 pb-2 border-b border-gray-100 flex items-center gap-2">
+              <div className="p-4 hover:shadow-md transition-all duration-300">
+                <h3 className="text-base font-medium mb-3 pb-2  flex items-center gap-2">
                   <span className="w-1 h-4 bg-primary rounded-full"></span>
                   广告
                 </h3>

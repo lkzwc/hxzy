@@ -127,7 +127,7 @@ export default function NotificationBadge() {
               {notifications.map((notification) => (
                 <Link
                   key={notification.id}
-                  href={`/community/post/${notification.post.id}`}
+                  href={`/community/${notification.post.id}`}
                   onClick={() => setShowDropdown(false)}
                   className={`block p-4 hover:bg-gray-50 ${!notification.isRead ? 'bg-primary-50' : ''}`}
                 >

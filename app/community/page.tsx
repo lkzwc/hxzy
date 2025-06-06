@@ -226,7 +226,7 @@ export default function Community() {
   return (
     <div>
       {/* 固定的顶部搜索栏 */}
-      <div className="sticky z-10 bg-gray-50/80 backdrop-blur-sm py-2.5">
+      <div className="sticky z-10 bg-gray-50/80 backdrop-blur-sm p-2">
         <div className="flex flex-col sm:flex-row gap-2.5">
           <div className="flex-1 flex items-center gap-2">
             <div className="flex-1 flex items-center gap-2 bg-gray-50 rounded-lg px-3 focus-within:ring-2 focus-within:ring-primary/30 hover:bg-gray-100 transition-all border border-gray-200/50">
