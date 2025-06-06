@@ -222,7 +222,7 @@ export default function Login() {
           <div className="flex-1 px-6 sm:px-12 py-6 sm:py-8 flex flex-col">
             <div className="mb-6 sm:mb-8">
               <h2 className="text-xl sm:text-2xl font-semibold text-center text-primary">
-                欢迎来到中医传承平台
+                欢迎来到华夏中医
               </h2>
               <p className="text-center text-neutral-500 text-xs sm:text-sm mt-2">
                 传承千年智慧，守护健康人生

@@ -6,14 +6,14 @@ import { AllProvider } from "./providers";
 export const metadata = {
   metadataBase: new URL("https://hxzy.life"),
   title: {
-    default: "中医传承平台",
-    template: "%s | 中医传承平台",
+    default: "华夏中医",
+    template: "%s | 华夏中医",
   },
   description: "传承千年智慧，守护健康人生",
   keywords: ["中医", "中药", "养生", "健康", "传统医学"],
-  authors: [{ name: "中医传承平台" }],
-  creator: "中医传承平台",
-  publisher: "中医传承平台",
+  authors: [{ name: "华夏中医" }],
+  creator: "华夏中医",
+  publisher: "华夏中医",
   formatDetection: {
     email: false,
     address: false,

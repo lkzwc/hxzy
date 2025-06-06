@@ -13,6 +13,7 @@ import QrCodeCarousel from "@/components/QrCodeCarousel";
 import useSWR, { mutate as globalMutate } from "swr";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { getTagColor } from "../utils/compassData";
 
 // 定义获取数据的fetcher函数
 const fetcher = async (url: string) => {
@@ -88,9 +89,9 @@ export default function CommunityLayout({
   }) => (
     <DataContext.Provider value={{tags,qrData}}>
       <div className="container mx-auto max-w-7xl">
-        <div className="flex gap-2 ml-20 mt-4">
+        <div className="flex gap-4 ml-10 md:ml-20  mt-4">
           {/* 左侧导航栏 - 固定位置 */}
-          <div className="sticky w-[160px] hidden md:block">
+          <div className="sticky w-[180px] hidden md:block">
             {/* 导航菜单 */}
             <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100 hover:shadow-md transition-all duration-300">
               <div className="flex flex-col gap-2">
@@ -98,14 +99,11 @@ export default function CommunityLayout({
                   <Link
                     key={item.name}
                     href={item.path}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors text-sm hover:bg-gray-50 ${
-                      pathname === item.path ||
-                      (item.path === "/community" &&
-                        pathname.startsWith("/community") &&
-                        pathname !== "/community/topics")
-                        ? "bg-primary/10 text-primary font-medium"
-                        : "text-gray-600"
-                    }`}
+                    className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition-colors text-sm  ${
+                      pathname === item.path
+                        ? "bg-primary/10 text-primary"
+                        : "text-gray-600 hover:bg-primary/10 hover:text-gray-600 "
+                    } `}
                   >
                     <span className="text-lg">{item.icon}</span>
                     {item.name}
@@ -117,11 +115,11 @@ export default function CommunityLayout({
 
           {/* 中间内容区 */}
 
-          <div className="flex-1">{children}</div>
+          <div className="w-[100%] mr-10 lg:mr-0 lg:flex-1 ">{children}</div>
 
           {/* 右侧边栏 - 固定位置 */}
-          <div className="w-[220px] hidden lg:block">
-            <div className="fixed pr-2">
+          <div className="w-[200px] hidden lg:block mr-24">
+            <div className="fixed">
               {/* 热门话题 */}
               <div className="bg-white rounded-xl shadow-sm p-4 border border-gray-100 hover:shadow-md transition-all duration-300 mb-2">
                 <h3 className="text-base font-medium mb-3 pb-2 border-b border-gray-100 flex items-center gap-2">
@@ -129,9 +127,9 @@ export default function CommunityLayout({
                   热门话题
                 </h3>
                 <div className="flex flex-col gap-2 ">
-                  {tags.map((category: Tag) => (
+                  {tags.map((category: Tag,index) => (
                     <div
-                      key={category.id}
+                      key={index}
                       className="flex items-center justify-between gap-2 cursor-pointer hover:text-primary transition-colors alias"
                       onClick={() => {
                         // 创建新的URLSearchParams对象
@@ -159,8 +157,8 @@ export default function CommunityLayout({
                         );
                       }}
                     >
-                      <div> #{category.text}</div>
-                      <div> #{category.value}</div>
+                      <div className={`${getTagColor(category.value)} font-medium transition-colors`}> #{category.text}</div>
+                      <div className="text-gray-400 text-xs"> {category.value}</div>
                     </div>
                   ))}
                 </div>

@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import useSWR from "swr";
 import { Spin } from "antd";
 import { DataContext, DataContextType } from "../layout";
+import { getTagColor, getTagSize } from "@/app/utils/compassData";
 
 
 
@@ -15,24 +16,6 @@ export default function TopicsPage() {
   const { tags } = useContext(DataContext)
 
   const [loading, setLoading] = useState(false);
-
-  // 根据帖子数量获取标签大小
-  const getTagSize = (count: number) => {
-    if (count > 100) return "text-2xl font-bold";
-    if (count > 50) return "text-xl font-semibold";
-    if (count > 20) return "text-lg font-medium";
-    if (count > 10) return "text-base";
-    return "text-sm";
-  };
-
-  // 根据帖子数量获取标签颜色
-  const getTagColor = (count: number) => {
-    if (count > 100) return "text-primary-600 hover:text-primary-700";
-    if (count > 50) return "text-amber-500 hover:text-amber-600";
-    if (count > 20) return "text-emerald-500 hover:text-emerald-600";
-    if (count > 10) return "text-blue-500 hover:text-blue-600";
-    return "text-gray-600 hover:text-gray-700";
-  };
 
   return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
