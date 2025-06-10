@@ -188,7 +188,7 @@ export default function PostDetail({ params }: any) {
   }
 
   return (
-    <div className="flex flex-col md:flex-row gap-6 max-w-7xl mx-auto py-2">
+    <div className="flex border-l flex-col md:flex-row gap-6 max-w-7xl mx-auto py-2">
       {/* 返回按钮 */}
 
       {contextHolder}
@@ -219,9 +219,9 @@ export default function PostDetail({ params }: any) {
         </div>
 
         {/* 帖子内容卡片 */}
-        <div className="bg-white rounded-xl shadow-md border border-gray-200 p-5 sm:p-7 hover:shadow-lg transition-all duration-300">
+        <div className="p-5 sm:p-7 bg-[#f9f9f9] transition-all duration-300">
           {/* 帖子标题和元信息 */}
-          <div className="border-b border-gray-100 pb-5 mb-5">
+          <div className="border-gray-100 pb-5 mb-5">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 leading-tight">
               {post.title}
             </h1>
@@ -229,7 +229,7 @@ export default function PostDetail({ params }: any) {
             {/* 作者信息和发布时间 */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-3">
-                <div className="relative h-10 w-10 rounded-full overflow-hidden border-2 border-gray-200">
+                <div className="relative h-10 w-10 rounded-full overflow-hidden">
                   <Image
                     src={post.author.image || "/images/defaultAvatar.jpg"}
                     alt={post.author.name || "用户"}
@@ -289,7 +289,7 @@ export default function PostDetail({ params }: any) {
           </div>
 
           {/* 帖子内容 - 优化排版 */}
-          <div className="prose max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap break-words p-4 sm:p-6 rounded-lg bg-gray-50 border border-gray-200 my-6 shadow-inner">
+          <div className="prose max-w-none text-gray-700 leading-relaxed whitespace-pre-wrap break-words p-4 sm:p-6 rounded-lg shadow-inner">
             {post.content}
           </div>
 
@@ -323,7 +323,7 @@ export default function PostDetail({ params }: any) {
             </div>
           )}
 
-          <div className="flex justify-between w-full mt-6 border-t border-gray-200 pt-5">
+          <div className="flex justify-between w-full pt-5">
             <div className="flex items-center w-full px-2">
               <LikeButton
                 postId={post.id}
@@ -347,7 +347,7 @@ export default function PostDetail({ params }: any) {
         </div>
 
         {/* 评论区 - 优化样式 */}
-        <div className="mt-6 sm:mt-4 bg-white rounded-xl shadow-md border border-gray-200 p-5 sm:p-7 hover:shadow-lg transition-all duration-300">
+        <div className="p-5 sm:p-7 hover:shadow-lg border-t transition-all duration-300">
           <h2 className="text-lg font-semibold text-gray-900 mb-5 pb-3 border-b border-gray-200 flex items-center gap-2">
             <span className="w-1.5 h-5 bg-primary rounded-full"></span>
             <MessageOutlined className="text-primary mr-2 text-lg" />

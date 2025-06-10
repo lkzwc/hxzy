@@ -154,12 +154,12 @@ export default function CommentSection({
     return (
       <form onSubmit={handleSubmit} className="relative">
         <div className="flex gap-3">
-          <div className="relative w-10 h-10 flex-shrink-0">
+          <div className="relative flex-shrink-0  w-8 h-8">
             <Image
               src={session.user?.image || '/images/default-avatar.png'}
               alt={session.user?.name || '用户'}
               fill
-              className="rounded-full object-cover ring-2 ring-base-200"
+              className="rounded-full object-cover ring-2 ring-base-200 "
             />
           </div>
           <div className="flex-1">

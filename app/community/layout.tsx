@@ -87,10 +87,10 @@ export default function CommunityLayout({
     searchParams: ReturnType<typeof useSearchParams>;
   }) => (
     <DataContext.Provider value={{ tags, qrData }}>
-      <div className=" bg-white">
+      <div className=" bg-white h-max">
         <div className="flex ml-10 md:ml-20 mt-4">
           {/* 左侧导航栏 - 固定位置 */}
-          <div className="sticky w-[180px] border-r-2 hidden md:block">
+          <div className="sticky w-[180px] border-rhidden md:block">
             {/* 导航菜单 */}
             <div className="rounded-xl p-4 transition-all duration-300">
               <div className="flex flex-col gap-2">
@@ -110,22 +110,22 @@ export default function CommunityLayout({
                 ))}
               </div>
             </div>
-            <div className="p-4">
+            <div className="py-4 border-t">
               {session ? (
-                <div className="flex justify-around items-center">
+                <div className="flex justify-start items-end">
                   <Avatar
-                    className="bg-primary/10 text-primary"
+                    className="bg-primary/10 text-primary !mr-2"
                     size={30}
                     src={session?.user?.image}
                   >
                     {(session?.user?.name || "用户")[0].toUpperCase()}
                   </Avatar>
-                  <div>
-                    <div className="text-sm text-gray-500">
+                  <div className="flex flex-col items-start">
+                    <div className="!text-base text-gray-500">
                       {session?.user?.name ?? session?.user?.email}
                     </div>
                     <Button
-                      className="!border-none m-0 !h-2 bg-transparent !text-gray-500 hover:text-gray-600"
+                      className="!border-none m-0 !h-2 !p-0 bg-transparent !text-xs !text-gray-500 hover:text-gray-600"
                       icon={<LogoutOutlined />}
                       onClick={() => signOut({ callbackUrl: "/" })}
                     >
@@ -136,7 +136,7 @@ export default function CommunityLayout({
               ) : (
                 <Link
                   href="/login"
-                  className="ml-8 px-6 py-2 bg-primary text-white font-medium rounded-md hover:bg-primary-600 transition-colors"
+                  className="ml-8 px-8 py-2 bg-primary text-white font-medium rounded-md hover:bg-primary-600 transition-colors"
                 >
                   登录
                 </Link>
@@ -146,7 +146,7 @@ export default function CommunityLayout({
 
           {/* 中间内容区 */}
 
-          <div className="w-[100%] mr-10 lg:mr-0 lg:flex-1 border-r-2 ">{children}</div>
+          <div className="w-[100%] mr-10 lg:mr-0 lg:flex-1 border-r">{children}</div>
 
           {/* 右侧边栏 - 固定位置 */}
           <div className="w-[200px] hidden lg:block mr-24">
