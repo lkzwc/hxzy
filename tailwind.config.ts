@@ -9,77 +9,86 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        // 基础颜色 - 中医暖色调
+        // 现代化中医主题色彩 - 更加清新和现代
         primary: {
-          DEFAULT: '#c17f46',  // 主色调默认值 - 中医药材棕色
-          50: '#faf5f0',
-          100: '#f5ebe1',
-          200: '#ead7c3',
-          300: '#e0c3a5',
-          400: '#d5af87',
-          500: '#c17f46',
-          600: '#9a6638',
-          700: '#744c2a',
-          800: '#4d331c',
-          900: '#27190e',
+          DEFAULT: '#2563eb',  // 现代蓝色 - 专业可信
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6',
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+          950: '#172554',
         },
         secondary: {
-          DEFAULT: '#d35c38',  // 次要色默认值 - 朱砂红
-          50: '#fcf1ee',
-          100: '#f9e3dd',
-          200: '#f3c7bb',
-          300: '#edab99',
-          400: '#e78f77',
-          500: '#d35c38',
-          600: '#a9492d',
-          700: '#7f3722',
-          800: '#552417',
-          900: '#2a120b',
+          DEFAULT: '#059669',  // 清新绿色 - 健康活力
+          50: '#ecfdf5',
+          100: '#d1fae5',
+          200: '#a7f3d0',
+          300: '#6ee7b7',
+          400: '#34d399',
+          500: '#10b981',
+          600: '#059669',
+          700: '#047857',
+          800: '#065f46',
+          900: '#064e3b',
+          950: '#022c22',
         },
         accent: {
-          DEFAULT: '#e9c46a',  // 点缀色默认值 - 黄芪色
-          50: '#fdf9f0',
-          100: '#fbf3e1',
-          200: '#f7e7c3',
-          300: '#f3dba5',
-          400: '#eecf87',
-          500: '#e9c46a',
-          600: '#ba9d55',
-          700: '#8c7640',
-          800: '#5d4e2a',
-          900: '#2e2715',
+          DEFAULT: '#f59e0b',  // 温暖橙色 - 活力点缀
+          50: '#fffbeb',
+          100: '#fef3c7',
+          200: '#fde68a',
+          300: '#fcd34d',
+          400: '#fbbf24',
+          500: '#f59e0b',
+          600: '#d97706',
+          700: '#b45309',
+          800: '#92400e',
+          900: '#78350f',
+          950: '#451a03',
         },
         neutral: {
-          DEFAULT: '#b9aa9a',  // 中性色默认值 - 砂岩色
-          50: '#f8f6f4',
-          100: '#f1ede9',
-          200: '#e3dbd3',
-          300: '#d5c9bd',
-          400: '#c7b7a7',
-          500: '#b9aa9a',
-          600: '#94887b',
-          700: '#6f665c',
-          800: '#4a443d',
-          900: '#25221e',
+          DEFAULT: '#6b7280',  // 现代中性灰
+          50: '#f9fafb',
+          100: '#f3f4f6',
+          200: '#e5e7eb',
+          300: '#d1d5db',
+          400: '#9ca3af',
+          500: '#6b7280',
+          600: '#4b5563',
+          700: '#374151',
+          800: '#1f2937',
+          900: '#111827',
+          950: '#030712',
         },
-        // 背景色
-        background: '#faf7f2',  // 淡米色背景
-        foreground: '#3d2c1e',  // 深棕色文字
+        // 背景和界面色彩
+        background: '#ffffff',  // 纯白背景
+        foreground: '#111827',  // 深灰文字
         muted: {
-          DEFAULT: '#f5f0e8',
-          foreground: '#6f665c',
+          DEFAULT: '#f3f4f6',
+          foreground: '#6b7280',
         },
         popover: {
-          DEFAULT: '#faf7f2',
-          foreground: '#3d2c1e',
+          DEFAULT: '#ffffff',
+          foreground: '#111827',
         },
         card: {
-          DEFAULT: '#faf7f2',
-          foreground: '#3d2c1e',
+          DEFAULT: '#ffffff',
+          foreground: '#111827',
         },
-        border: '#e3dbd3',
-        input: '#e3dbd3',
-        ring: '#c17f46',
+        border: '#e5e7eb',
+        input: '#f3f4f6',
+        ring: '#2563eb',
+        // 功能性颜色
+        success: '#10b981',
+        warning: '#f59e0b',
+        error: '#ef4444',
+        info: '#3b82f6',
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',

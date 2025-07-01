@@ -50,7 +50,6 @@ type Stats = {
 };
 interface Post {
   id: string | number;
-  title: string;
   content: string;
   createdAt: string;
   _count: {
@@ -150,8 +149,7 @@ export default function ProfilePage() {
               ></Link>
               <div className="flex items-start gap-4 relative z-10">
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-base font-medium text-neutral-900 mb-2 line-clamp-1">{post.title}</h3>
-                  <p className="text-neutral-500 text-sm line-clamp-2 mb-3 leading-relaxed">{post.content}</p>
+                  <p className="text-neutral-900 text-sm line-clamp-3 mb-3 leading-relaxed font-medium">{post.content}</p>
                   <div className="flex items-center gap-4 text-xs text-neutral-400">
                     <span>{dayjs(post.createdAt).format('YYYY年MM月DD日')}</span>
                     <span className="flex items-center gap-1.5">

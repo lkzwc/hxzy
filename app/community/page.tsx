@@ -14,7 +14,7 @@ import {
   SendOutlined,
   ClockCircleOutlined,
 } from "@ant-design/icons";
-import CreatePostModal from "@/components/CreatePostModal";
+import TwitterStylePostComposer from "@/components/TwitterStylePostComposer";
 import LikeButton from "@/components/LikeButton";
 import useSWR from "swr";
 import useSWRInfinite from "swr/infinite";
@@ -44,7 +44,6 @@ interface Author {
 
 interface Post {
   id: number;
-  title: string;
   content: string;
   createdAt: string;
   views: number;
@@ -59,7 +58,6 @@ interface Post {
 interface PostsResponse {
   posts: Array<{
     id: string;
-    title: string;
     content: string;
     createdAt: string;
     views: number;
@@ -422,10 +420,10 @@ export default function Community() {
             onClick={() =>
               session ? setIsModalOpen(true) : router.push("/api/auth/signin")
             }
-            className="flex items-center justify-center gap-1.5 px-3 sm:px-3.5 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-sm hover:shadow"
+            className="btn-twitter flex items-center justify-center gap-1.5"
           >
-            <PlusOutlined className="w-3.5 h-3.5 flex-shrink-0" />
-            <span className="text-xs sm:text-sm font-medium">发帖</span>
+            <PlusOutlined className="w-4 h-4 flex-shrink-0" />
+            <span className="text-sm font-semibold">发帖</span>
           </button>
         </div>
       </div>
@@ -436,67 +434,35 @@ export default function Community() {
         </div>
       )}
 
-      <Form className="border-b-2">
-        <Form.Item name="content" wrapperCol={{ span: 23 }}>
-          <Mentions
-            autoSize
-            maxLength={400}
-            prefix={"#"}
-            variant="underlined"
-            placeholder="说说您的新鲜事 使用#加入TAG 便于别人搜索"
-            options={[
-              {
-                value: "zhongyi",
-                label: "中医",
-              },
-              {
-                value: "zombieJ",
-                label: "祝由术",
-              },
-              {
-                value: "yesmeck",
-                label: "yesmeck",
-              },
-            ]}
-          />
-        </Form.Item>
-        <Form.Item>
-          <Space wrap className="!w-5 !h-5">
-            <Upload {...uploadProps}>
-              {fileList.length >= 8 ? null : uploadButton}
-            </Upload>
-            <Button htmlType="submit" icon={<SendOutlined />} size="small">
-              Submit
-            </Button>
-          </Space>
-        </Form.Item>
-      </Form>
+      {/* Twitter风格的发布帖子组件 */}
+      {session && (
+        <TwitterStylePostComposer
+          placeholder="说说您的新鲜事..."
+          onSuccess={() => {
+            // 刷新数据
+            mutate();
+          }}
+        />
+      )}
 
       {/* 主要内容区域 */}
       <Skeleton loading={postsLoading} active>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 mt-3">
+        <div className="max-w-[1100px] mx-auto">
           {/* 帖子列表 */}
-          <div className="lg:col-span-3 divide-gray-100">
+          <div className="divide-y divide-gray-100">
             {posts.map((post: any) => (
               <div
                 key={post.id}
-                className="relative bg-white hover:bg-gray-50/50 transition-all duration-300 group overflow-hidden hover:scale-[1.03] hover:shadow-lg"
+                className="relative bg-white hover:bg-gray-50/50 transition-all duration-200 group border-l-2 border-transparent hover:border-primary/30"
               >
-                <div className="p-2 sm:p-3">
+                <div className="px-4 py-3">
                   {/* 内容区域和图片区域的弹性布局 */}
                   <div className="flex flex-row gap-3">
                     {/* 左侧内容区域 */}
                     <div className="flex-1 min-w-0">
-                      {/* 标题 - 增加视觉层次感 */}
+                      {/* 内容预览 - 作为主要显示内容 */}
                       <Link href={`/community/${post.id}`} className="block">
-                        <h2 className="text-sm sm:text-base font-semibold text-gray-900 group-hover:text-primary transition-colors line-clamp-1 pr-2">
-                          {post.title}
-                        </h2>
-                      </Link>
-
-                      {/* 内容预览 - 改进排版 */}
-                      <Link href={`/community/${post.id}`} className="block">
-                        <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-gray-600 line-clamp-2 leading-relaxed">
+                        <p className="text-sm text-gray-800 group-hover:text-gray-900 transition-colors line-clamp-2 leading-relaxed">
                           {post.content}
                         </p>
                       </Link>
@@ -580,16 +546,6 @@ export default function Community() {
           </div>
         </div>
       </Skeleton>
-
-      {/* 创建帖子模态框 */}
-      <CreatePostModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSuccess={() => {
-          // 刷新数据
-          mutate();
-        }}
-      />
     </div>
   );
 }

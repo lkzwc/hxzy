@@ -26,10 +26,7 @@ export async function GET(request: NextRequest) {
     const where: WhereInput = {
       published: true,
       ...(search && {
-        OR: [
-          { title: { contains: search, mode: 'insensitive' } },
-          { content: { contains: search, mode: 'insensitive' } },
-        ],
+        content: { contains: search, mode: 'insensitive' },
       }),
       ...(tag && { tags: { has: tag } }),
     }
@@ -40,7 +37,6 @@ export async function GET(request: NextRequest) {
         where: where as any, // 使用类型断言避免类型错误
         select: {
           id: true,
-          title: true,
           content: true,
           createdAt: true,
           views: true,
@@ -113,24 +109,19 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { title, content, tags, images } = await request.json()
+    const { content, tags, images } = await request.json()
 
     // 验证数据
-    if (!title?.trim()) {
-      return NextResponse.json(
-        { error: '标题不能为空' },
-        { status: 400 }
-      )
-    }
     if (!content?.trim()) {
       return NextResponse.json(
         { error: '内容不能为空' },
         { status: 400 }
       )
     }
-    if (!Array.isArray(tags) || tags.length === 0) {
+    // 标签验证 - 允许空标签但必须是数组
+    if (!Array.isArray(tags)) {
       return NextResponse.json(
-        { error: '请至少选择一个标签' },
+        { error: '标签格式错误' },
         { status: 400 }
       )
     }
@@ -150,7 +141,6 @@ export async function POST(request: NextRequest) {
     // 创建帖子
     const post = await prisma.post.create({
       data: {
-        title: title.trim(),
         content: content.trim(),
         tags: tags as string[],
         images: images || [],

@@ -20,7 +20,6 @@ export async function GET(
       where: { id: postId },
       select: {
         id: true,
-        title: true,
         content: true,
         images: true,
         published: true,

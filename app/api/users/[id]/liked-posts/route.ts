@@ -27,7 +27,6 @@ export async function GET(
       },
       select: {
         id: true,
-        title: true,
         content: true,
         createdAt: true,
         _count: {

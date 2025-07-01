@@ -41,7 +41,6 @@ interface Comment {
 
 interface Post {
   id: number;
-  title: string;
   content: string;
   images: string[];
   createdAt: string;
@@ -220,12 +219,8 @@ export default function PostDetail({ params }: any) {
 
         {/* 帖子内容卡片 */}
         <div className="p-5 sm:p-7 bg-[#f9f9f9] transition-all duration-300">
-          {/* 帖子标题和元信息 */}
+          {/* 帖子元信息 */}
           <div className="border-gray-100 pb-5 mb-5">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-4 leading-tight">
-              {post.title}
-            </h1>
-
             {/* 作者信息和发布时间 */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center space-x-3">

@@ -8,38 +8,37 @@ datasource db {
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
-  otherId   String?    @unique //标识唯一ID
-  name      String?
-  email     String?    @unique 
-  image     String?
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt @default(now())
-  comments  Comment[]
-  posts     Post[]
-  postLikes PostLike[]
-  lastLoginAt DateTime? @default(now())
-  notifications Notification[] // 用户收到的通知
+  id            Int            @id @default(autoincrement())
+  otherId       String?        @unique
+  name          String?
+  email         String?        @unique
+  image         String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now()) @updatedAt
+  lastLoginAt   DateTime?      @default(now())
+  comments      Comment[]
+  notifications Notification[]
+  posts         Post[]
+  postLikes     PostLike[]
 
   @@index([email])
   @@index([id])
 }
 
 model Post {
-  id        Int        @id @default(autoincrement())
-  title     String
-  content   String
-  images    String[]
-  published Boolean    @default(true)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
-  tags      String[]
-  views     Int        @default(0)
-  authorId  Int
-  comments  Comment[]
-  author    User       @relation(fields: [authorId], references: [id])
-  postLikes PostLike[]
-  notifications Notification[] // 与帖子相关的通知
+  id            Int            @id @default(autoincrement())
+  content       String
+  images        String[]
+  published     Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  tags          String[]
+  views         Int            @default(0)
+  authorId      Int
+  comments      Comment[]
+  notifications Notification[]
+  author        User           @relation(fields: [authorId], references: [id])
+  postLikes     PostLike[]
 
   @@index([authorId])
   @@index([createdAt])
@@ -47,19 +46,19 @@ model Post {
 }
 
 model Comment {
-  id        Int       @id @default(autoincrement())
-  content   String
-  images    String[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  authorId  Int
-  postId    Int
-  parentId  Int?
-  author    User      @relation(fields: [authorId], references: [id])
-  parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
-  replies   Comment[] @relation("CommentReplies")
-  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
-  notifications Notification[] // 与评论相关的通知
+  id            Int            @id @default(autoincrement())
+  content       String
+  images        String[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  authorId      Int
+  postId        Int
+  parentId      Int?
+  author        User           @relation(fields: [authorId], references: [id])
+  parent        Comment?       @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies       Comment[]      @relation("CommentReplies")
+  post          Post           @relation(fields: [postId], references: [id], onDelete: Cascade)
+  notifications Notification[]
 
   @@index([postId])
   @@index([authorId])
@@ -78,24 +77,17 @@ model PostLike {
   @@index([postId])
 }
 
-// 通知模型
 model Notification {
-  id        Int       @id @default(autoincrement())
-  content   String    // 通知内容
-  isRead    Boolean   @default(false) // 是否已读
-  createdAt DateTime  @default(now())
-  
-  // 关联接收通知的用户
+  id        Int      @id @default(autoincrement())
+  content   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
   userId    Int
-  user      User      @relation(fields: [userId], references: [id])
-  
-  // 关联相关帖子
   postId    Int
-  post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
-  
-  // 关联相关评论（可选）
   commentId Int?
-  comment   Comment?  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
 
   @@index([userId])
   @@index([postId])
