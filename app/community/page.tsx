@@ -104,7 +104,7 @@ export default function Community() {
     return params.toString();
   };
 
-  // 使用SWR获取帖子数据
+  // 使用SWR获取帖子数据 - 优化配置
   const {
     data,
     error,
@@ -119,6 +119,10 @@ export default function Community() {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
       revalidateFirstPage: false,
+      dedupingInterval: 60000, // 1分钟内不重复请求
+      focusThrottleInterval: 5000, // 5秒内不重复聚焦请求
+      errorRetryInterval: 5000, // 错误重试间隔
+      errorRetryCount: 3, // 最多重试3次
     }
   );
 
@@ -455,12 +459,29 @@ export default function Community() {
           )}
 
           {/* 帖子列表 */}
-          <Skeleton
-            loading={postsLoading}
-            active
-            paragraph={{ rows: 3 }}
-            className="p-4"
-          >
+          {postsLoading && posts.length === 0 ? (
+            // 优化的骨架屏 - 模拟真实帖子布局
+            <div className="space-y-0">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="px-4 py-4 border-b border-gray-100">
+                  <div className="flex gap-3">
+                    <div className="flex-1">
+                      <div className="space-y-2">
+                        <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
+                        <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
+                      </div>
+                      <div className="flex items-center gap-2 mt-3">
+                        <div className="w-5 h-5 bg-gray-200 rounded-full animate-pulse"></div>
+                        <div className="h-3 bg-gray-200 rounded animate-pulse w-16"></div>
+                        <div className="h-3 bg-gray-200 rounded animate-pulse w-12"></div>
+                      </div>
+                    </div>
+                    <div className="w-16 h-16 bg-gray-200 rounded-lg animate-pulse"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
             <div>
               {posts.map((post: any) => (
                 <article
@@ -553,7 +574,7 @@ export default function Community() {
                 </div>
               )}
             </div>
-          </Skeleton>
+          )}
         </div>
       </div>
     </div>

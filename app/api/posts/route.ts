@@ -19,8 +19,11 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search')
     const tag = searchParams.get('tag')
     const page = parseInt(searchParams.get('page') || '1')
-    const limit = parseInt(searchParams.get('limit') || '10')
+    const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 20) // 限制最大20条
     const skip = (page - 1) * limit
+
+    // 简单的内存缓存键
+    const cacheKey = `posts:${page}:${limit}:${search || ''}:${tag || ''}`
 
     // 构建查询条件
     const where: WhereInput = {
@@ -31,58 +34,67 @@ export async function GET(request: NextRequest) {
       ...(tag && { tags: { has: tag } }),
     }
 
-    // 获取帖子列表和下一页数据
-    const [posts, nextPagePosts] = await Promise.all([
-      prisma.post.findMany({
-        where: where as any, // 使用类型断言避免类型错误
-        select: {
-          id: true,
-          content: true,
-          createdAt: true,
-          views: true,
-          tags: true,
-          images: true,
-          published: true,
-          author: {
-            select: {
-              id: true,
-              name: true,
-              image: true,
-            },
-          },
-          _count: {
-            select: {
-              comments: true,
-            },
-          },
-        },
-        orderBy: [
-          { createdAt: 'desc' },
-          { id: 'desc' },
-        ],
-        skip,
-        take: limit,
-      }),
-      prisma.post.findMany({
-        where: where as any, // 使用类型断言避免类型错误
-        select: { id: true },
-        orderBy: [
-          { createdAt: 'desc' },
-          { id: 'desc' },
-        ],
-        skip: skip + limit,
-        take: 1,
-      }),
-    ])
+    // 优化查询：只获取必要的数据，减少关联查询
+    const posts = await prisma.post.findMany({
+      where: where as any,
+      select: {
+        id: true,
+        content: true,
+        createdAt: true,
+        views: true,
+        tags: true,
+        images: true,
+        authorId: true,
+        // 移除 _count 查询，改为单独查询或缓存
+      },
+      orderBy: [
+        { createdAt: 'desc' },
+        { id: 'desc' },
+      ],
+      skip,
+      take: limit + 1, // 多取一条来判断是否有更多数据
+    })
 
-    // 设置缓存控制
+    // 判断是否有更多数据
+    const hasMore = posts.length > limit
+    const actualPosts = hasMore ? posts.slice(0, limit) : posts
+
+    // 获取作者信息（批量查询）
+    const authorIds = [...new Set(actualPosts.map(post => post.authorId))]
+    const authors = await prisma.user.findMany({
+      where: { id: { in: authorIds } },
+      select: { id: true, name: true, image: true }
+    })
+
+    // 获取评论数（批量查询）
+    const postIds = actualPosts.map(post => post.id)
+    const commentCounts = await prisma.comment.groupBy({
+      by: ['postId'],
+      where: { postId: { in: postIds } },
+      _count: { id: true }
+    })
+
+    // 组装数据
+    const postsWithDetails = actualPosts.map(post => {
+      const author = authors.find(a => a.id === post.authorId)
+      const commentCount = commentCounts.find(c => c.postId === post.id)?._count.id || 0
+
+      return {
+        ...post,
+        author: author || { id: post.authorId, name: null, image: null },
+        _count: { comments: commentCount }
+      }
+    })
+
+    // 设置更积极的缓存控制
     const headers = new Headers()
-    headers.set('Cache-Control', 'public, s-maxage=10, stale-while-revalidate=59')
+    headers.set('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=300')
+    headers.set('CDN-Cache-Control', 'public, s-maxage=60')
 
     return NextResponse.json(
       {
-        posts,
-        hasMore: nextPagePosts.length > 0,
+        posts: postsWithDetails,
+        hasMore,
       },
       {
         headers,

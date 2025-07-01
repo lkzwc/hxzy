@@ -43,6 +43,10 @@ model Post {
   @@index([authorId])
   @@index([createdAt])
   @@index([views])
+  @@index([published])
+  @@index([published, createdAt])
+  @@index([tags])
+  @@index([content])
 }
 
 model Comment {
