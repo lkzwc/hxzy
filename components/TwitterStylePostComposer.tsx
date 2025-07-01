@@ -154,7 +154,7 @@ export default function TwitterStylePostComposer({
   const isPostDisabled = !content?.trim() || isSubmitting;
 
   return (
-    <div className={`bg-white border-b border-neutral-200 ${className}`}>
+    <div className={`bg-white ${className}`}>
       {contextHolder}
       <Form
         form={form}
@@ -162,7 +162,7 @@ export default function TwitterStylePostComposer({
         initialValues={{ content: "", tags: [] }}
         preserve={false}
       >
-        <div className="px-3 py-2">
+        <div className="px-4 py-4">
           <div className="flex gap-2">
             {/* 用户头像 */}
             <Avatar

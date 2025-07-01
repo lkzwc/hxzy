@@ -12,7 +12,6 @@ import {
   MessageOutlined,
   PlusOutlined,
   SendOutlined,
-  ClockCircleOutlined,
 } from "@ant-design/icons";
 import TwitterStylePostComposer from "@/components/TwitterStylePostComposer";
 import LikeButton from "@/components/LikeButton";
@@ -379,173 +378,184 @@ export default function Community() {
   };
 
   return (
-    <div>
+    <div className="min-h-screen bg-gray-50/30">
       {contextHolder}
-      {/* 固定的顶部搜索栏 */}
-      <div className="sticky z-10 bg-gray-50/80 backdrop-blur-sm p-2">
-        <div className="flex flex-col sm:flex-row gap-2.5">
-          <div className="flex-1 flex items-center gap-2">
-            <div className="flex-1 flex items-center gap-2 bg-gray-50 rounded-lg px-3 focus-within:ring-2 focus-within:ring-primary/30 hover:bg-gray-100 transition-all border border-gray-200/50">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-3.5 w-3.5 text-gray-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+
+      {/* 主容器 - 最大宽度1100px */}
+      <div className="max-w-[1100px] mx-auto bg-white min-h-screen shadow-sm">
+        {/* 固定的顶部搜索栏 */}
+        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+          <div className="px-4 py-3">
+            {/* 搜索栏 */}
+            <div className="flex items-center gap-3 mb-3">
+              <div className="flex-1 relative">
+                <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-4 py-2.5 focus-within:ring-2 focus-within:ring-primary/20 hover:bg-gray-100 transition-all border border-gray-200/50">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    />
+                  </svg>
+                  <input
+                    type="text"
+                    placeholder="搜索感兴趣的内容..."
+                    className="flex-1 text-sm bg-transparent focus:outline-none min-w-0"
+                    value={searchInput}
+                    onChange={(e) => setSearchInput(e.target.value)}
+                    onKeyPress={handleKeyPress}
+                  />
+                </div>
+              </div>
+              <button
+                onClick={handleSearch}
+                className="flex-shrink-0 px-5 py-2.5 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors text-sm font-medium shadow-sm hover:shadow"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-              <input
-                type="text"
-                placeholder="搜索感兴趣的内容..."
-                className="flex-1 text-xs sm:text-sm bg-transparent focus:outline-none min-w-0 p-2"
-                value={searchInput}
-                onChange={(e) => setSearchInput(e.target.value)}
-                onKeyPress={handleKeyPress}
-              />
+                搜索
+              </button>
+              <button
+                onClick={() =>
+                  session ? setIsModalOpen(true) : router.push("/api/auth/signin")
+                }
+                className="flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors text-sm font-medium shadow-sm hover:shadow"
+              >
+                <PlusOutlined className="w-4 h-4" />
+                <span>发帖</span>
+              </button>
             </div>
-            <button
-              onClick={handleSearch}
-              className="flex-shrink-0 px-3 sm:px-3.5 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors text-xs sm:text-sm shadow-sm hover:shadow"
-            >
-              搜索
-            </button>
           </div>
-          <button
-            onClick={() =>
-              session ? setIsModalOpen(true) : router.push("/api/auth/signin")
-            }
-            className="btn-twitter flex items-center justify-center gap-1.5"
-          >
-            <PlusOutlined className="w-4 h-4 flex-shrink-0" />
-            <span className="text-sm font-semibold">发帖</span>
-          </button>
         </div>
-      </div>
 
-      {data?.length === 0 && (
-        <div className="text-gray-600 px-4 text-sm sm:text-base font-medium">
-          暂无帖子，来发布第一篇吧
-        </div>
-      )}
+        {/* 发帖组件区域 */}
+        {session && (
+          <div className="border-b border-gray-100">
+            <TwitterStylePostComposer
+              placeholder="说说您的新鲜事..."
+              onSuccess={() => {
+                // 刷新数据
+                mutate();
+              }}
+            />
+          </div>
+        )}
 
-      {/* Twitter风格的发布帖子组件 */}
-      {session && (
-        <TwitterStylePostComposer
-          placeholder="说说您的新鲜事..."
-          onSuccess={() => {
-            // 刷新数据
-            mutate();
-          }}
-        />
-      )}
+        {/* 主要内容区域 */}
+        <div className="flex-1">
+          {data?.length === 0 && (
+            <div className="text-center py-12">
+              <div className="text-gray-500 text-sm">暂无帖子，来发布第一篇吧</div>
+            </div>
+          )}
 
-      {/* 主要内容区域 */}
-      <Skeleton loading={postsLoading} active>
-        <div className="max-w-[1100px] mx-auto">
           {/* 帖子列表 */}
-          <div className="divide-y divide-gray-100">
-            {posts.map((post: any) => (
-              <div
-                key={post.id}
-                className="relative bg-white hover:bg-gray-50/50 transition-all duration-200 group border-l-2 border-transparent hover:border-primary/30"
-              >
-                <div className="px-4 py-3">
-                  {/* 内容区域和图片区域的弹性布局 */}
-                  <div className="flex flex-row gap-3">
-                    {/* 左侧内容区域 */}
-                    <div className="flex-1 min-w-0">
-                      {/* 内容预览 - 作为主要显示内容 */}
-                      <Link href={`/community/${post.id}`} className="block">
-                        <p className="text-sm text-gray-800 group-hover:text-gray-900 transition-colors line-clamp-2 leading-relaxed">
-                          {post.content}
-                        </p>
-                      </Link>
-                    </div>
+          <Skeleton
+            loading={postsLoading}
+            active
+            paragraph={{ rows: 3 }}
+            className="p-4"
+          >
+            <div>
+              {posts.map((post: any) => (
+                <article
+                  key={post.id}
+                  className="relative bg-white hover:bg-gray-50/30 transition-all duration-200 group border-b border-gray-100 last:border-b-0"
+                >
+                  <div className="px-4 py-4">
+                    {/* 内容区域和图片区域的弹性布局 */}
+                    <div className="flex gap-3">
+                      {/* 左侧内容区域 */}
+                      <div className="flex-1 min-w-0">
+                        {/* 内容预览 - 作为主要显示内容 */}
+                        <Link href={`/community/${post.id}`} className="block group-hover:no-underline">
+                          <p className="text-sm text-gray-800 group-hover:text-gray-900 transition-colors line-clamp-2 leading-relaxed mb-3">
+                            {post.content}
+                          </p>
+                        </Link>
+                      </div>
 
-                    {/* 右侧图片区域 */}
-                    {post.images && post.images.length > 0 && (
-                      <Link
-                        href={`/community/${post.id}`}
-                        className="block flex-shrink-0 w-16 sm:w-20 md:w-24 mt-0"
-                      >
-                        <div className="relative overflow-hidden rounded-lg aspect-square bg-gray-100 h-full">
-                          <img
-                            src={post.images[0]}
-                            alt="帖子图片"
-                            className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                          />
-                          {post.images.length > 1 && (
-                            <div className="absolute top-1 right-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded-md">
-                              +{post.images.length - 1}
-                            </div>
-                          )}
-                        </div>
-                      </Link>
-                    )}
+                      {/* 右侧图片区域 */}
+                      {post.images && post.images.length > 0 && (
+                        <Link
+                          href={`/community/${post.id}`}
+                          className="block flex-shrink-0 w-16 h-16"
+                        >
+                          <div className="relative overflow-hidden rounded-lg bg-gray-100 w-full h-full shadow-sm ring-1 ring-gray-200/50">
+                            <img
+                              src={post.images[0]}
+                              alt="帖子图片"
+                              className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                            />
+                            {post.images.length > 1 && (
+                              <div className="absolute top-1 right-1 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded-md font-medium">
+                                +{post.images.length - 1}
+                              </div>
+                            )}
+                          </div>
+                        </Link>
+                      )}
                   </div>
 
-                  <div className="mt-1 sm:mt-1.5 flex flex-wrap items-center justify-between gap-1">
-                    {/* 左下角作者和日期信息 - 改进布局 */}
-                    <div className="flex items-center gap-1.5">
-                      <div className="flex items-center gap-1.5">
+                    {/* 元信息区域 - 更紧凑的设计 */}
+                    <div className="flex items-center justify-between">
+                      {/* 左侧：作者信息 */}
+                      <div className="flex items-center gap-2">
                         {post.author.image ? (
                           <img
                             src={post.author.image}
                             alt={post.author.name || "用户头像"}
-                            className="w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 border-primary/20 shadow-sm"
+                            className="w-5 h-5 rounded-full ring-1 ring-gray-200"
                           />
                         ) : (
-                          <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-primary/10 border-2 border-primary/20 shadow-sm" />
+                          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-primary/20 to-primary/40" />
                         )}
-                        <span className="text-xs font-medium text-gray-800">
+                        <span className="text-xs text-gray-600 font-medium">
                           {post.author.name || "匿名用户"}
+                        </span>
+                        <span className="text-xs text-gray-300">·</span>
+                        <span className="text-xs text-gray-400">
+                          {dayjs(post.createdAt).fromNow()}
                         </span>
                       </div>
 
-                      {/* 日期 - 改进样式 */}
-                      <div className="flex items-center gap-1 text-gray-400 text-xs bg-gray-50 px-1.5 py-0.5 rounded-full">
-                        <ClockCircleOutlined className="w-2 h-2" />
-                        <span>{dayjs(post.createdAt).fromNow()}</span>
-                      </div>
-
-                      {/* 评论数 */}
-                      <Link
-                        href={`/community/${post.id}`}
-                        className="flex items-center gap-1 bg-gray-50 hover:bg-gray-100 text-gray-400 rounded-full px-1.5 py-0.5 text-xs transition-colors"
-                      >
-                        <MessageOutlined className="w-2 h-2" />
-                        <span>{post._count.comments}</span>
-                      </Link>
-
-                      {/* 浏览量 */}
-                      <div className="flex items-center gap-1 bg-gray-50 hover:bg-gray-100 text-gray-400 rounded-full px-1.5 py-0.5 text-xs transition-colors">
-                        <EyeOutlined className="w-2 h-2" />
-                        <span>{post.views}</span>
+                      {/* 右侧：互动数据 */}
+                      <div className="flex items-center gap-4">
+                        <Link
+                          href={`/community/${post.id}`}
+                          className="flex items-center gap-1.5 text-gray-400 hover:text-primary transition-colors group/comment"
+                        >
+                          <MessageOutlined className="w-3.5 h-3.5 group-hover/comment:scale-110 transition-transform" />
+                          <span className="text-xs font-medium">{post._count.comments}</span>
+                        </Link>
+                        <div className="flex items-center gap-1.5 text-gray-400">
+                          <EyeOutlined className="w-3.5 h-3.5" />
+                          <span className="text-xs font-medium">{post.views}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
                 </div>
-              </div>
+              </article>
             ))}
 
-            {/* 加载更多指示器 */}
-            {hasMore && (
-              <div
-                ref={loadingRef}
-                className="flex justify-center items-center py-2.5 sm:py-3"
-              >
-                <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-2 border-primary border-t-transparent shadow-sm"></div>
-              </div>
-            )}
-          </div>
+              {/* 加载更多指示器 */}
+              {hasMore && (
+                <div
+                  ref={loadingRef}
+                  className="flex justify-center items-center py-4"
+                >
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-primary border-t-transparent"></div>
+                </div>
+              )}
+            </div>
+          </Skeleton>
         </div>
-      </Skeleton>
+      </div>
     </div>
   );
 }
