@@ -28,7 +28,7 @@ export default function Settings() {
                     </div>
                 </div>
             }
-            bordered={false}
+            variant={"borderless"}
         >
             <Divider orientation="left" orientationMargin={0}>账户设置</Divider>
             <List itemLayout="horizontal">

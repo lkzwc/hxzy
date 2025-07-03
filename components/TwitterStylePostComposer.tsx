@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useRef } from "react";
@@ -64,23 +65,42 @@ export default function TwitterStylePostComposer({
 
 
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
 
+    if (images.length + files.length > MAX_IMAGES) {
+      messageApi.warning(`最多只能上传${MAX_IMAGES}张图片`);
+      return;
+    }
+
+    const formData = new FormData();
     Array.from(files).forEach((file) => {
-      if (images.length >= MAX_IMAGES) {
-        messageApi.warning(`最多只能上传${MAX_IMAGES}张图片`);
-        return;
+      formData.append("files", file);
+    });
+
+    try {
+      messageApi.loading("正在上传图片...", 0);
+      
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      messageApi.destroy(); // 清除loading消息
+
+      if (!response.ok) {
+        throw new Error("上传失败");
       }
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const result = e.target?.result as string;
-        setImages(prev => [...prev, result]);
-      };
-      reader.readAsDataURL(file);
-    });
+      const data = await response.json();
+      setImages(prev => [...prev, ...data.urls]);
+      messageApi.success("图片上传成功");
+    } catch (error) {
+      messageApi.destroy(); // 清除loading消息
+      console.error("Error uploading images:", error);
+      messageApi.error("图片上传失败，请重试");
+    }
 
     e.target.value = "";
   };
@@ -151,7 +171,7 @@ export default function TwitterStylePostComposer({
     }
   };
 
-  const isPostDisabled = !content?.trim() || isSubmitting;
+  const isPostDisabled = !content?.trim() || isSubmitting || remainingChars < 0;
 
   return (
     <div className={`bg-white ${className}`}>
@@ -182,10 +202,16 @@ export default function TwitterStylePostComposer({
                   options={tagOptions}
                   variant="borderless"
                   className="w-full text-base border-none outline-none bg-transparent p-0"
-                  style={{
-                    fontSize: '16px',
-                    lineHeight: '1.4',
-                    resize: 'none'
+                  onChange={(value) => {
+                    // 限制字符数
+                    if (value && value.length > MAX_CHARS) {
+                      const truncatedValue = value.substring(0, MAX_CHARS);
+                      form.setFieldValue('content', truncatedValue);
+                      messageApi.warning(`内容不能超过${MAX_CHARS}个字符`);
+                      return;
+                    }
+                    // 正常更新表单值
+                    form.setFieldValue('content', value);
                   }}
                   filterOption={(input, option) => {
                     const label = (option as any)?.label;
@@ -196,19 +222,25 @@ export default function TwitterStylePostComposer({
 
               {/* 图片预览 */}
               {images.length > 0 && (
-                <div className={`mb-2 grid gap-1 ${
-                  images.length === 1 ? 'grid-cols-1' : 
-                  images.length === 2 ? 'grid-cols-2' : 
-                  'grid-cols-2'
+                <div className={`mb-2 flex flex-wrap gap-2 ${
+                  images.length === 1 ? 'max-w-xs' : 'w-full'
                 }`}>
                   {images.map((image, index) => (
-                    <div key={index} className="relative group">
+                    <div
+                      key={index}
+                      className={`relative group ${
+                        images.length === 1
+                          ? 'w-30 h-30'
+                          : images.length === 2
+                          ? 'w-24 h-24'
+                          : 'w-20 h-20'
+                      }`}
+                    >
                       <Image
                         src={image}
                         alt={`上传的图片 ${index + 1}`}
-                        width={120}
-                        height={120}
-                        className="w-full h-20 object-cover rounded-lg border border-neutral-200"
+                        fill
+                        className="object-cover rounded-lg border border-neutral-200"
                       />
                       <button
                         onClick={() => removeImage(index)}
@@ -277,3 +309,4 @@ export default function TwitterStylePostComposer({
     </div>
   );
 }
+

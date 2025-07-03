@@ -1,9 +1,13 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { BellIcon } from '@heroicons/react/24/outline'
+import useSWR, { mutate } from 'swr'
+
+// Fetcher 函数
+const fetcher = (url: string) => fetch(url).then((res) => res.json())
 
 interface Notification {
   id: number
@@ -22,29 +26,22 @@ interface Notification {
 
 export default function NotificationBadge() {
   const { data: session, status } = useSession()
-  const [notifications, setNotifications] = useState<Notification[]>([])
-  const [unreadCount, setUnreadCount] = useState(0)
+  console.log("status",status)
   const [showDropdown, setShowDropdown] = useState(false)
-  const [loading, setLoading] = useState(false)
 
-  // 获取通知列表
-  const fetchNotifications = async () => {
-    if (status !== 'authenticated' || !session) return
-
-    try {
-      setLoading(true)
-      const response = await fetch('/api/users/notifications')
-      if (response.ok) {
-        const data = await response.json()
-        setNotifications(data.notifications)
-        setUnreadCount(data.unreadCount)
-      }
-    } catch (error) {
-      console.error('获取通知失败:', error)
-    } finally {
-      setLoading(false)
+  // 使用 useSWR 获取通知数据
+  const { data: notificationData, error, isLoading } = useSWR(
+    status === 'authenticated' ? '/api/users/notifications' : null,
+    fetcher,
+    {
+      refreshInterval: 6000, // 每分钟刷新一次
+      revalidateOnFocus: false,
+      revalidateOnReconnect: true,
     }
-  }
+  )
+
+  const notifications = notificationData?.notifications || []
+  const unreadCount = notificationData?.unreadCount || 0
 
   // 标记所有通知为已读
   const markAllAsRead = async () => {
@@ -55,30 +52,22 @@ export default function NotificationBadge() {
         method: 'PUT',
       })
       if (response.ok) {
-        // 更新本地通知状态
-        setNotifications(prev => 
-          prev.map(notification => ({
+        // 使用 mutate 更新 SWR 缓存
+        mutate('/api/users/notifications', {
+          notifications: notifications.map(notification => ({
             ...notification,
             isRead: true
-          }))
-        )
-        setUnreadCount(0)
+          })),
+          unreadCount: 0
+        }, false)
+
+        // 同时触发全局的通知数据更新（用于导航栏）
+        mutate('/api/users/notifications')
       }
     } catch (error) {
       console.error('标记通知已读失败:', error)
     }
   }
-
-  // 初始加载和定期刷新通知
-  useEffect(() => {
-    if (status === 'authenticated') {
-      fetchNotifications()
-
-      // 每分钟刷新一次通知
-      const intervalId = setInterval(fetchNotifications, 60000)
-      return () => clearInterval(intervalId)
-    }
-  }, [status])
 
   // 如果未登录，不显示通知图标
   if (status !== 'authenticated' || !session) {
@@ -120,11 +109,11 @@ export default function NotificationBadge() {
             </button>
           </div>
 
-          {loading ? (
+          {isLoading ? (
             <div className="p-4 text-center text-gray-500">加载中...</div>
           ) : notifications.length > 0 ? (
             <div className="divide-y divide-gray-100">
-              {notifications.map((notification) => (
+              {notifications.map((notification: Notification) => (
                 <Link
                   key={notification.id}
                   href={`/community/${notification.post.id}`}

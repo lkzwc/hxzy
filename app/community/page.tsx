@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useRef } from "react";
@@ -386,12 +387,12 @@ export default function Community() {
       {contextHolder}
 
       {/* 主容器 - 最大宽度1100px */}
-      <div className="max-w-[1100px] mx-auto bg-white min-h-screen shadow-sm">
+      <div className="mx-auto bg-white min-h-screen shadow-sm">
         {/* 固定的顶部搜索栏 */}
-        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+        <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-gray-100">
           <div className="px-4 py-3">
             {/* 搜索栏 */}
-            <div className="flex items-center gap-3 mb-3">
+            <div className="flex items-center gap-3">
               <div className="flex-1 relative">
                 <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-4 py-2.5 focus-within:ring-2 focus-within:ring-primary/20 hover:bg-gray-100 transition-all border border-gray-200/50">
                   <svg
@@ -463,20 +464,38 @@ export default function Community() {
             // 优化的骨架屏 - 模拟真实帖子布局
             <div className="space-y-0">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="px-4 py-4 border-b border-gray-100">
+                <div key={i} className="px-4 py-3 border-b border-gray-100">
+                  {/* 顶部作者信息骨架 */}
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <div className="h-3 bg-gray-200 rounded animate-pulse w-20"></div>
+                        <div className="h-3 bg-gray-200 rounded animate-pulse w-12"></div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="h-3 bg-gray-200 rounded animate-pulse w-8"></div>
+                      <div className="h-3 bg-gray-200 rounded animate-pulse w-8"></div>
+                    </div>
+                  </div>
+
+                  {/* 内容区域骨架 */}
                   <div className="flex gap-3">
                     <div className="flex-1">
                       <div className="space-y-2">
                         <div className="h-4 bg-gray-200 rounded animate-pulse w-full"></div>
                         <div className="h-4 bg-gray-200 rounded animate-pulse w-3/4"></div>
                       </div>
-                      <div className="flex items-center gap-2 mt-3">
-                        <div className="w-5 h-5 bg-gray-200 rounded-full animate-pulse"></div>
-                        <div className="h-3 bg-gray-200 rounded animate-pulse w-16"></div>
-                        <div className="h-3 bg-gray-200 rounded animate-pulse w-12"></div>
+                      {/* 标签骨架 */}
+                      <div className="flex gap-1 mt-2">
+                        <div className="h-5 bg-gray-200 rounded-full animate-pulse w-12"></div>
+                        <div className="h-5 bg-gray-200 rounded-full animate-pulse w-16"></div>
                       </div>
                     </div>
-                    <div className="w-16 h-16 bg-gray-200 rounded-lg animate-pulse"></div>
+                    {i % 2 === 0 && (
+                      <div className="w-16 h-16 bg-gray-200 rounded-lg animate-pulse"></div>
+                    )}
                   </div>
                 </div>
               ))}
@@ -488,17 +507,83 @@ export default function Community() {
                   key={post.id}
                   className="relative bg-white hover:bg-gray-50/30 transition-all duration-200 group border-b border-gray-100 last:border-b-0"
                 >
-                  <div className="px-4 py-4">
+                  <div className="px-4 py-3">
+                    {/* 顶部作者信息 - 重新设计 */}
+                    <div className="flex items-center gap-3 mb-3">
+                      {/* 用户头像 */}
+                      <div className="relative">
+                        {post.author.image ? (
+                          <img
+                            src={post.author.image}
+                            alt={post.author.name || "用户头像"}
+                            className="w-10 h-10 rounded-full object-cover shadow-lg"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg">
+                            <span className="text-white text-sm font-bold">
+                              {(post.author.name || "匿名")[0]}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* 用户信息 */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium text-gray-900 truncate">
+                            {post.author.name || "匿名用户"}
+                          </span>
+                          <span className="text-xs text-gray-400 flex-shrink-0">
+                            {dayjs(post.createdAt).fromNow()}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* 右侧互动数据 */}
+                      <div className="flex items-center gap-3 text-gray-400">
+                        <Link
+                          href={`/community/${post.id}`}
+                          className="flex items-center gap-1 hover:text-primary transition-colors group/comment"
+                        >
+                          <MessageOutlined className="w-4 h-4 group-hover/comment:scale-110 transition-transform" />
+                          <span className="text-xs font-medium">{post._count.comments}</span>
+                        </Link>
+                        <div className="flex items-center gap-1">
+                          <EyeOutlined className="w-4 h-4" />
+                          <span className="text-xs font-medium">{post.views}</span>
+                        </div>
+                      </div>
+                    </div>
+
                     {/* 内容区域和图片区域的弹性布局 */}
                     <div className="flex gap-3">
                       {/* 左侧内容区域 */}
                       <div className="flex-1 min-w-0">
                         {/* 内容预览 - 作为主要显示内容 */}
                         <Link href={`/community/${post.id}`} className="block group-hover:no-underline">
-                          <p className="text-sm text-gray-800 group-hover:text-gray-900 transition-colors line-clamp-2 leading-relaxed mb-3">
+                          <p className="text-sm text-gray-800 group-hover:text-gray-900 transition-colors line-clamp-2 leading-relaxed mb-2">
                             {post.content}
                           </p>
                         </Link>
+
+                        {/* 标签显示 */}
+                        {post.tags && post.tags.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {post.tags.slice(0, 3).map((tag: string, index: number) => (
+                              <span
+                                key={index}
+                                className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary/80 hover:bg-primary/15 transition-colors"
+                              >
+                                #{tag}
+                              </span>
+                            ))}
+                            {post.tags.length > 3 && (
+                              <span className="text-xs text-gray-400">
+                                +{post.tags.length - 3}
+                              </span>
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       {/* 右侧图片区域 */}
@@ -521,48 +606,10 @@ export default function Community() {
                           </div>
                         </Link>
                       )}
-                  </div>
-
-                    {/* 元信息区域 - 更紧凑的设计 */}
-                    <div className="flex items-center justify-between">
-                      {/* 左侧：作者信息 */}
-                      <div className="flex items-center gap-2">
-                        {post.author.image ? (
-                          <img
-                            src={post.author.image}
-                            alt={post.author.name || "用户头像"}
-                            className="w-5 h-5 rounded-full ring-1 ring-gray-200"
-                          />
-                        ) : (
-                          <div className="w-5 h-5 rounded-full bg-gradient-to-br from-primary/20 to-primary/40" />
-                        )}
-                        <span className="text-xs text-gray-600 font-medium">
-                          {post.author.name || "匿名用户"}
-                        </span>
-                        <span className="text-xs text-gray-300">·</span>
-                        <span className="text-xs text-gray-400">
-                          {dayjs(post.createdAt).fromNow()}
-                        </span>
-                      </div>
-
-                      {/* 右侧：互动数据 */}
-                      <div className="flex items-center gap-4">
-                        <Link
-                          href={`/community/${post.id}`}
-                          className="flex items-center gap-1.5 text-gray-400 hover:text-primary transition-colors group/comment"
-                        >
-                          <MessageOutlined className="w-3.5 h-3.5 group-hover/comment:scale-110 transition-transform" />
-                          <span className="text-xs font-medium">{post._count.comments}</span>
-                        </Link>
-                        <div className="flex items-center gap-1.5 text-gray-400">
-                          <EyeOutlined className="w-3.5 h-3.5" />
-                          <span className="text-xs font-medium">{post.views}</span>
-                        </div>
-                      </div>
                     </div>
-                </div>
-              </article>
-            ))}
+                  </div>
+                </article>
+              ))}
 
               {/* 加载更多指示器 */}
               {hasMore && (
