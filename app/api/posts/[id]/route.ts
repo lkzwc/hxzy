@@ -15,46 +15,34 @@ export async function GET(
       )
     }
 
-    // 获取帖子信息
-    const post = await prisma.post.findUnique({
-      where: { id: postId },
-      select: {
-        id: true,
-        content: true,
-        images: true,
-        published: true,
-        createdAt: true,
-        updatedAt: true,
-        tags: true,
-        views: true,
-        author: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-          },
-        },
-        comments: {
-          select: {
-            id: true,
-            content: true,
-            images: true,
-            createdAt: true,
-            parentId: true,
-            author: {
-              select: {
-                id: true,
-                name: true,
-                image: true,
-              },
+    // 优化：分离帖子信息和评论查询，避免一次性加载所有评论
+    const [post, commentCount] = await Promise.all([
+      // 获取帖子基本信息
+      prisma.post.findUnique({
+        where: { id: postId },
+        select: {
+          id: true,
+          content: true,
+          images: true,
+          published: true,
+          createdAt: true,
+          updatedAt: true,
+          tags: true,
+          views: true,
+          author: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
             },
           },
-          orderBy: {
-            createdAt: 'desc',
-          },
         },
-      },
-    })
+      }),
+      // 只获取评论数量，评论内容通过单独的 API 获取
+      prisma.comment.count({
+        where: { postId: postId },
+      })
+    ])
 
     if (!post) {
       return NextResponse.json(
@@ -63,27 +51,31 @@ export async function GET(
       )
     }
 
-    // 获取点赞数
+    // 并行获取点赞数，优化性能
     const likesCount = await prisma.postLike.count({
       where: {
         postId,
       },
     })
 
-    // 增加浏览量
-    await prisma.post.update({
+    // 异步增加浏览量，不阻塞响应
+    prisma.post.update({
       where: { id: postId },
       data: {
         views: {
           increment: 1,
         },
       },
+    }).catch(error => {
+      console.error('更新浏览量失败:', error)
     })
 
     // 格式化响应数据
     const formattedPost = {
       ...post,
       likes: likesCount,
+      commentCount, // 添加评论数量
+      views: post.views + 1, // 返回更新后的浏览量
     }
 
     return NextResponse.json(formattedPost)

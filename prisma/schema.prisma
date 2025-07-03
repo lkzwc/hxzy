@@ -40,13 +40,13 @@ model Post {
   author        User           @relation(fields: [authorId], references: [id])
   postLikes     PostLike[]
 
-  @@index([authorId])
-  @@index([createdAt])
-  @@index([views])
-  @@index([published])
-  @@index([published, createdAt])
-  @@index([tags])
-  @@index([content])
+  // 优化后的索引
+  @@index([published, createdAt(sort: Desc), id(sort: Desc)]) // 主列表查询优化
+  @@index([authorId, published, createdAt(sort: Desc)])       // 用户帖子查询优化
+  @@index([tags, published, createdAt(sort: Desc)])           // 标签筛选优化
+  @@index([views(sort: Desc)])                                // 热门排序优化
+  @@index([authorId])                                         // 保留基础索引
+  @@index([createdAt])                                        // 保留基础索引
 }
 
 model Comment {
@@ -64,9 +64,11 @@ model Comment {
   post          Post           @relation(fields: [postId], references: [id], onDelete: Cascade)
   notifications Notification[]
 
-  @@index([postId])
-  @@index([authorId])
-  @@index([parentId])
+  // 优化后的索引
+  @@index([postId, createdAt(sort: Desc)])    // 帖子评论列表查询优化
+  @@index([postId, parentId])                 // 评论层级查询优化
+  @@index([authorId, createdAt(sort: Desc)])  // 用户评论查询优化
+  @@index([parentId])                         // 保留基础索引
 }
 
 model PostLike {
@@ -77,8 +79,8 @@ model PostLike {
   user      User     @relation(fields: [userId], references: [id])
 
   @@id([userId, postId])
-  @@index([userId])
-  @@index([postId])
+  @@index([userId, createdAt(sort: Desc)])  // 用户点赞历史查询优化
+  @@index([postId, createdAt(sort: Desc)])  // 帖子点赞统计优化
 }
 
 model Notification {

@@ -59,32 +59,44 @@ export async function GET(request: NextRequest) {
     const hasMore = posts.length > limit
     const actualPosts = hasMore ? posts.slice(0, limit) : posts
 
-    // 获取作者信息（批量查询）
-    const authorIds = [...new Set(actualPosts.map(post => post.authorId))]
-    const authors = await prisma.user.findMany({
-      where: { id: { in: authorIds } },
-      select: { id: true, name: true, image: true }
-    })
-
-    // 获取评论数（批量查询）
+    // 批量获取关联数据，优化性能
     const postIds = actualPosts.map(post => post.id)
-    const commentCounts = await prisma.comment.groupBy({
-      by: ['postId'],
-      where: { postId: { in: postIds } },
-      _count: { id: true }
-    })
+    const authorIds = [...new Set(actualPosts.map(post => post.authorId))]
 
-    // 组装数据
-    const postsWithDetails = actualPosts.map(post => {
-      const author = authors.find(a => a.id === post.authorId)
-      const commentCount = commentCounts.find(c => c.postId === post.id)?._count.id || 0
+    const [authors, commentCounts, likeCounts] = await Promise.all([
+      // 获取作者信息
+      prisma.user.findMany({
+        where: { id: { in: authorIds } },
+        select: { id: true, name: true, image: true }
+      }),
+      // 获取评论数量
+      prisma.comment.groupBy({
+        by: ['postId'],
+        where: { postId: { in: postIds } },
+        _count: { id: true }
+      }),
+      // 获取点赞数量
+      prisma.postLike.groupBy({
+        by: ['postId'],
+        where: { postId: { in: postIds } },
+        _count: { userId: true }
+      })
+    ])
 
-      return {
-        ...post,
-        author: author || { id: post.authorId, name: null, image: null },
-        _count: { comments: commentCount }
+    // 创建映射以便快速查找
+    const authorMap = new Map(authors.map(author => [author.id, author]))
+    const commentCountMap = new Map(commentCounts.map(count => [count.postId, count._count.id]))
+    const likeCountMap = new Map(likeCounts.map(count => [count.postId, count._count.userId]))
+
+    // 组合数据
+    const postsWithDetails = actualPosts.map(post => ({
+      ...post,
+      author: authorMap.get(post.authorId) || { id: post.authorId, name: '未知用户', image: null },
+      _count: {
+        comments: commentCountMap.get(post.id) || 0,
+        postLikes: likeCountMap.get(post.id) || 0,
       }
-    })
+    }))
 
     // 设置更积极的缓存控制
     const headers = new Headers()

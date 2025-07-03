@@ -71,41 +71,45 @@ export async function GET(
       },
     }) as CommentWithDetails[]
 
-    // 为回复评论添加被回复者信息
-    const commentsWithReplyInfo: CommentResponse[] = await Promise.all(
-      comments.map(async comment => {
-        let replyTo = null
-        if (comment.parentId) {
-          const parentComment = await prisma.comment.findUnique({
-            where: { id: comment.parentId },
-            select: {
-              author: {
-                select: {
-                  id: true,
-                  name: true,
-                },
-              },
-            },
-          })
-          if (parentComment) {
-            replyTo = {
-              id: parentComment.author.id,
-              name: parentComment.author.name,
-            }
-          }
-        }
+    // 优化：批量获取父评论信息，避免 N+1 查询
+    const parentIds = [...new Set(comments.filter(c => c.parentId).map(c => c.parentId!))]
+    const parentComments = parentIds.length > 0 ? await prisma.comment.findMany({
+      where: { id: { in: parentIds } },
+      select: {
+        id: true,
+        author: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    }) : []
 
-        return {
-          id: comment.id,
-          content: comment.content,
-          images: comment.images,
-          createdAt: comment.createdAt,
-          author: comment.author,
-          parentId: comment.parentId,
-          replyTo,
+    // 创建父评论映射
+    const parentMap = new Map(parentComments.map(p => [p.id, p.author]))
+
+    // 构建最终结果
+    const commentsWithReplyInfo: CommentResponse[] = comments.map(comment => {
+      let replyTo = null
+      if (comment.parentId && parentMap.has(comment.parentId)) {
+        const parentAuthor = parentMap.get(comment.parentId)!
+        replyTo = {
+          id: parentAuthor.id,
+          name: parentAuthor.name,
         }
-      })
-    )
+      }
+
+      return {
+        id: comment.id,
+        content: comment.content,
+        images: comment.images,
+        createdAt: comment.createdAt,
+        author: comment.author,
+        parentId: comment.parentId,
+        replyTo,
+      }
+    })
 
     // 按照父评论的创建时间和回复时间排序
     const sortedComments = commentsWithReplyInfo.sort((a, b) => {
