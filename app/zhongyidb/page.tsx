@@ -186,7 +186,7 @@ export default function ZhongYiDBPage() {
               />
               <div className="px-2 sm:px-3">
                 <button 
-                  className="btn btn-primary btn-circle"
+                  className="btn bg-primary btn-circle"
                   onClick={handleSearch}
                 >
                   <SearchOutlined className="w-4 h-4 text-gray-400" />
@@ -203,21 +203,21 @@ export default function ZhongYiDBPage() {
         <div className="flex justify-center mb-12 overflow-x-auto hide-scrollbar">
           <div className="bg-base-100 mb-10 shadow-lg rounded-full p-1 flex-nowrap">
             <button 
-              className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[80px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'zhongyao' ? 'btn-primary' : 'btn-ghost'}`}
+              className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[80px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'zhongyao' ? 'bg-primary' : 'btn-ghost'}`}
               onClick={() => setActiveTab('zhongyao')}
             >
               <span className={`sm:w-5 sm:h-5 ${activeTab === 'zhongyao' ? 'text-current' : 'text-gray-600'}`}>🌿</span>
               中药
             </button>
             <button 
-              className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[80px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'jingfang' ? 'btn-primary' : 'btn-ghost'}`}
+              className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[80px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'jingfang' ? 'bg-primary' : 'btn-ghost'}`}
               onClick={() => setActiveTab('jingfang')}
             >
               <FileTextOutlined className={`sm:w-5 sm:h-5 ${activeTab === 'jingfang' ? 'text-current' : 'text-gray-600'}`} />
               经方
             </button>
             <button 
-              className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[80px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'kecheng' ? 'btn-primary' : 'btn-ghost'}`}
+              className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[80px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'kecheng' ? 'bg-primary' : 'btn-ghost'}`}
               onClick={() => {
                 // setActiveTab('kecheng')
                 window.open('https://yhcpiigo.ap-southeast-1.clawcloudrun.com/', '_blank')
@@ -227,7 +227,7 @@ export default function ZhongYiDBPage() {
               课程
             </button>
             <button 
-              className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[80px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'dianzishu' ? 'btn-primary' : 'btn-ghost'}`}
+              className={`join-item btn sm:btn-lg gap-1.5 sm:gap-2 rounded-full min-w-[80px] sm:min-w-[160px] text-sm sm:text-base ${activeTab === 'dianzishu' ? 'bg-primary' : 'btn-ghost'}`}
               onClick={() => setActiveTab('dianzishu')}
             >
               <BookOutlined className={`sm:w-5 sm:h-5 ${activeTab === 'dianzishu' ? 'text-current' : 'text-gray-600'}`} />
@@ -310,7 +310,7 @@ export default function ZhongYiDBPage() {
                     </div>
                     <p className="mt-2 text-sm sm:text-base">{course.description}</p>
                     <div className="card-actions justify-end mt-3 sm:mt-4">
-                      <button className="btn btn-primary btn-sm sm:btn-md w-full sm:w-auto sm:btn-wide">查看课程</button>
+                      <button className="btn bg-primary btn-sm sm:btn-md w-full sm:w-auto sm:btn-wide">查看课程</button>
                     </div>
                   </div>
                 </div>

@@ -1,28 +1,39 @@
-import { Suspense, lazy } from 'react'
-import Image from 'next/image'
-import dynamic from 'next/dynamic'
+import { Suspense } from 'react'
 
-// 静态数据 - 使用更小的图片尺寸和webp格式
+// 网站核心功能展示数据
 const features = [
   {
-    title: '传统医学智慧',
-    desc: '探索中医理论体系，传承千年医药智慧',
-    image: 'https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?q=80&w=1080&fm=webp',
+    title: '中医知识宝库',
+    desc: '汇聚经典医籍、方剂药材、诊疗心得',
+    image: '/images/tcm-wisdom.svg',
     stats: [
-      { label: '历史传承', value: '5000+', unit: '年' },
-      { label: '经典著作', value: '300+', unit: '部' },
-      { label: '验方记载', value: '10万+', unit: '个' },
-    ]
+      { label: '经典医籍', value: '500+', unit: '部' },
+      { label: '方剂收录', value: '8000+', unit: '首' },
+      { label: '药材详解', value: '2000+', unit: '种' },
+    ],
+    features: ['《黄帝内经》解读', '经方验方研究', '本草纲目详解', '名医医案分析']
   },
   {
-    title: '现代科技融合',
-    desc: '结合现代科技，创新中医药发展',
-    image: 'https://images.unsplash.com/photo-1512290746430-3ffb4fab31bc?q=80&w=1080&fm=webp',
+    title: '智能诊疗工具',
+    desc: '现代科技助力中医诊断与学习',
+    image: '/images/modern-tech.svg',
     stats: [
-      { label: '数字化医案', value: '100万+', unit: '例' },
-      { label: 'AI 辅助诊断', value: '95%+', unit: '准确率' },
-      { label: '研究成果', value: '1000+', unit: '项' },
-    ]
+      { label: '在线工具', value: '20+', unit: '个' },
+      { label: '用户使用', value: '50万+', unit: '次' },
+      { label: '准确率', value: '95%+', unit: '' },
+    ],
+    features: ['五行体质测试', '经络穴位查询', '方剂配伍分析', '症状智能诊断']
+  },
+  {
+    title: '中医学习社区',
+    desc: '中医爱好者交流学习的专业平台',
+    image: '/images/community.svg',
+    stats: [
+      { label: '用户', value: '10万+', unit: '人' },
+      { label: '讨论话题', value: '5000+', unit: '个' },
+      { label: '专业医师', value: '1000+', unit: '位' },
+    ],
+    features: ['学术讨论交流', '临床经验分享', '名医在线答疑', '中医文化传播']
   },
 ]
 
@@ -68,26 +79,28 @@ export default async function Home() {
               </div>
               
               <h1 className="text-5xl lg:text-7xl font-bold text-neutral-800 mb-8 leading-tight">
-                传承<span className="text-primary-600">千年智慧</span>
+                华夏<span className="text-primary-600">中医</span>
                 <br />
-                守护<span className="bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-secondary-500">现代健康</span>
+                传承<span className="bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-secondary-600">千年智慧</span>
               </h1>
-              
+
               <p className="text-xl text-neutral-600 mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                探索中医药文化瑰宝，融合现代科技创新，让传统智慧在当代焕发新生
+                汇聚中医经典知识，提供智能诊疗工具，打造专业学习社区，让传统医学在现代焕发新生
               </p>
               
               <HomeButtons />
 
               {/* 统计数据 */}
-              <div className="grid grid-cols-3 gap-8 mt-16 text-center lg:text-left">
+              <div className="grid grid-cols-3 gap-4 lg:gap-8 mt-16">
                 {features[0].stats.map((stat, index) => (
-                  <div key={stat.label} className="space-y-2">
-                    <div className="text-3xl lg:text-4xl font-bold text-primary-600">
-                      {stat.value}
-                      <span className="text-lg text-neutral-500 ml-1">{stat.unit}</span>
+                  <div key={stat.label} className="text-center lg:text-left group">
+                    <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-4 lg:p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-primary-100/50 hover:border-primary-200/70">
+                      <div className="text-2xl lg:text-4xl xl:text-5xl font-bold text-primary-600 mb-2 group-hover:text-primary-700 transition-colors duration-300">
+                        {stat.value}
+                        <span className="text-base lg:text-lg text-neutral-500 ml-1 font-medium">{stat.unit}</span>
+                      </div>
+                      <div className="text-xs lg:text-sm text-neutral-600 font-medium">{stat.label}</div>
                     </div>
-                    <div className="text-sm text-neutral-500">{stat.label}</div>
                   </div>
                 ))}
               </div>
@@ -103,9 +116,66 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* 核心功能展示 */}
+      <section className="py-20 bg-gradient-to-b from-white to-primary-50/30">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-neutral-800 mb-4">
+              三大核心功能
+            </h2>
+            <p className="text-xl text-neutral-600 max-w-3xl mx-auto">
+              从知识学习到智能诊疗，从社区交流到文化传承，全方位的中医药服务平台
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {features.map((feature) => (
+              <div key={feature.title} className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group">
+                <div className="aspect-video mb-6 rounded-xl overflow-hidden bg-gradient-to-br from-primary-50 to-secondary-50">
+                  <img
+                    src={feature.image}
+                    alt={feature.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                  />
+                </div>
+
+                <h3 className="text-2xl font-bold text-neutral-800 mb-3">
+                  {feature.title}
+                </h3>
+
+                <p className="text-neutral-600 mb-6">
+                  {feature.desc}
+                </p>
+
+                <div className="grid grid-cols-3 gap-3 mb-6">
+                  {feature.stats.map((stat) => (
+                    <div key={stat.label} className="text-center bg-gradient-to-br from-primary-50/50 to-secondary-50/50 rounded-xl p-3 hover:from-primary-100/50 hover:to-secondary-100/50 transition-all duration-300">
+                      <div className="text-xl lg:text-2xl font-bold text-primary-600 mb-1">
+                        {stat.value}
+                        <span className="text-xs lg:text-sm text-neutral-500 ml-1 font-medium">{stat.unit}</span>
+                      </div>
+                      <div className="text-xs text-neutral-600 font-medium">{stat.label}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="space-y-2">
+                  {feature.features.map((item, idx) => (
+                    <div key={idx} className="flex items-center text-sm text-neutral-600">
+                      <span className="w-2 h-2 bg-primary-500 rounded-full mr-3"></span>
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* 非首屏内容 - 使用懒加载 */}
       <LazyFeatureSection />
-      
+
       {/* WuXing Section - 最后加载 */}
       <div className="bg-gradient-to-b from-primary-50 to-primary-100/50">
         <LazyLuopanSection />

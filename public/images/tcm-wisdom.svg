@@ -1,0 +1,68 @@
+<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF7ED"/>
+      <stop offset="50%" stop-color="#FEF3C7"/>
+      <stop offset="100%" stop-color="#FDE68A"/>
+    </linearGradient>
+    <radialGradient id="decorGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#F59E0B" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#D97706" stop-opacity="0.1"/>
+    </radialGradient>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect width="800" height="600" fill="url(#bgGradient)"/>
+  
+  <!-- 装饰元素 -->
+  <circle cx="150" cy="120" r="60" fill="url(#decorGradient)"/>
+  <circle cx="650" cy="480" r="80" fill="url(#decorGradient)"/>
+  <circle cx="700" cy="150" r="40" fill="url(#decorGradient)"/>
+  
+  <!-- 传统纹样 -->
+  <g transform="translate(50, 50)" opacity="0.2">
+    <path d="M0,0 Q20,10 40,0 Q60,10 80,0" stroke="#92400E" stroke-width="2" fill="none"/>
+    <path d="M0,20 Q20,30 40,20 Q60,30 80,20" stroke="#92400E" stroke-width="2" fill="none"/>
+    <path d="M0,40 Q20,50 40,40 Q60,50 80,40" stroke="#92400E" stroke-width="2" fill="none"/>
+  </g>
+  
+  <!-- 中心内容区域 -->
+  <rect x="150" y="150" width="500" height="300" rx="20" fill="rgba(255,255,255,0.8)" stroke="#D97706" stroke-width="2"/>
+  
+  <!-- 主标题 */
+  <text x="400" y="220" text-anchor="middle" font-family="serif" font-size="48" font-weight="bold" fill="#92400E">
+    传统医学智慧
+  </text>
+  
+  <!-- 副标题 */
+  <text x="400" y="270" text-anchor="middle" font-family="serif" font-size="24" fill="#A8552E">
+    探索中医理论体系
+  </text>
+  
+  <!-- 装饰线条 -->
+  <line x1="200" y1="300" x2="600" y2="300" stroke="#F59E0B" stroke-width="2"/>
+  
+  <!-- 底部文字 */
+  <text x="400" y="350" text-anchor="middle" font-family="serif" font-size="20" fill="#92400E">
+    传承千年医药智慧
+  </text>
+  
+  <!-- 中医符号装饰 -->
+  <g transform="translate(250, 380)" fill="#D97706" opacity="0.6">
+    <!-- 简化的太极图 -->
+    <circle cx="0" cy="0" r="25" fill="white" stroke="#D97706" stroke-width="2"/>
+    <path d="M0,-25 A25,25 0 0,1 0,25 A12.5,12.5 0 0,1 0,0 A12.5,12.5 0 0,0 0,-25" fill="#D97706"/>
+    <circle cx="0" cy="-12.5" r="3" fill="white"/>
+    <circle cx="0" cy="12.5" r="3" fill="#D97706"/>
+  </g>
+  
+  <g transform="translate(550, 380)" fill="#D97706" opacity="0.6">
+    <!-- 八卦符号 -->
+    <g>
+      <line x1="-15" y1="-10" x2="15" y2="-10" stroke="#D97706" stroke-width="3"/>
+      <line x1="-15" y1="-3" x2="15" y2="-3" stroke="#D97706" stroke-width="3"/>
+      <line x1="-15" y1="4" x2="-5" y2="4" stroke="#D97706" stroke-width="3"/>
+      <line x1="5" y1="4" x2="15" y2="4" stroke="#D97706" stroke-width="3"/>
+    </g>
+  </g>
+</svg>

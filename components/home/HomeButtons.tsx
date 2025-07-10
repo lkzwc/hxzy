@@ -31,7 +31,7 @@ export default function HomeButtons() {
             text-white font-semibold rounded-full shadow-lg shadow-primary-500/30 hover:shadow-xl 
             hover:shadow-primary-500/40 transition-all duration-300 group"
         >
-          <span>进入社区</span>
+          <span>探索中医</span>
           <RightOutlined className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
         </Link>
       </motion.div>
@@ -41,14 +41,14 @@ export default function HomeButtons() {
         whileHover="hover"
         whileTap="tap"
       >
-        <Link 
-          href="/about" 
-          className="inline-flex items-center px-8 py-4 bg-white/90 backdrop-blur-sm text-primary-600 
-            font-semibold rounded-full shadow-lg shadow-gray-200/50 hover:shadow-xl 
+        <Link
+          href="/community/about"
+          className="inline-flex items-center px-8 py-4 bg-white/90 backdrop-blur-sm text-primary-600
+            font-semibold rounded-full shadow-lg shadow-gray-200/50 hover:shadow-xl
             hover:shadow-gray-200/70 border border-gray-100 transition-all duration-300 group"
         >
           <BookOutlined className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform" />
-          <span>了解更多</span>
+          <span>学习中医</span>
         </Link>
       </motion.div>
     </div>

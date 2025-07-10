@@ -296,7 +296,7 @@ export default function ProfilePage() {
       key: 'likes',
       label: '我的点赞',
       children: isLoading ? (
-        <div className="text-center py-8 text-gray-500">加载中...</div>
+        <div className="text-center py-8 bg-primary">加载中...</div>
       ) : (
         renderPosts(likedPosts)
       ),
@@ -312,7 +312,7 @@ export default function ProfilePage() {
         </div>
       ),
       children: notificationLoading ? (
-        <div className="text-center py-8 text-gray-500">加载中...</div>
+        <div className="text-center py-8 !bg-primary">加载中...</div>
       ) : (
         renderNotifications()
       ),
@@ -320,7 +320,7 @@ export default function ProfilePage() {
     {
       key: 'collections',
       label: '我的收藏',
-      children: <div className="text-center py-8 text-gray-500">功能开发中...</div>,
+      children: <div className="text-center py-8 !bg-primary">功能开发中...</div>,
     },
     {
       key: 'learning',

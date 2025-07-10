@@ -20,16 +20,8 @@ import useSWR from "swr";
 import useSWRInfinite from "swr/infinite";
 import {
   Button,
-  Empty,
-  Form,
-  Mentions,
   message,
   Result,
-  Skeleton,
-  Space,
-  Spin,
-  Tag,
-  Upload,
 } from "antd";
 
 // 配置 dayjs
@@ -381,11 +373,11 @@ export default function Community() {
                           <img
                             src={post.author.image}
                             alt={post.author.name || "用户头像"}
-                            className="w-10 h-10 rounded-full object-cover shadow-lg"
+                            className="w-10 h-10 rounded-full object-cover shadow-lg outline outline-3 outline-primary-600"
                           />
                         ) : (
-                          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center shadow-lg">
-                            <span className="text-white text-sm font-bold">
+                          <div className="w-10 h-10 rounded-full flex outline outline-3 outline-primary-600  items-center justify-center shadow-lg">
+                            <span className="text-primary text-sm  font-bold">
                               {(post.author.name || "匿名")[0]}
                             </span>
                           </div>
@@ -408,14 +400,14 @@ export default function Community() {
                       <div className="flex items-center gap-3 text-gray-400">
                         <Link
                           href={`/community/${post.id}`}
-                          className="flex items-center gap-1 hover:text-primary transition-colors group/comment"
+                          className="flex items-center gap-1 text-primary-500  hover:text-primary transition-colors group/comment"
                         >
                           <MessageOutlined className="w-4 h-4 group-hover/comment:scale-110 transition-transform" />
                           <span className="text-xs font-medium">{post._count.comments}</span>
                         </Link>
-                        <div className="flex items-center gap-1">
-                          <EyeOutlined className="w-4 h-4" />
-                          <span className="text-xs font-medium">{post.views}</span>
+                        <div className="flex items-center gap-1 ">
+                          <EyeOutlined className="w-4 h-4 " />
+                          <span className="text-xs font-medium ">{post.views}</span>
                         </div>
                       </div>
                     </div>

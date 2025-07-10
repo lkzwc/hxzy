@@ -76,7 +76,7 @@ export default function TimeTable() {
             transition={{ delay: index * 0.05 }}
             className={`h-[52px] flex items-center px-2 rounded border
               ${currentTime?.name === unit.name
-                ? 'bg-primary/5 ring-1 ring-primary/20'
+                ? 'bg-primary/10 ring-1 ring-primary/20'
                 : 'hover:bg-gray-50/80 ring-1 ring-gray-100'
               } transition-all duration-200`}
           >

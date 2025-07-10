@@ -347,8 +347,8 @@ export default function DoctorRegisterPage() {
 
             <Form.Item className="flex justify-end">
               <Button
-                color="default"
                 variant="solid"
+                className="bg-primary text-white hover:bg-primary-focus"
                 htmlType="submit"
                 loading={isSubmitting}
                 size="large"

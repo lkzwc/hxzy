@@ -2,24 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 17, 24, 39;
-  --background-rgb: 255, 255, 255;
-  --background-secondary: 249, 250, 251;
-  --primary-rgb: 37, 99, 235;
-  --secondary-rgb: 5, 150, 105;
-  --accent-rgb: 245, 158, 11;
-  --border-rgb: 229, 231, 235;
-  --twitter-blue: 29, 155, 240;
-  --twitter-hover: 26, 140, 216;
-}
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: rgb(var(--background-rgb));
-  font-feature-settings: 'rlig' 1, 'calt' 1;
-  line-height: 1.6;
-}
 
 @layer components {
   .btn {
@@ -85,6 +68,8 @@ body {
   .card-twitter {
     @apply bg-white border-b border-neutral-200 hover:bg-neutral-50/50 transition-colors duration-200;
   }
+
+
 }
 
 /* 自定义样式 */
@@ -122,4 +107,35 @@ body {
 
 .shadow-twitter {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+/* Ant Design Input 搜索框主题色定制 */
+.ant-input-search-large .ant-input {
+  border-color: #fbd4a5 !important; /* primary-300 */
+}
+
+.ant-input-search-large .ant-input:hover {
+  border-color: #f7b76d !important; /* primary-400 */
+}
+
+.ant-input-search-large .ant-input:focus,
+.ant-input-search-large .ant-input-focused {
+  border-color: #d97706 !important; /* primary-600 */
+  box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.1) !important;
+}
+
+.ant-input-search-large .ant-input-group-addon {
+  border-color: #d97706 !important; /* primary-600 */
+  background-color: #d97706 !important; /* primary-600 */
+}
+
+.ant-input-search-large .ant-input-group-addon .ant-btn {
+  background-color: #d97706 !important; /* primary-600 */
+  border-color: #d97706 !important; /* primary-600 */
+  color: white !important;
+}
+
+.ant-input-search-large .ant-input-group-addon .ant-btn:hover {
+  background-color: #b45309 !important; /* primary-700 */
+  border-color: #b45309 !important; /* primary-700 */
 }

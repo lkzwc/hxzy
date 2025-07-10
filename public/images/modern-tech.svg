@@ -1,0 +1,89 @@
+<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="techBgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fefdf8"/>
+      <stop offset="50%" stop-color="#fef7ed"/>
+      <stop offset="100%" stop-color="#fde8d1"/>
+    </linearGradient>
+    <radialGradient id="techDecorGradient" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#d97706" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#b45309" stop-opacity="0.1"/>
+    </radialGradient>
+  </defs>
+  
+  <!-- 背景 -->
+  <rect width="800" height="600" fill="url(#techBgGradient)"/>
+  
+  <!-- 科技装饰元素 -->
+  <circle cx="120" cy="100" r="50" fill="url(#techDecorGradient)"/>
+  <circle cx="680" cy="500" r="70" fill="url(#techDecorGradient)"/>
+  <circle cx="720" cy="120" r="35" fill="url(#techDecorGradient)"/>
+  
+  <!-- 网格背景 -->
+  <defs>
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#d97706" stroke-width="0.5" opacity="0.2"/>
+    </pattern>
+  </defs>
+  <rect width="800" height="600" fill="url(#grid)"/>
+  
+  <!-- 中心内容区域 -->
+  <rect x="150" y="150" width="500" height="300" rx="20" fill="rgba(255,255,255,0.9)" stroke="#d97706" stroke-width="2"/>
+  
+  <!-- 主标题 -->
+  <text x="400" y="220" text-anchor="middle" font-family="sans-serif" font-size="48" font-weight="bold" fill="#92400e">
+    现代科技融合
+  </text>
+
+  <!-- 副标题 */
+  <text x="400" y="270" text-anchor="middle" font-family="sans-serif" font-size="24" fill="#b45309">
+    结合现代科技创新
+  </text>
+
+  <!-- 装饰线条 -->
+  <line x1="200" y1="300" x2="600" y2="300" stroke="#d97706" stroke-width="2"/>
+
+  <!-- 底部文字 -->
+  <text x="400" y="350" text-anchor="middle" font-family="sans-serif" font-size="20" fill="#92400e">
+    创新中医药发展
+  </text>
+  
+  <!-- 科技图标装饰 -->
+  <g transform="translate(250, 380)" fill="#d97706" opacity="0.7">
+    <!-- AI 芯片图标 -->
+    <rect x="-20" y="-15" width="40" height="30" rx="5" fill="none" stroke="#d97706" stroke-width="2"/>
+    <rect x="-15" y="-10" width="30" height="20" rx="3" fill="#d97706"/>
+    <circle cx="-10" cy="-5" r="2" fill="white"/>
+    <circle cx="0" cy="-5" r="2" fill="white"/>
+    <circle cx="10" cy="-5" r="2" fill="white"/>
+    <circle cx="-5" cy="5" r="2" fill="white"/>
+    <circle cx="5" cy="5" r="2" fill="white"/>
+  </g>
+
+  <g transform="translate(550, 380)" fill="#d97706" opacity="0.7">
+    <!-- 数据图标 */
+    <rect x="-20" y="-15" width="8" height="25" rx="2" fill="#d97706"/>
+    <rect x="-8" y="-10" width="8" height="20" rx="2" fill="#d97706"/>
+    <rect x="4" y="-5" width="8" height="15" rx="2" fill="#d97706"/>
+    <rect x="16" y="-12" width="8" height="22" rx="2" fill="#d97706"/>
+  </g>
+  
+  <!-- 连接线装饰 -->
+  <g stroke="#d97706" stroke-width="2" fill="none" opacity="0.4">
+    <path d="M100,200 Q200,150 300,200"/>
+    <path d="M500,200 Q600,150 700,200"/>
+    <path d="M100,400 Q200,450 300,400"/>
+    <path d="M500,400 Q600,450 700,400"/>
+  </g>
+
+  <!-- 数据点 -->
+  <g fill="#d97706" opacity="0.6">
+    <circle cx="150" cy="250" r="4"/>
+    <circle cx="300" cy="280" r="4"/>
+    <circle cx="500" cy="260" r="4"/>
+    <circle cx="650" cy="290" r="4"/>
+    <circle cx="200" cy="350" r="4"/>
+    <circle cx="400" cy="380" r="4"/>
+    <circle cx="600" cy="360" r="4"/>
+  </g>
+</svg>

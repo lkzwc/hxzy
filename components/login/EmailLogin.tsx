@@ -91,7 +91,7 @@ export default function EmailLogin({ onSuccess }: EmailLoginProps) {
               placeholder="请输入您的邮箱地址"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full h-12 pl-4 pr-4 text-sm border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white transition-all duration-200 placeholder-gray-400"
+              className="w-full h-12 pl-4 pr-4 text-sm border-2 border-gray-200 rounded-xl focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-100 bg-white transition-all duration-200 placeholder-gray-400"
               disabled={isLoading}
             />
             {email && email.includes("@") && (
@@ -112,7 +112,7 @@ export default function EmailLogin({ onSuccess }: EmailLoginProps) {
                 value={code}
                 onChange={(e) => setCode(e.target.value)}
                 maxLength={6}
-                className="w-full h-12 pl-4 pr-4 text-sm border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 bg-white transition-all duration-200 placeholder-gray-400"
+                className="w-full h-12 pl-4 pr-4 text-sm border-2 border-gray-200 rounded-xl focus:outline-none focus:border-secondary-500 focus:ring-2 focus:ring-secondary-100 bg-white transition-all duration-200 placeholder-gray-400"
                 disabled={isLoading}
               />
               {code && code.length === 6 && (
@@ -125,7 +125,7 @@ export default function EmailLogin({ onSuccess }: EmailLoginProps) {
               type="button"
               onClick={sendEmailCode}
               disabled={isLoading || !email || !email.includes("@")}
-              className="px-6 h-12 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 text-sm font-medium shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
+              className="px-6 h-12 bg-gradient-to-r from-primary-500 to-secondary-600 text-white rounded-xl hover:from-primary-600 hover:to-secondary-700 transition-all duration-200 text-sm font-medium shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
             >
               {isLoading ? (
                 <>
@@ -146,7 +146,7 @@ export default function EmailLogin({ onSuccess }: EmailLoginProps) {
         <button
           type="submit"
           disabled={isLoading || !email || !code || code.length !== 6}
-          className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-700 text-white rounded-xl hover:from-blue-700 hover:to-purple-800 transition-all duration-300 text-base font-medium shadow-lg hover:shadow-xl hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
+          className="w-full h-12 bg-gradient-to-r from-primary-600 to-accent-700 text-white rounded-xl hover:from-primary-700 hover:to-accent-800 transition-all duration-300 text-base font-medium shadow-lg hover:shadow-xl hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
         >
           {isLoading ? (
             <>
@@ -165,8 +165,8 @@ export default function EmailLogin({ onSuccess }: EmailLoginProps) {
         {/* 状态指示器 */}
         {codes && (
           <div className="text-center">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-secondary-100 text-secondary-800 rounded-full text-xs font-medium">
+              <span className="w-2 h-2 bg-secondary-500 rounded-full animate-pulse"></span>
               验证码已发送到您的邮箱
             </div>
           </div>

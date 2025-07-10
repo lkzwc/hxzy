@@ -105,7 +105,7 @@ export default function DoctorsPage() {
       if (searchQuery) {
         params.append("search", searchQuery);
       }
-      
+
       // 添加分页参数
       params.append("page", currentPage.toString());
       params.append("pageSize", pageSize.toString());
@@ -152,7 +152,7 @@ export default function DoctorsPage() {
       {/* 筛选区域 */}
       <div className="max-w-7xl mx-auto p-4">
         {/* 顶部搜索区域 */}
-        <div className="bg-white rounded-lg shadow-md p-6 space-y-6 border border-teal-50">
+        <div className="bg-white rounded-lg shadow-md p-6 space-y-6 border border-primary-100">
           {/* 搜索框 */}
           <div className="relative">
             <div className="flex items-center">
@@ -161,9 +161,16 @@ export default function DoctorsPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onSearch={() => fetchDoctors()}
-                enterButton={<Button color="cyan" variant="outlined" type="primary" icon={<SearchOutlined />} className="bg-gradient-to-r from-primary-500 to-primary-600 border-0">搜索</Button>}
+                enterButton={
+                  <Button
+                    className="!bg-primary-600 !text-white !border-primary-600 hover:!bg-primary-700 hover:!border-primary-700 rounded-full"
+                    icon={<SearchOutlined />}
+                  >
+                    搜索
+                  </Button>
+                }
                 size="large"
-                className="w-full"
+                className="w-full [&_.ant-input]:!border-primary-300 [&_.ant-input]:focus:!border-primary-600 [&_.ant-input]:hover:!border-primary-400 [&_.ant-input-group-addon]:!border-primary-600 [&_.ant-input-group-addon]:!bg-primary-600"
               />
             </div>
           </div>
@@ -180,8 +187,8 @@ export default function DoctorsPage() {
                   checked={selectedRegion === "全部"}
                   onChange={() => setSelectedRegion("全部")}
                   className={`px-4 py-1 rounded-full text-sm transition-all duration-300 ${
-                    selectedRegion === "全部" 
-                      ? "!bg-gradient-to-r !from-primary-500 !to-primary-600 !text-white shadow-sm" 
+                    selectedRegion === "全部"
+                      ? "!bg-gradient-to-r !from-primary-500 !to-primary-600 !text-white shadow-sm"
                       : "hover:bg-primary-50"
                   }`}
                 >
@@ -193,8 +200,8 @@ export default function DoctorsPage() {
                     checked={selectedRegion === region}
                     onChange={() => setSelectedRegion(region)}
                     className={`px-4 py-1 rounded-full text-sm transition-all duration-300 ${
-                      selectedRegion === region 
-                        ? "!bg-gradient-to-r !from-primary-500 !to-primary-600 !text-white shadow-sm" 
+                      selectedRegion === region
+                        ? "!bg-gradient-to-r !from-primary-500 !to-primary-600 !text-white shadow-sm"
                         : "hover:bg-primary-50"
                     }`}
                   >
@@ -216,8 +223,8 @@ export default function DoctorsPage() {
                     checked={selectedSpecialty === specialty}
                     onChange={() => setSelectedSpecialty(specialty)}
                     className={`px-4 py-1 rounded-full text-sm transition-all duration-300 ${
-                      selectedSpecialty === specialty 
-                        ? "!bg-gradient-to-r !from-primary-500 !to-primary-600 !text-white shadow-sm" 
+                      selectedSpecialty === specialty
+                        ? "!bg-gradient-to-r !from-primary-500 !to-primary-600 !text-white shadow-sm"
                         : "hover:bg-primary-50"
                     }`}
                   >
@@ -230,7 +237,7 @@ export default function DoctorsPage() {
         </div>
 
         {/* 医生列表 */}
-        <Spin spinning={loading} tip="加载中...">
+        <Spin spinning={loading} tip="加载中..." className="[&_.ant-spin-dot-item]:!bg-primary-600 !text-primary-600">
           <div className="mt-8 grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {filteredDoctors.length > 0 ? (
               filteredDoctors.map((doctor: Doctor) => (
@@ -239,11 +246,20 @@ export default function DoctorsPage() {
                   hoverable
                   className="overflow-hidden rounded-lg shadow-sm hover:shadow-md transition-all duration-300 border-0 bg-gradient-to-b from-white to-primary-50"
                   actions={[
-                    <Link key="view" href={`/doctors/${doctor.id}`} className="px-3 pb-2">
-                      <Button color="orange" variant="outlined" block className="rounded-full shadow-sm hover:shadow-md transition-all duration-300 bg-gradient-to-r from-primary-500 to-primary-600 border-0 h-8 text-sm">
+                    <Link
+                      key="view"
+                      href={`/doctors/${doctor.id}`}
+                      className="px-3 pb-2"
+                    >
+                      <Button
+                        color="orange"
+                        variant="outlined"
+                        block
+                        className="rounded-full shadow-sm hover:shadow-md transition-all duration-300 bg-gradient-to-r from-primary-500 to-primary-600 border-0 h-8 text-sm"
+                      >
                         查看详情
                       </Button>
-                    </Link>
+                    </Link>,
                   ]}
                 >
                   <div className="flex p-3">
@@ -263,31 +279,56 @@ export default function DoctorsPage() {
                         )}
                       </div>
                     </div>
-                    
+
                     {/* 右侧内容 */}
                     <div className="flex-1">
                       <div className="mb-1">
-                        <h3 className="text-lg font-bold text-gray-800">{doctor.name}</h3>
-                        <p className="text-primary-600 font-medium text-sm">{doctor.ability || doctor.title}</p>
+                        <h3 className="text-lg font-bold text-gray-800">
+                          {doctor.name}
+                        </h3>
+                        <p className="text-primary-600 font-medium text-sm">
+                          {doctor.ability || doctor.title}
+                        </p>
                       </div>
-                      
+
                       <div>
                         <p className="text-gray-600 text-xs flex items-center gap-1">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-3 w-3"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
                           </svg>
                           {doctor.province || doctor.hospital}
                         </p>
-                        
+
                         <div className="mt-2 flex flex-wrap gap-1">
-                          {doctor.specialty?.split(',').map((item: string, index: number) => (
-                            <Tag key={index}  className="rounded-sm text-primary-600 border-secondary-500">
-                              {item}
-                            </Tag>
-                          ))}
+                          {doctor.specialty
+                            ?.split(",")
+                            .map((item: string, index: number) => (
+                              <Tag
+                                key={index}
+                                className="rounded-sm text-primary-600 border-secondary-500"
+                              >
+                                {item}
+                              </Tag>
+                            ))}
                         </div>
-                        
+
                         <div className="mt-2 text-gray-600 line-clamp-2 text-xs bg-white bg-opacity-70 p-1 rounded-lg">
                           {doctor.description || doctor.introduction}
                         </div>
@@ -302,7 +343,7 @@ export default function DoctorsPage() {
               </div>
             )}
           </div>
-          
+
           {/* 分页 */}
           {filteredDoctors.length > 0 && (
             <div className="mt-8 flex justify-center">
@@ -326,12 +367,10 @@ export default function DoctorsPage() {
       {/* 右下角固定的名医入驻按钮 */}
       <div className="fixed bottom-8 right-8 z-10">
         <Link href="/doctors/register">
-          <Button 
-            color="cyan" 
-            variant="solid"
+          <Button
             size="large"
             icon={<PlusCircleOutlined />}
-            className="text-primary !bg-orange-400 rounded-full h-12 px-6 bg-gradient-to-r from-amber-500 to-amber-600 border-0 hover:shadow-xl transition-all duration-300 hover:from-amber-600 hover:to-amber-700"
+            className="!text-white !bg-gradient-to-r !from-primary-500 !to-primary-600 !border-0 rounded-full h-12 px-6 hover:shadow-xl transition-all duration-300 hover:!from-primary-600 hover:!to-primary-700"
           >
             名医入驻
           </Button>

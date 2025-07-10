@@ -24,23 +24,23 @@ export default function ClientHeroSection({ features }: Props) {
   const [isLoaded, setIsLoaded] = useState(false)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
 
-  // 延迟启动轮播，减少初始加载时的性能消耗
+  // 优化轮播逻辑，减少初始加载时的性能消耗
   useEffect(() => {
-    // 先标记组件已加载
+    // 立即标记组件已加载
     setIsLoaded(true)
-    
-    // 延迟2秒后再开始轮播，减轻初始加载压力
+
+    // 延迟3秒后再开始轮播，减轻初始加载压力
     const startTimer = setTimeout(() => {
       timerRef.current = setInterval(() => {
         setActiveFeature((prev) => (prev + 1) % features.length)
-      }, 6000)
-    }, 2000)
-    
+      }, 8000) // 增加轮播间隔，减少重渲染频率
+    }, 3000)
+
     return () => {
       clearTimeout(startTimer)
       if (timerRef.current) clearInterval(timerRef.current)
     }
-  }, [features.length])
+  }, [])
 
   return (
     <div className="relative">
@@ -71,9 +71,11 @@ export default function ClientHeroSection({ features }: Props) {
                     fill
                     priority={index === 0}
                     loading={index === 0 ? "eager" : "lazy"}
-                    className="object-cover"
+                    className="object-cover transition-transform duration-500 hover:scale-105"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    quality={75}
+                    quality={80}
+                    placeholder="blur"
+                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                     onLoad={() => index === 0 && setIsLoaded(true)}
                   />
 

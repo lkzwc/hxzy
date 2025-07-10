@@ -40,7 +40,7 @@ const wuxingData = [
   },
   {
     name: '水',
-    color: '#1E40AF', // 更深邃的靛青色
+    color: '#166534', // 深绿色 - 水的生机
     position: { x: -88, y: 121 },
     properties: ['北方', '冬季', '肾脏', '壬癸', '黑色'],
     connections: ['木'] // 水生木
@@ -175,14 +175,14 @@ export default function LuopanSection() {
             <motion.div 
               className="relative w-[300px] h-[300px] md:w-[600px] md:h-[600px] mx-auto"
               initial={{ opacity: 0, rotate: 0 }}
-              animate={{ 
+              animate={{
                 opacity: 1,
-                rotate: 360 
+                rotate: 360
               }}
-              transition={{ 
+              transition={{
                 opacity: { duration: 0.8 },
                 rotate: {
-                  duration: 60,
+                  duration: 120, // 减慢旋转速度，减少CPU使用
                   repeat: Infinity,
                   ease: "linear"
                 }
@@ -317,11 +317,11 @@ export default function LuopanSection() {
                 <motion.div
                   key={ring.id}
                   className="absolute w-full h-full"
-                  animate={{ 
-                    rotate: ring.rotationDirection === 1 ? 360 : -360 
+                  animate={{
+                    rotate: ring.rotationDirection === 1 ? 360 : -360
                   }}
                   transition={{
-                    duration: 60 + ring.radius / 20,
+                    duration: 120 + ring.radius / 10, // 减慢旋转，减少性能消耗
                     repeat: Infinity,
                     ease: "linear"
                   }}
@@ -383,7 +383,7 @@ export default function LuopanSection() {
                   w-20 h-20 md:w-32 md:h-32 z-10"
                 animate={{ rotate: 360 }}
                 transition={{
-                  duration: 60,
+                  duration: 100, // 减慢太极图旋转
                   repeat: Infinity,
                   ease: "linear"
                 }}
@@ -462,25 +462,32 @@ export default function LuopanSection() {
                       <line x1="2" y1="5" x2="12" y2="5" stroke="#064E3B" strokeWidth="2" />
                     </g>
                     
-                    {/* 中心太极图 */}
+                    {/* 中心太极图 - 修复版本 */}
                     <g transform="translate(100, 100) scale(0.5)">
-                      <circle cx="0" cy="0" r="50" fill="white" stroke="#FDE68A" strokeWidth="1" />
-                      
-                      {/* 阴阳分割线 */}
+                      {/* 外圆边框 */}
+                      <circle cx="0" cy="0" r="50" fill="white" stroke="#FDE68A" strokeWidth="2" />
+
+                      {/* 阴阳分割 - 正确的太极图形状 */}
+                      {/* 黑色部分（阳中有阴） */}
                       <path
-                        d="M0,-50 A50,50 0 0,1 0,50 A25,25 0 0,0 0,0 A25,25 0 0,1 0,-50"
-                        fill="black"
+                        d="M0,-50 A50,50 0 0,1 0,50 A25,25 0 0,1 0,0 A25,25 0 0,0 0,-50 Z"
+                        fill="#1f2937"
                       />
+
+                      {/* 白色部分（阴中有阳） */}
                       <path
-                        d="M0,-50 A50,50 0 0,0 0,50 A25,25 0 0,1 0,0 A25,25 0 0,0 0,-50"
+                        d="M0,50 A50,50 0 0,1 0,-50 A25,25 0 0,1 0,0 A25,25 0 0,0 0,50 Z"
                         fill="white"
                       />
-                      
+
                       {/* 阴阳鱼眼 */}
-                      <circle cx="0" cy="-25" r="5" fill="white" />
-                      <circle cx="0" cy="-25" r="1.5" fill="black" />
-                      <circle cx="0" cy="25" r="5" fill="black" />
-                      <circle cx="0" cy="25" r="1.5" fill="white" />
+                      {/* 阳眼（黑色部分的白眼） */}
+                      <circle cx="0" cy="-25" r="6" fill="white" />
+                      <circle cx="0" cy="-25" r="2" fill="#1f2937" />
+
+                      {/* 阴眼（白色部分的黑眼） */}
+                      <circle cx="0" cy="25" r="6" fill="#1f2937" />
+                      <circle cx="0" cy="25" r="2" fill="white" />
                     </g>
                   </svg>
                 </div>

@@ -40,10 +40,10 @@ export default function Login() {
       <div className="relative w-[320px] sm:w-auto">
         <button
           onClick={handleClose}
-          className="absolute -top-8 -right-8 p-2 rounded-full bg-white hover:bg-primary-50 transition-colors duration-200"
-          title="关闭"
+          className="absolute -top-3 -right-3 z-10 w-10 h-10 rounded-full bg-white hover:bg-red-50 transition-all duration-200 shadow-lg hover:shadow-xl flex items-center justify-center group border border-neutral-200 hover:border-red-200"
+          title="关闭登录窗口"
         >
-          <CloseOutlined className="w-6 h-6 text-primary" />
+          <CloseOutlined className="w-5 h-5 text-neutral-600 group-hover:text-red-500 transition-colors duration-200" />
         </button>
 
         <div className="bg-neutral-50 rounded-2xl flex overflow-hidden shadow-2xl w-full sm:w-[750px] relative">

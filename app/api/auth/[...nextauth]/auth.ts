@@ -4,6 +4,7 @@ import Google from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import crypto from "crypto";
+import dayjs from "dayjs";
 
 
 // 前端提交微信凭证 → authorize验证 → 返回用户对象
@@ -71,7 +72,7 @@ export const authOptions: NextAuthOptions = {
         const dbUser = await prisma.user.upsert({
           where: { otherId: user?.id },
           update: userData,
-          create: userData,
+          create: {...userData, createdAt: dayjs().format('YYYY-MM-DD HH:mm:ss')},
         });
 
         console.log("signIn000", dbUser);

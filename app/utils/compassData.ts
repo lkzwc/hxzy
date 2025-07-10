@@ -43,9 +43,9 @@ export const getTagSize = (count: number) => {
 // 根据帖子数量获取标签颜色
 export const getTagColor = (count: number) => {
   if (count > 100) return "text-primary-600 hover:text-primary-700";
-  if (count > 50) return "text-amber-500 hover:text-amber-600";
-  if (count > 20) return "text-emerald-500 hover:text-emerald-600";
-  if (count > 10) return "text-blue-500 hover:text-blue-600";
+  if (count > 50) return "text-accent-500 hover:text-accent-600";
+  if (count > 20) return "text-secondary-500 hover:text-secondary-600";
+  if (count > 10) return "text-primary-500 hover:text-primary-600";
   return "text-gray-600 hover:text-gray-700";
 };
 

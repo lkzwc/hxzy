@@ -256,14 +256,14 @@ export default function PostDetail({ params }: any) {
             {post.tags && post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-3">
                 {post.tags.map((tag, index) => {
-                  // 为标签分配不同的颜色
+                  // 为标签分配不同的颜色 - 使用中医主题色系
                   const colors = [
                     "primary",
-                    "rose",
+                    "secondary",
+                    "accent",
                     "amber",
                     "emerald",
-                    "blue",
-                    "purple",
+                    "orange",
                   ];
                   const color = colors[index % colors.length];
 

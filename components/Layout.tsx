@@ -31,12 +31,12 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
 };
 
 const menuItems = [
-  { name: "首页", path: "/", description: "首页" },
-  { name: "中医工具", path: "/tools", description: "中医工具" },
-  { name: "中医社区", path: "/community", description: "中医爱好者交流地" },
-  { name: "中医数据库", path: "/zhongyidb", description: "中医数据库" },
-  { name: "全国名医", path: "/doctors", description: "中医大家" },
-  { name: "关于我们", path: "/about", description: "关于我们" },
+  { name: "首页", path: "/", description: "首页", icon: "🏠" },
+  { name: "中医工具", path: "/tools", description: "中医工具", icon: "🔧" },
+  { name: "中医社区", path: "/community", description: "中医爱好者交流地", icon: "👥" },
+  { name: "中医数据库", path: "/zhongyidb", description: "中医数据库", icon: "📚" },
+  { name: "全国名医", path: "/doctors", description: "中医大家", icon: "👨‍⚕️" },
+  { name: "关于我们", path: "/about", description: "关于我们", icon: "ℹ️" },
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -59,11 +59,25 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     };
   }, [isMenuOpen]);
 
+  // 键盘导航支持
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape" && isMenuOpen) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isMenuOpen]);
+
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <header className="fixed top-0 left-0 right-0 z-50">
         {/* 毛玻璃效果背景 */}
-        <div className="absolute inset-0 bg-gradient-to-r from-primary-600/95 to-primary-500/95 backdrop-blur-md shadow-lg" />
+        <div className="absolute inset-0 bg-gradient-to-r bg-primary/95 to-primary-600/95 backdrop-blur-md shadow-lg" />
 
         <div className="relative px-4 md:px-8 py-4">
           <div className="flex justify-between items-center max-w-7xl mx-auto">
@@ -136,62 +150,95 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
       </header>
 
-      {/* 移动端菜单 */}
+      {/* 移动端菜单遮罩 */}
       <div
         className={`fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity duration-300 md:hidden ${
           isMenuOpen ? "opacity-100 z-40" : "opacity-0 pointer-events-none"
         }`}
         onClick={() => setIsMenuOpen(false)}
+        aria-hidden="true"
       />
       <div
-        className={`fixed top-0 right-0 h-full w-72 bg-white shadow-lg transform transition-transform duration-300 ease-in-out md:hidden ${
+        className={`fixed top-0 right-0 h-full w-80 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out md:hidden ${
           isMenuOpen ? "translate-x-0 z-50" : "translate-x-full"
         }`}
       >
         <div className="flex flex-col h-full">
-          <div className="flex justify-between items-center p-4 border-b border-gray-100">
-            <span className="text-lg font-bold bg-gradient-to-r from-primary-600 to-primary-500 bg-clip-text text-transparent">
-              导航菜单
-            </span>
-            <button
-              onClick={() => setIsMenuOpen(false)}
-              className="p-2 hover:bg-gray-50 rounded-lg transition-colors"
-              aria-label="关闭菜单"
-            >
-              <svg
-                className="w-6 h-6 text-gray-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+          {/* 菜单头部 */}
+          <div className="bg-gradient-to-r from-primary-600 to-primary-500 p-6 text-white">
+            <div className="flex justify-between items-center">
+              <button
+                onClick={() => setIsMenuOpen(false)}
+                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                aria-label="关闭菜单"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
+                <svg
+                  className="w-6 h-6 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
-          <nav className="flex-1 overflow-y-auto">
-            <ul className="p-4 space-y-1">
+
+          {/* 菜单内容 */}
+          <nav className="flex-1 overflow-y-auto bg-white" role="navigation" aria-label="主导航菜单">
+            <ul className="p-4 space-y-2" role="menu">
               {menuItems.map((item) => (
                 <li key={item.name}>
                   <Link
                     href={item.path}
-                    className={`flex items-center px-4 py-3 rounded-lg transition-colors ${
+                    className={`flex items-center px-4 py-4 rounded-xl transition-all duration-200 group touch-manipulation ${
                       pathname === item.path
-                        ? "bg-primary-50 text-primary-600"
-                        : "text-gray-600 hover:bg-gray-50"
+                        ? "bg-gradient-to-r from-primary-50 to-secondary-50 text-primary-700 shadow-sm border border-primary-100"
+                        : "text-gray-700 hover:bg-gradient-to-r hover:from-primary-50 hover:to-secondary-50 hover:text-primary-600 active:bg-primary-100"
                     }`}
                     onClick={() => setIsMenuOpen(false)}
+                    role="menuitem"
                   >
-                    <span className="font-medium">{item.name}</span>
+                    <span className="text-2xl mr-4 group-hover:scale-110 transition-transform">
+                      {item.icon}
+                    </span>
+                    <div className="flex-1">
+                      <div className="font-semibold text-base">{item.name}</div>
+                      <div className="text-sm text-gray-500 mt-1">{item.description}</div>
+                    </div>
+                    <svg
+                      className={`w-5 h-5 transition-transform ${
+                        pathname === item.path ? "text-primary-500" : "text-gray-400 group-hover:text-primary-500"
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
+                    </svg>
                   </Link>
                 </li>
               ))}
             </ul>
           </nav>
+
+          {/* 菜单底部 */}
+          <div className="p-4 border-t border-gray-100 bg-gray-50">
+            <div className="text-center text-sm text-gray-500">
+              <p>华夏中医 · 传承千年智慧</p>
+              <p className="mt-1 text-xs">© 2024 版权所有</p>
+            </div>
+          </div>
         </div>
       </div>
 

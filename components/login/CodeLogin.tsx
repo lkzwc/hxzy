@@ -139,7 +139,7 @@ export default function CodeLogin({ onSuccess }: CodeLoginProps) {
           </div>
 
           {/* 验证码显示区域 - 超紧凑左右结构 */}
-          <div className="bg-gradient-to-r from-blue-50 to-green-50 border border-blue-200 rounded-lg p-2">
+          <div className="bg-gradient-to-r from-primary-50 to-secondary-50 border border-primary-200 rounded-lg p-2">
             <div className="flex items-center gap-2">
               {/* 左侧：验证码显示 */}
               <div className="flex-1">
@@ -154,13 +154,13 @@ export default function CodeLogin({ onSuccess }: CodeLoginProps) {
               <div className="flex gap-1">
                 <button
                   onClick={() => copyToClipboard(codeData.code)}
-                  className="flex items-center gap-1 px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 transition-colors"
+                  className="flex items-center gap-1 px-2 py-1 bg-primary-500 text-white rounded text-xs hover:bg-primary-600 transition-colors"
                 >
                   📋
                 </button>
                 <button
                   onClick={handleRefreshCode}
-                  className="flex items-center gap-1 px-2 py-1 bg-green-500 text-white rounded text-xs hover:bg-green-600 transition-colors"
+                  className="flex items-center gap-1 px-2 py-1 bg-secondary-500 text-white rounded text-xs hover:bg-secondary-600 transition-colors"
                 >
                   🔄
                 </button>
@@ -168,7 +168,7 @@ export default function CodeLogin({ onSuccess }: CodeLoginProps) {
             </div>
 
             {/* 底部：简化的提示和状态 */}
-            <div className="mt-2 pt-1 border-t border-blue-200 flex items-center justify-between text-xs">
+            <div className="mt-2 pt-1 border-t border-primary-200 flex items-center justify-between text-xs">
               <span className="text-gray-600 text-center mx-auto">发送到微信公众号</span>
               <span
                 className={`px-2 py-0.5 rounded-full text-xs ${
@@ -191,7 +191,7 @@ export default function CodeLogin({ onSuccess }: CodeLoginProps) {
         </div>
       ) : (
         <div className="text-center space-y-2">
-          <div className="w-8 h-8 mx-auto border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-8 h-8 mx-auto border-2 border-primary-500 border-t-transparent rounded-full animate-spin"></div>
           <p className="text-xs text-gray-500">生成验证码中...</p>
         </div>
       )}
