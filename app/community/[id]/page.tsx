@@ -242,11 +242,11 @@ export default function PostDetail({ params }: any) {
                   </p>
                 </div>
               </div>
-              <div className="flex items-center space-x-4 text-gray-500 text-sm">
-                <span className="flex items-center">
+              <div className="flex items-center space-x-4 text-sm">
+                <span className="flex items-center text-primary-600 hover:text-primary-700 transition-colors">
                   <EyeOutlined className="mr-1" /> {post.views}
                 </span>
-                <span className="flex items-center">
+                <span className="flex items-center text-primary-600 hover:text-primary-700 transition-colors">
                   <MessageOutlined className="mr-1" /> {post._count.comments}
                 </span>
               </div>

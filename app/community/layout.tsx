@@ -105,15 +105,27 @@ export default function CommunityLayout({
       <div className=" bg-white h-max">
         <div className="flex max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 gap-6 mt-4">
           {/* 左侧导航栏 - 固定位置 */}
-          <div className="sticky top-4 w-[200px] min-w-[180px] hidden md:block">
+          <div className="sticky ml-7 top-4 max-w-[180px] min-w-[160px] hidden md:block">
             {/* 导航菜单卡片 */}
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-4 transition-all duration-300 hover:shadow-md">
               <div className="flex flex-col gap-1">
                 {sidebarItems.map((item) => (
-                  <Link
+                  <button
                     key={item.name}
-                    href={item.path}
-                    className={`group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-medium relative ${
+                    onClick={() => {
+                      // 特殊处理广场页面，清除所有查询参数
+                      if (item.path === "/community") {
+                        // 发送清空搜索的事件
+                        const clearSearchEvent = new CustomEvent("clearSearch");
+                        document.dispatchEvent(clearSearchEvent);
+
+                        // 清除URL参数
+                        router.replace("/community", { scroll: false });
+                      } else {
+                        router.push(item.path);
+                      }
+                    }}
+                    className={`group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 text-sm font-medium relative w-full text-left ${
                       pathname === item.path
                         ? "bg-gradient-to-r from-primary/10 to-primary/5 text-primary shadow-sm border border-primary/20"
                         : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
@@ -137,7 +149,7 @@ export default function CommunityLayout({
                     {pathname === item.path && !(item as any).badge && (
                       <div className="ml-auto w-2 h-2 bg-primary rounded-full"></div>
                     )}
-                  </Link>
+                  </button>
                 ))}
               </div>
             </div>
@@ -189,7 +201,7 @@ export default function CommunityLayout({
           <div className="flex-1 min-w-0">{children}</div>
 
           {/* 右侧边栏 - 固定位置 */}
-          <div className="w-[280px] hidden lg:block">
+          <div className="w-[230px] hidden lg:block">
             <div className="sticky top-4">
               {/* 热门话题 */}
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-4 transition-all duration-300 hover:shadow-md">

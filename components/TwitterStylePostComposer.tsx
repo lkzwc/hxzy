@@ -178,14 +178,15 @@ export default function TwitterStylePostComposer({
                 />
               </Form.Item>
 
-              {/* 图片上传组件 */}
+              {/* 图片预览区域 */}
               {images.length > 0 && (
-                <div className="mb-2">
+                <div className="mb-3">
                   <ImageUpload
                     type="post"
                     value={images}
                     onChange={handleImageChange}
                     maxCount={MAX_IMAGES}
+                    showPreviewOnly={true}
                   />
                 </div>
               )}
@@ -201,7 +202,7 @@ export default function TwitterStylePostComposer({
                       value={images}
                       onChange={handleImageChange}
                       maxCount={MAX_IMAGES}
-                      compact={true}
+                      showPreview={false}
                     />
 
                     {/* 其他功能按钮占位 */}

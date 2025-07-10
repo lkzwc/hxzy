@@ -169,7 +169,7 @@ export default function Community() {
     }
   }, [searchParams]);
 
-  // 监nfromlayout.tsx发出的分类变更事件
+  // 监听来自layout.tsx发出的分类变更事件
   useEffect(() => {
     const handleCategoryEvent = (event: CustomEvent) => {
       const categoryName = event.detail;
@@ -190,6 +190,23 @@ export default function Community() {
         "categoryChanged",
         handleCategoryEvent as EventListener
       );
+    };
+  }, [setSize]);
+
+  // 监听来自layout.tsx发出的清空搜索事件
+  useEffect(() => {
+    const handleClearSearchEvent = () => {
+      setSearchInput(""); // 清空搜索框
+      setSearchQuery(""); // 清空搜索查询
+      setActiveCategory(undefined); // 重置分类为全部
+      // 重置页码并重新获取数据
+      setSize(1);
+    };
+
+    document.addEventListener("clearSearch", handleClearSearchEvent);
+
+    return () => {
+      document.removeEventListener("clearSearch", handleClearSearchEvent);
     };
   }, [setSize]);
 
@@ -274,22 +291,6 @@ export default function Community() {
                 className="flex-shrink-0 px-5 py-2.5 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors text-sm font-medium shadow-sm hover:shadow"
               >
                 搜索
-              </button>
-              <button
-                onClick={() => {
-                  if (!session) {
-                    router.push("/api/auth/signin");
-                  }
-                  // 如果已登录，滚动到发帖组件
-                  const composer = document.querySelector('[data-composer]');
-                  if (composer) {
-                    composer.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }}
-                className="flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl hover:bg-primary/90 transition-colors text-sm font-medium shadow-sm hover:shadow"
-              >
-                <PlusOutlined className="w-4 h-4" />
-                <span>发帖</span>
               </button>
             </div>
           </div>
@@ -405,9 +406,9 @@ export default function Community() {
                           <MessageOutlined className="w-4 h-4 group-hover/comment:scale-110 transition-transform" />
                           <span className="text-xs font-medium">{post._count.comments}</span>
                         </Link>
-                        <div className="flex items-center gap-1 ">
-                          <EyeOutlined className="w-4 h-4 " />
-                          <span className="text-xs font-medium ">{post.views}</span>
+                        <div className="flex items-center gap-1 text-primary-600 hover:text-primary-700 transition-colors group/view">
+                          <EyeOutlined className="w-4 h-4 group-hover/view:scale-110 transition-transform" />
+                          <span className="text-xs font-medium">{post.views}</span>
                         </div>
                       </div>
                     </div>
@@ -447,7 +448,7 @@ export default function Community() {
                       {post.images && post.images.length > 0 && (
                         <Link
                           href={`/community/${post.id}`}
-                          className="block flex-shrink-0 w-16 h-16"
+                          className="block flex-shrink-0 w-20 h-16"
                         >
                           <div className="relative overflow-hidden rounded-lg bg-gray-100 w-full h-full shadow-sm ring-1 ring-gray-200/50">
                             <img
