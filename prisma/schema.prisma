@@ -104,17 +104,18 @@ model Notification {
 }
 
 model Doctor {
-  id           Int      @id @default(autoincrement())
-  name         String
-  department   String
-  hospital     String
-  specialty    String
-  phone        String
-  province     String
-  introduction String
-  avatar       String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             Int      @id @default(autoincrement())
+  name           String
+  department     String
+  hospital       String
+  specialty      String
+  phone          String
+  province       String
+  introduction   String
+  avatar         String?
+  attachmentUrls String[] // 存储附件URL数组
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   @@index([createdAt])
 }

@@ -7,7 +7,7 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import 'dayjs/locale/zh-cn'
 import { RedoOutlined,MessageOutlined } from '@ant-design/icons'
-import ImageUpload from './ImageUpload'
+import ImageUpload from './PublishToolbar'
 
 // 配置 dayjs
 dayjs.extend(relativeTime)

@@ -296,9 +296,7 @@ export default function Community() {
           </div>
         </div>
 
-        {/* 发帖组件区域 */}
-        {session && (
-          <div className="border-b border-gray-100">
+        <div className="border-b border-gray-100">
             <TwitterStylePostComposer
               placeholder="说说您的新鲜事..."
               onSuccess={() => {
@@ -307,7 +305,6 @@ export default function Community() {
               }}
             />
           </div>
-        )}
 
         {/* 主要内容区域 */}
         <div className="flex-1">

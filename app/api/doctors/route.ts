@@ -85,7 +85,8 @@ export async function POST(request: Request) {
         phone: body.phone,
         province: body.province,
         introduction: body.introduction,
-        avatar: body.avatar || null
+        avatar: body.avatar || null,
+        attachmentUrls: body.attachmentUrls || []
       }
     })
     
