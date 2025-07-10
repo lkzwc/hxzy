@@ -6,7 +6,8 @@ import Image from 'next/image'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import 'dayjs/locale/zh-cn'
-import { PlusCircleOutlined, RedoOutlined,MessageOutlined } from '@ant-design/icons'
+import { RedoOutlined,MessageOutlined } from '@ant-design/icons'
+import ImageUpload from './ImageUpload'
 
 // 配置 dayjs
 dayjs.extend(relativeTime)
@@ -47,40 +48,11 @@ export default function CommentSection({
     parentId: number | null
   } | null>(null)
   const replyInputRef = useRef<HTMLTextAreaElement>(null)
-  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  // 处理图片上传
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (!files?.length) return
 
-    // 检查图片数量限制
-    if (images.length + files.length > 3) {
-      alert('最多只能上传3张图片')
-      return
-    }
-
-    const formData = new FormData()
-    for (let i = 0; i < files.length; i++) {
-      formData.append('files', files[i])
-    }
-
-    try {
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
-      })
-
-      if (!response.ok) {
-        throw new Error('上传失败')
-      }
-
-      const data = await response.json()
-      setImages(prev => [...prev, ...data.urls])
-    } catch (error) {
-      console.error('Error uploading images:', error)
-      alert('图片上传失败，请重试')
-    }
+  // 处理图片变化
+  const handleImageChange = (urls: string[]) => {
+    setImages(urls)
   }
 
   // 提交评论
@@ -184,50 +156,15 @@ export default function CommentSection({
                 placeholder={replyTo ? `回复 ${replyTo.name || '匿名用户'}...` : "写下你的评论..."}
                 className="w-full min-h-[100px] p-4 bg-transparent rounded-xl resize-none focus:outline-none text-base placeholder:text-gray-400"
               />
-              {images.length > 0 && (
-                <div className="px-4 pb-4">
-                  <div className="grid grid-cols-3 gap-2">
-                    {images.map((url, index) => (
-                      <div key={index} className="relative aspect-square rounded-lg overflow-hidden group">
-                        <Image
-                          src={url}
-                          alt={`上传图片 ${index + 1}`}
-                          fill
-                          className="object-cover"
-                        />
-                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <button
-                          type="button"
-                          onClick={() => setImages(prev => prev.filter((_, i) => i !== index))}
-                          className="absolute top-1 right-1 w-6 h-6 bg-black/60 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-black/80"
-                        >
-                          ×
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <div className="px-4 pb-4">
+                <ImageUpload
+                  type="comment"
+                  value={images}
+                  onChange={handleImageChange}
+                  maxCount={1}
+                />
+              </div>
               <div className="absolute right-3 bottom-3 flex items-center gap-2">
-                <div className="flex items-center gap-1">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    className="hidden"
-                    ref={fileInputRef}
-                    onChange={handleImageUpload}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="p-2 text-gray-500 hover:text-primary hover:bg-base-200 rounded-full transition-colors"
-                    title="添加图片"
-                  >
-                    <PlusCircleOutlined className="w-5 h-5"/>
-
-                  </button>
-                </div>
                 <button
                   type="submit"
                   disabled={!content.trim() && images.length === 0}

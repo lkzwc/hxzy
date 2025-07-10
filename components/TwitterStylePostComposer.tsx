@@ -1,17 +1,13 @@
 
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
-import {
-  PictureOutlined,
-  CloseOutlined,
-  SendOutlined,
-} from "@ant-design/icons";
+
 import { Avatar, message, Form, Mentions } from "antd";
 import { POST_CONSTANTS } from "@/util/common";
+import ImageUpload from "./ImageUpload";
 
 interface TwitterStylePostComposerProps {
   onSuccess?: () => void;
@@ -33,7 +29,7 @@ export default function TwitterStylePostComposer({
   
   const { data: session } = useSession();
   const router = useRouter();
-  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [messageApi, contextHolder] = message.useMessage();
 
   const content = Form.useWatch('content', form) || '';
@@ -66,59 +62,9 @@ export default function TwitterStylePostComposer({
 
 
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files) return;
-
-    if (images.length + files.length > MAX_IMAGES) {
-      messageApi.warning(`最多只能上传${MAX_IMAGES}张图片`);
-      return;
-    }
-
-    const formData = new FormData();
-    Array.from(files).forEach((file) => {
-      formData.append("files", file);
-    });
-
-    try {
-      messageApi.loading("正在上传图片...", 0);
-
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      messageApi.destroy(); // 清除loading消息
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "上传失败");
-      }
-
-      const data = await response.json();
-      console.log("Upload response:", data); // 调试信息
-
-      if (data.urls && Array.isArray(data.urls)) {
-        setImages(prev => {
-          const newImages = [...prev, ...data.urls];
-          console.log("Updated images:", newImages); // 调试信息
-          return newImages;
-        });
-        messageApi.success(`成功上传${data.urls.length}张图片`);
-      } else {
-        throw new Error("服务器返回的数据格式错误");
-      }
-    } catch (error) {
-      messageApi.destroy(); // 清除loading消息
-      console.error("Error uploading images:", error);
-      messageApi.error(error instanceof Error ? error.message : "图片上传失败，请重试");
-    }
-
-    e.target.value = "";
-  };
-
-  const removeImage = (index: number) => {
-    setImages(prev => prev.filter((_, i) => i !== index));
+  // 处理图片变化
+  const handleImageChange = (urls: string[]) => {
+    setImages(urls);
   };
 
   const handleSubmit = async () => {
@@ -232,85 +178,85 @@ export default function TwitterStylePostComposer({
                 />
               </Form.Item>
 
-              {/* 图片预览 */}
+              {/* 图片上传组件 */}
               {images.length > 0 && (
-                <div className={`mb-2 flex flex-wrap gap-2 ${
-                  images.length === 1 ? 'max-w-xs' : 'w-full'
-                }`}>
-                  {images.map((image, index) => (
-                    <div
-                      key={`${image}-${index}`}
-                      className={`relative group ${
-                        images.length === 1
-                          ? 'w-32 h-32'
-                          : images.length === 2
-                          ? 'w-24 h-24'
-                          : 'w-20 h-20'
-                      }`}
-                    >
-                      <div className="relative w-full h-full">
-                        <Image
-                          src={image}
-                          alt={`上传的图片 ${index + 1}`}
-                          fill
-                          className="object-cover rounded-lg border border-neutral-200"
-                          unoptimized
-                          onError={() => {
-                            console.error('Image load error:', image);
-                            // 可以在这里设置一个默认图片或者移除这个图片
-                          }}
-                          onLoad={() => {
-                            console.log('Image loaded successfully:', image);
-                          }}
-                        />
-                      </div>
-                      <button
-                        onClick={() => removeImage(index)}
-                        className="absolute top-1 right-1 w-4 h-4 bg-black/60 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                      >
-                        <CloseOutlined className="w-2.5 h-2.5" />
-                      </button>
-                    </div>
-                  ))}
+                <div className="mb-2">
+                  <ImageUpload
+                    type="post"
+                    value={images}
+                    onChange={handleImageChange}
+                    maxCount={MAX_IMAGES}
+                  />
                 </div>
               )}
 
               {/* 工具栏 */}
-              <div className="flex items-center justify-between pt-1">
-                <div className="flex items-center gap-2">
-                  {/* 图片上传 */}
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={images.length >= MAX_IMAGES}
-                    className="p-1 text-primary-600 hover:bg-primary-50 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <PictureOutlined className="w-4 h-4" />
-                  </button>
-                  
+              <div className="flex items-center justify-between pt-2 border-t border-gray-100">
+                <div className="flex items-center gap-3">
+                  {/* 功能按钮 */}
+                  <div className="flex items-center gap-1">
+                    {/* 图片上传按钮 */}
+                    <ImageUpload
+                      type="post"
+                      value={images}
+                      onChange={handleImageChange}
+                      maxCount={MAX_IMAGES}
+                      compact={true}
+                    />
+
+                    {/* 其他功能按钮占位 */}
+                    <button className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-colors" title="视频">
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M2 6a2 2 0 012-2h6l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+                      </svg>
+                    </button>
+
+                    <button className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-colors" title="附件">
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+
+                    <button className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-colors" title="表情">
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a1 1 0 10-1.415-1.414 3 3 0 01-4.242 0 1 1 0 00-1.415 1.414 5 5 0 007.072 0z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+
+                    <button className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-colors" title="可见性">
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                        <path fillRule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                  </div>
+
                   {/* 字符计数 */}
-                  <div className={`text-xs ${
-                    remainingChars < 20 ? 'text-warning' : 
-                    remainingChars < 0 ? 'text-error' : 'text-neutral-500'
+                  <div className={`text-sm font-medium ${
+                    remainingChars < 20 ? 'text-red-500' :
+                    remainingChars < 0 ? 'text-red-600' : 'text-gray-500'
                   }`}>
                     {remainingChars}
                   </div>
                 </div>
 
-                {/* 发布按钮 - 使用图标 */}
+                {/* 发布按钮 */}
                 <button
                   onClick={handleSubmit}
                   disabled={isPostDisabled}
-                  className={`p-1.5 rounded-full transition-all duration-200 ${
-                    isPostDisabled 
-                      ? 'bg-neutral-300 text-neutral-500 cursor-not-allowed' 
+                  className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-200 ${
+                    isPostDisabled
+                      ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
                       : 'bg-primary-600 text-white hover:bg-primary-700 shadow-sm hover:shadow-md'
                   }`}
-                  title="发布"
                 >
                   {isSubmitting ? (
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      <span>发布中...</span>
+                    </div>
                   ) : (
-                    <SendOutlined className="w-4 h-4" />
+                    '发布'
                   )}
                 </button>
               </div>
@@ -319,15 +265,7 @@ export default function TwitterStylePostComposer({
         </div>
       </Form>
 
-      {/* 隐藏的文件输入 */}
-      <input
-        ref={fileInputRef}
-        type="file"
-        accept="image/*"
-        multiple
-        onChange={handleImageUpload}
-        className="hidden"
-      />
+
     </div>
   );
 }

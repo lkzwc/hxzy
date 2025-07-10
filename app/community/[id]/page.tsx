@@ -154,7 +154,7 @@ export default function PostDetail({ params }: any) {
         prev
           ? {
               ...prev,
-              comments: [...prev.comments, newComment],
+              comments: [...prev.comments ?? [], newComment],
             }
           : null
       );
@@ -359,7 +359,7 @@ export default function PostDetail({ params }: any) {
                 prev
                   ? {
                       ...prev,
-                      comments: [...prev.comments, newComment],
+                      comments: [...prev?.comments ?? [], newComment],
                       _count: {
                         ...prev._count,
                         comments: prev._count.comments + 1,

@@ -4,7 +4,6 @@ import Google from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { prisma } from "@/lib/prisma";
 import crypto from "crypto";
-import dayjs from "dayjs";
 
 
 // 前端提交微信凭证 → authorize验证 → 返回用户对象
@@ -18,8 +17,8 @@ export const authOptions: NextAuthOptions = {
       clientSecret: process.env.GITHUB_CLIENT_SECRET!,
     }),
     Google({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? "",
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? "",
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
     // 自定义微信登录
     CredentialsProvider({
@@ -72,7 +71,7 @@ export const authOptions: NextAuthOptions = {
         const dbUser = await prisma.user.upsert({
           where: { otherId: user?.id },
           update: userData,
-          create: {...userData, createdAt: dayjs().format('YYYY-MM-DD HH:mm:ss')},
+          create: {...userData, createdAt: new Date()},
         });
 
         console.log("signIn000", dbUser);
