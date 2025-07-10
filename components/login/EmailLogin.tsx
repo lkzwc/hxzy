@@ -1,0 +1,177 @@
+"use client";
+
+import { useState } from "react";
+import { signIn } from "next-auth/react";
+import { message } from "antd";
+
+interface EmailLoginProps {
+  onSuccess?: () => void;
+}
+
+export default function EmailLogin({ onSuccess }: EmailLoginProps) {
+  const [email, setEmail] = useState("");
+  const [code, setCode] = useState("");
+  const [codes, setCodes] = useState<any>();
+  const [isLoading, setIsLoading] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
+
+  // 发送邮箱验证码
+  const sendEmailCode = async () => {
+    if (!email || !email.includes("@")) {
+      messageApi.warning("请输入有效的邮箱地址");
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/send-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCodes(data);
+        messageApi.success("验证码已发送到您的邮箱");
+      } else {
+        messageApi.error("发送验证码失败，请重试");
+      }
+    } catch (error) {
+      messageApi.error("发送验证码失败，请重试");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!email || !code) {
+      messageApi.warning("请输入邮箱和验证码");
+      return;
+    }
+
+    if (codes?.time < Date.now() - 1000 * 60 * 5) {
+      messageApi.warning("验证码已过期，请重新获取");
+      return;
+    }
+
+    if (Math.floor(101010 + codes.codeS / 1000000).toString() === code) {
+      setIsLoading(true);
+      try {
+        await signIn("credentials", {
+          email: email,
+          callbackUrl: "/community",
+        });
+        messageApi.success("登录成功");
+        onSuccess?.();
+      } catch (error) {
+        messageApi.error("登录失败，请重试");
+      } finally {
+        setIsLoading(false);
+      }
+    } else {
+      messageApi.error("验证码错误，请重新输入");
+    }
+  };
+
+  return (
+    <div className="flex-1 flex flex-col space-y-6">
+      {contextHolder}
+
+      <form onSubmit={handleLogin} className="space-y-5">
+        {/* 邮箱输入 */}
+        <div className="space-y-2">
+          <div className="relative">
+            <input
+              type="email"
+              placeholder="请输入您的邮箱地址"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full h-12 pl-4 pr-4 text-sm border-2 border-gray-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100 bg-white transition-all duration-200 placeholder-gray-400"
+              disabled={isLoading}
+            />
+            {email && email.includes("@") && (
+              <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                <span className="text-green-500 text-lg">✓</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 验证码输入和发送按钮 */}
+        <div className="space-y-2">
+          <div className="flex gap-3">
+            <div className="flex-1 relative">
+              <input
+                type="text"
+                placeholder="请输入6位验证码"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                maxLength={6}
+                className="w-full h-12 pl-4 pr-4 text-sm border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-100 bg-white transition-all duration-200 placeholder-gray-400"
+                disabled={isLoading}
+              />
+              {code && code.length === 6 && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <span className="text-green-500 text-lg">✓</span>
+                </div>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={sendEmailCode}
+              disabled={isLoading || !email || !email.includes("@")}
+              className="px-6 h-12 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 transition-all duration-200 text-sm font-medium shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  发送中
+                </>
+              ) : (
+                <>
+                  <span>📤</span>
+                  发送验证码
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* 登录按钮 */}
+        <button
+          type="submit"
+          disabled={isLoading || !email || !code || code.length !== 6}
+          className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-700 text-white rounded-xl hover:from-blue-700 hover:to-purple-800 transition-all duration-300 text-base font-medium shadow-lg hover:shadow-xl hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
+        >
+          {isLoading ? (
+            <>
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              登录中...
+            </>
+          ) : (
+            <>
+              <span>🚀</span>
+              立即登录
+            </>
+          )}
+        </button>
+
+
+        {/* 状态指示器 */}
+        {codes && (
+          <div className="text-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              验证码已发送到您的邮箱
+            </div>
+          </div>
+        )}
+      </form>
+    </div>
+  );
+}

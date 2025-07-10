@@ -1,0 +1,200 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int            @id @default(autoincrement())
+  otherId       String?        @unique
+  name          String?
+  email         String?        @unique
+  image         String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @default(now()) @updatedAt
+  lastLoginAt   DateTime?      @default(now())
+  comments      Comment[]
+  notifications Notification[]
+  posts         Post[]
+  postLikes     PostLike[]
+
+  @@index([email])
+  @@index([id])
+}
+
+model Post {
+  id            Int            @id @default(autoincrement())
+  title         String?        // 可选的标题字段
+  content       String
+  images        String[]
+  published     Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  tags          String[]
+  views         Int            @default(0)
+  authorId      Int
+  comments      Comment[]
+  notifications Notification[]
+  author        User           @relation(fields: [authorId], references: [id])
+  postLikes     PostLike[]
+
+  // 优化后的索引
+  @@index([published, createdAt(sort: Desc), id(sort: Desc)]) // 主列表查询优化
+  @@index([authorId, published, createdAt(sort: Desc)])       // 用户帖子查询优化
+  @@index([tags, published, createdAt(sort: Desc)])           // 标签筛选优化
+  @@index([views(sort: Desc)])                                // 热门排序优化
+  @@index([authorId])                                         // 保留基础索引
+  @@index([createdAt])                                        // 保留基础索引
+}
+
+model Comment {
+  id            Int            @id @default(autoincrement())
+  content       String
+  images        String[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  authorId      Int
+  postId        Int
+  parentId      Int?
+  author        User           @relation(fields: [authorId], references: [id])
+  parent        Comment?       @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies       Comment[]      @relation("CommentReplies")
+  post          Post           @relation(fields: [postId], references: [id], onDelete: Cascade)
+  notifications Notification[]
+
+  // 优化后的索引
+  @@index([postId, createdAt(sort: Desc)])    // 帖子评论列表查询优化
+  @@index([postId, parentId])                 // 评论层级查询优化
+  @@index([authorId, createdAt(sort: Desc)])  // 用户评论查询优化
+  @@index([parentId])                         // 保留基础索引
+}
+
+model PostLike {
+  createdAt DateTime @default(now())
+  userId    Int
+  postId    Int
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@id([userId, postId])
+  @@index([userId, createdAt(sort: Desc)])  // 用户点赞历史查询优化
+  @@index([postId, createdAt(sort: Desc)])  // 帖子点赞统计优化
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  content   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  userId    Int
+  postId    Int
+  commentId Int?
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+
+  // 优化后的索引
+  @@index([userId, createdAt(sort: Desc)]) // 用于按时间排序的通知列表查询
+  @@index([userId, isRead])                // 用于未读通知数量查询
+  @@index([postId])                        // 保留原有索引
+  @@index([commentId])                     // 保留原有索引
+}
+
+model Doctor {
+  id           Int      @id @default(autoincrement())
+  name         String
+  department   String
+  hospital     String
+  specialty    String
+  phone        String
+  province     String
+  introduction String
+  avatar       String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([createdAt])
+}
+
+model ChineseMedicine {
+  id          Int      @id @default(autoincrement())
+  name        String
+  pinyin      String
+  category    String
+  properties  String
+  effects     String
+  description String?
+  image       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([name])
+  @@index([pinyin])
+}
+
+model ClassicalFormula {
+  id          Int      @id @default(autoincrement())
+  name        String
+  pinyin      String
+  source      String
+  composition String
+  indications String
+  usage       String
+  description String?
+  category    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([name])
+  @@index([pinyin])
+}
+
+model Course {
+  id          Int      @id @default(autoincrement())
+  title       String
+  instructor  String
+  description String
+  coverImage  String
+  category    String
+  link        String
+  isVip       Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([createdAt])
+}
+
+model EBook {
+  id          Int      @id @default(autoincrement())
+  title       String
+  pinyin      String
+  author      String
+  dynasty     String
+  category    String
+  description String
+  coverImage  String
+  link        String
+  isVip       Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([dynasty])
+  @@index([author])
+  @@index([title])
+  @@index([pinyin])
+}
+
+model AdQrcode {
+  id          String   @id @default(cuid())
+  description String
+  imageUrl    String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+}

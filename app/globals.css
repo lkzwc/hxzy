@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 17, 24, 39;
+  --background-rgb: 255, 255, 255;
+  --background-secondary: 249, 250, 251;
+  --primary-rgb: 37, 99, 235;
+  --secondary-rgb: 5, 150, 105;
+  --accent-rgb: 245, 158, 11;
+  --border-rgb: 229, 231, 235;
+  --twitter-blue: 29, 155, 240;
+  --twitter-hover: 26, 140, 216;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: rgb(var(--background-rgb));
+  font-feature-settings: 'rlig' 1, 'calt' 1;
+  line-height: 1.6;
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 text-white hover:bg-primary-700 active:bg-primary-800 shadow-sm focus:ring-primary-500;
+  }
+
+  .btn-secondary {
+    @apply bg-secondary-600 text-white hover:bg-secondary-700 active:bg-secondary-800 shadow-sm focus:ring-secondary-500;
+  }
+
+  .btn-outline {
+    @apply border border-primary-600 text-primary-600 hover:bg-primary-50 hover:text-primary-700 focus:ring-primary-500;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent hover:bg-neutral-100 text-neutral-700 focus:ring-neutral-500;
+  }
+
+  .btn-link {
+    @apply text-primary-600 hover:text-primary-700 underline-offset-4 hover:underline focus:ring-primary-500;
+  }
+
+  .input {
+    @apply px-4 py-2 rounded-lg border border-neutral-300 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-200;
+  }
+
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-neutral-200 hover:shadow-md transition-shadow duration-200;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Twitter风格的按钮 */
+  .btn-twitter {
+    @apply bg-primary-600 text-white hover:bg-primary-700 rounded-full px-6 py-2 font-semibold transition-all duration-200 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-twitter-outline {
+    @apply border border-primary-600 text-primary-600 hover:bg-primary-50 rounded-full px-6 py-2 font-semibold transition-all duration-200;
+  }
+
+  .btn-twitter-small {
+    @apply bg-primary-600 text-white hover:bg-primary-700 rounded-full px-4 py-1.5 text-sm font-semibold transition-all duration-200;
+  }
+
+  /* Twitter风格的输入框 */
+  .input-twitter {
+    @apply w-full resize-none border-none outline-none text-xl placeholder-neutral-500 bg-transparent focus:ring-0;
+  }
+
+  /* Twitter风格的卡片 */
+  .card-twitter {
+    @apply bg-white border-b border-neutral-200 hover:bg-neutral-50/50 transition-colors duration-200;
+  }
+}
+
+/* 自定义样式 */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 30;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.content-container {
+  @apply bg-white rounded-xl shadow-sm border border-neutral-200 p-6;
+}
+
+.section-bg {
+  background-color: rgb(var(--background-secondary));
+}
+
+/* 现代化的渐变背景 */
+.gradient-bg {
+  background: linear-gradient(135deg, rgb(var(--primary-rgb) / 0.05) 0%, rgb(var(--secondary-rgb) / 0.05) 100%);
+}
+
+.gradient-primary {
+  background: linear-gradient(135deg, rgb(var(--primary-rgb)) 0%, rgb(var(--secondary-rgb)) 100%);
+}
+
+/* 优化的阴影效果 */
+.shadow-soft {
+  box-shadow: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04);
+}
+
+.shadow-twitter {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+}
