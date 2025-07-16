@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import Link from "next/link";
@@ -16,12 +16,15 @@ import {
 } from "@ant-design/icons";
 import TwitterStylePostComposer from "@/components/TwitterStylePostComposer";
 import LikeButton from "@/components/LikeButton";
+import OptimizedImage from "@/components/OptimizedImage";
+import { useInfiniteScroll, useVirtualScroll } from "@/hooks/useInfiniteScroll";
 import useSWR from "swr";
 import useSWRInfinite from "swr/infinite";
 import {
   Button,
   message,
   Result,
+  Tag,
 } from "antd";
 
 // 配置 dayjs
@@ -80,7 +83,8 @@ export default function Community() {
   const [searchQuery, setSearchQuery] = useState(""); // 用于实际搜索的值
   const [activeCategory, setActiveCategory] = useState<any>(undefined);
   const [messageApi, contextHolder] = message.useMessage();
-  const loadingRef = useRef<HTMLDivElement>(null);
+  const [useVirtualScrolling, setUseVirtualScrolling] = useState(false); // 是否启用虚拟滚动
+  const [containerHeight, setContainerHeight] = useState(800); // 容器高度
   const { data: session } = useSession();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -210,26 +214,59 @@ export default function Community() {
     };
   }, [setSize]);
 
-  // 监听滚动加载
-  useEffect(() => {
-    if (!hasMore) return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const first = entries[0];
-        if (first.isIntersecting && hasMore && !isLoadingMore) {
-          setSize((size) => size + 1);
-        }
-      },
-      { threshold: 0.1 }
-    );
-
-    if (loadingRef.current) {
-      observer.observe(loadingRef.current);
+  // 使用优化的无限滚动 Hook
+  const {
+    isFetching: isInfiniteScrollFetching,
+    lastElementRef,
+    setHasMore,
+  } = useInfiniteScroll(
+    async () => {
+      if (!hasMore || isLoadingMore) return;
+      setSize((size) => size + 1);
+    },
+    {
+      threshold: 100,
+      enabled: hasMore && !isLoadingMore,
+      delay: 300,
     }
+  );
 
-    return () => observer.disconnect();
-  }, [hasMore, isLoadingMore]);
+  // 同步 hasMore 状态
+  useEffect(() => {
+    setHasMore(hasMore);
+  }, [hasMore, setHasMore]);
+
+  // 获取所有帖子数据用于虚拟滚动
+  const allPosts = useMemo(() => {
+    if (!data) return [];
+    return data.flatMap((page) => page.posts);
+  }, [data]);
+
+  // 虚拟滚动配置
+  const ITEM_HEIGHT = 120; // 每个帖子项的高度（像素）
+  const virtualScroll = useVirtualScroll(allPosts, {
+    itemHeight: ITEM_HEIGHT,
+    containerHeight,
+    overscan: 5,
+  });
+
+  // 检测是否应该启用虚拟滚动（当帖子数量超过50时）
+  useEffect(() => {
+    setUseVirtualScrolling(allPosts.length > 50);
+  }, [allPosts.length]);
+
+  // 动态设置容器高度
+  useEffect(() => {
+    const updateContainerHeight = () => {
+      const windowHeight = window.innerHeight;
+      const headerHeight = 200; // 估算的头部高度
+      setContainerHeight(windowHeight - headerHeight);
+    };
+
+    updateContainerHeight();
+    window.addEventListener('resize', updateContainerHeight);
+    return () => window.removeEventListener('resize', updateContainerHeight);
+  }, []);
 
 
 
@@ -292,6 +329,21 @@ export default function Community() {
               >
                 搜索
               </button>
+
+              {/* 虚拟滚动切换按钮 */}
+              {allPosts.length > 20 && (
+                <button
+                  onClick={() => setUseVirtualScrolling(!useVirtualScrolling)}
+                  className={`px-3 py-2 text-xs rounded-lg transition-colors ${
+                    useVirtualScrolling
+                      ? 'text-primary-600 bg-primary-50 border border-primary-200'
+                      : 'text-gray-500 hover:text-primary-600 hover:bg-gray-50 border border-gray-200'
+                  }`}
+                  title={useVirtualScrolling ? '切换到普通滚动模式' : '切换到虚拟滚动模式（适合大量数据）'}
+                >
+                  {useVirtualScrolling ? '虚拟滚动' : '普通模式'}
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -355,7 +407,152 @@ export default function Community() {
                 </div>
               ))}
             </div>
+          ) : useVirtualScrolling ? (
+            // 虚拟滚动渲染
+            <div
+              className="virtual-scroll-container overflow-auto"
+              style={{ height: containerHeight }}
+              onScroll={virtualScroll.handleScroll}
+            >
+              {/* 总高度占位符 */}
+              <div style={{ height: virtualScroll.totalHeight, position: 'relative' }}>
+                {/* 可见项目容器 */}
+                <div
+                  style={{
+                    transform: `translateY(${virtualScroll.offsetY}px)`,
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                  }}
+                >
+                  {virtualScroll.visibleItems.map((post: any) => (
+                    <div
+                      key={post.id}
+                      style={{ height: ITEM_HEIGHT }}
+                      className="virtual-post-item"
+                    >
+                      <article className="relative bg-white hover:bg-gray-50/30 transition-all duration-200 group border-b border-gray-100 last:border-b-0">
+                        <div className="px-4 py-3">
+                          <div className="flex gap-4">
+                            {/* 左侧内容 */}
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start gap-3 mb-3">
+                                {/* 用户头像 */}
+                                <div className="relative">
+                                  {post.author.image ? (
+                                    <OptimizedImage
+                                      src={post.author.image}
+                                      alt={post.author.name || "用户头像"}
+                                      width={40}
+                                      height={40}
+                                      className="w-10 h-10 rounded-full object-cover shadow-lg outline outline-3 outline-primary-600"
+                                      priority={false}
+                                      quality={80}
+                                    />
+                                  ) : (
+                                    <div className="w-10 h-10 rounded-full flex outline outline-3 outline-primary-600 items-center justify-center shadow-lg">
+                                      <span className="text-sm font-medium text-primary-600">
+                                        {post.author.name?.charAt(0) || "U"}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* 用户信息和时间 */}
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <span className="font-medium text-gray-900 truncate">
+                                      {post.author.name}
+                                    </span>
+                                    <span className="text-gray-400 text-sm">·</span>
+                                    <span className="text-gray-500 text-sm whitespace-nowrap">
+                                      {dayjs(post.createdAt).fromNow()}
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              {/* 帖子内容 */}
+                              <Link href={`/community/${post.id}`} className="block group/content">
+                                <p className="text-gray-900 text-sm line-clamp-3 mb-3 leading-relaxed group-hover/content:text-primary-600 transition-colors">
+                                  {post.content}
+                                </p>
+                              </Link>
+
+                              {/* 标签 */}
+                              {post.tags && post.tags.length > 0 && (
+                                <div className="flex flex-wrap gap-1 mb-3">
+                                  {post.tags.slice(0, 3).map((tag: string) => (
+                                    <Tag
+                                      key={tag}
+                                      className="text-xs px-2 py-1 bg-primary-50 text-primary-700 border-primary-200 rounded-full"
+                                    >
+                                      {tag}
+                                    </Tag>
+                                  ))}
+                                  {post.tags.length > 3 && (
+                                    <span className="text-xs text-gray-400">+{post.tags.length - 3}</span>
+                                  )}
+                                </div>
+                              )}
+
+                              {/* 互动数据 */}
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-4 text-sm text-gray-500">
+                                  <div className="flex items-center gap-1 text-primary-600 hover:text-primary-700 transition-colors group/view">
+                                    <EyeOutlined className="w-4 h-4 group-hover/view:scale-110 transition-transform" />
+                                    <span className="text-xs font-medium">{post.views}</span>
+                                  </div>
+
+                                  <div className="flex items-center gap-1 text-primary-600 hover:text-primary-700 transition-colors">
+                                    <MessageOutlined className="w-4 h-4" />
+                                    <span className="text-xs font-medium">{post._count.comments}</span>
+                                  </div>
+                                </div>
+
+                                <LikeButton
+                                  postId={post.id}
+                                  initialLikes={post._count.likes}
+                                />
+                              </div>
+                            </div>
+
+                            {/* 右侧图片区域 */}
+                            {post.images && post.images.length > 0 && (
+                              <Link
+                                href={`/community/${post.id}`}
+                                className="block flex-shrink-0 w-20 h-16"
+                              >
+                                <div className="relative overflow-hidden rounded-lg bg-gray-100 w-full h-full shadow-sm ring-1 ring-gray-200/50">
+                                  <OptimizedImage
+                                    src={post.images[0]}
+                                    alt="帖子图片"
+                                    width={80}
+                                    height={64}
+                                    className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                                    priority={false}
+                                    quality={75}
+                                    sizes="80px"
+                                  />
+                                  {post.images.length > 1 && (
+                                    <div className="absolute top-1 right-1 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded-md font-medium">
+                                      +{post.images.length - 1}
+                                    </div>
+                                  )}
+                                </div>
+                              </Link>
+                            )}
+                          </div>
+                        </div>
+                      </article>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           ) : (
+            // 普通滚动渲染
             <div>
               {posts.map((post: any) => (
                 <article
@@ -368,10 +565,14 @@ export default function Community() {
                       {/* 用户头像 */}
                       <div className="relative">
                         {post.author.image ? (
-                          <img
+                          <OptimizedImage
                             src={post.author.image}
                             alt={post.author.name || "用户头像"}
+                            width={40}
+                            height={40}
                             className="w-10 h-10 rounded-full object-cover shadow-lg outline outline-3 outline-primary-600"
+                            priority={false}
+                            quality={80}
                           />
                         ) : (
                           <div className="w-10 h-10 rounded-full flex outline outline-3 outline-primary-600  items-center justify-center shadow-lg">
@@ -448,10 +649,15 @@ export default function Community() {
                           className="block flex-shrink-0 w-20 h-16"
                         >
                           <div className="relative overflow-hidden rounded-lg bg-gray-100 w-full h-full shadow-sm ring-1 ring-gray-200/50">
-                            <img
+                            <OptimizedImage
                               src={post.images[0]}
                               alt="帖子图片"
+                              width={80}
+                              height={64}
                               className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+                              priority={false}
+                              quality={75}
+                              sizes="80px"
                             />
                             {post.images.length > 1 && (
                               <div className="absolute top-1 right-1 bg-black/80 text-white text-xs px-1.5 py-0.5 rounded-md font-medium">
@@ -469,10 +675,17 @@ export default function Community() {
               {/* 加载更多指示器 */}
               {hasMore && (
                 <div
-                  ref={loadingRef}
-                  className="flex justify-center items-center py-4"
+                  ref={lastElementRef}
+                  className="flex justify-center items-center py-8"
                 >
-                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-primary border-t-transparent"></div>
+                  {(isLoadingMore || isInfiniteScrollFetching) ? (
+                    <div className="flex items-center gap-2 text-gray-500">
+                      <div className="animate-spin rounded-full h-5 w-5 border-2 border-primary border-t-transparent"></div>
+                      <span className="text-sm">加载中...</span>
+                    </div>
+                  ) : (
+                    <div className="text-gray-400 text-sm">滚动加载更多</div>
+                  )}
                 </div>
               )}
             </div>

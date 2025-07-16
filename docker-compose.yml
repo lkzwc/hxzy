@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 数据库
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: hxzy
+      POSTGRES_USER: hxzy_user
+      POSTGRES_PASSWORD: hxzy_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  # Next.js 应用
+  app:
+    build: .
+    environment:
+      DATABASE_URL: "postgresql://hxzy_user:hxzy_password@postgres:5432/hxzy"
+      NEXTAUTH_URL: "http://localhost:3000"
+      NEXTAUTH_SECRET: "your-nextauth-secret-key-change-this"
+      STORAGE_TYPE: "local"
+      LOCAL_UPLOAD_DIR: "public/uploads"
+      LOCAL_BASE_URL: "http://localhost:3000"
+      MAX_FILE_SIZE: "5242880"
+      ALLOWED_FILE_TYPES: "image/jpeg,image/png,image/webp,image/gif"
+      MAX_FILES_PER_UPLOAD: "9"
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./public/uploads:/app/public/uploads
+    depends_on:
+      - postgres
+    command: sh -c "npx prisma migrate deploy && npm start"
+
+volumes:
+  postgres_data:
