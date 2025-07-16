@@ -120,7 +120,7 @@ export default function OptimizedImage({
   }
 
   return (
-    <div ref={imgRef} className={`relative ${className}`}>
+    <div ref={imgRef} className="relative">
       {(isInView || priority) && (
         <>
           <Image
@@ -136,26 +136,26 @@ export default function OptimizedImage({
             sizes={responsiveSizes}
             className={`transition-opacity duration-300 ${
               isLoading ? 'opacity-0' : 'opacity-100'
-            } ${fill ? `object-${objectFit}` : ''}`}
+            } ${fill ? `object-${objectFit}` : ''} ${className}`}
             style={fill ? undefined : { objectFit }}
             loading={loading}
             onLoad={handleLoad}
             onError={handleError}
           />
-          
+
           {/* 加载状态 */}
           {isLoading && (
-            <div className="absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center">
+            <div className={`absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center ${className}`}>
               <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
             </div>
           )}
         </>
       )}
-      
+
       {/* 懒加载占位符 */}
       {!isInView && !priority && (
-        <div 
-          className="bg-gray-200 animate-pulse"
+        <div
+          className={`bg-gray-200 animate-pulse ${className}`}
           style={{ width, height }}
         />
       )}
