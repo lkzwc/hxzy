@@ -40,7 +40,7 @@ const SCENE_CONFIG = {
 export default function PublishToolbar({
   type,
   value = [],
-  remainingChars=0,
+  remainingChars = 0,
   onChange,
   maxCount,
   disabled = false,
@@ -271,70 +271,71 @@ export default function PublishToolbar({
 
       <div className="flex items-center gap-2">
         {/* 上传按钮 */}
-      {renderUploadButton()}
+        {renderUploadButton()}
 
-      {/* 其他功能按钮占位 */}
-      <button
-        className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-colors"
-        title="视频"
-      >
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M2 6a2 2 0 012-2h6l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
-        </svg>
-      </button>
-
-      <button
-        className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-colors"
-        title="附件"
-      >
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-          <path
-            fillRule="evenodd"
-            d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </button>
-
-      <button
-        className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-colors"
-        title="表情"
-      >
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-          <path
-            fillRule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a1 1 0 10-1.415-1.414 3 3 0 01-4.242 0 1 1 0 00-1.415 1.414 5 5 0 007.072 0z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </button>
-
-      <button
-        className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-colors"
-        title="可见性"
-      >
-        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-          <path
-            fillRule="evenodd"
-            d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
-            clipRule="evenodd"
-          />
-        </svg>
-      </button>
-
-      {/* 字符计数 */}
-      <span
-        className={`text-sm font-medium ${
-          remainingChars < 20
-            ? "text-red-500"
-            : remainingChars < 0
-              ? "text-red-600"
-              : "text-gray-500"
-        }`}
-      >
-        {remainingChars}
-      </span>
+        {/* 其他功能按钮占位 */}
+        {type === "post" && (
+          <>
+            {" "}
+            <button
+              className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-colors"
+              title="视频"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 6a2 2 0 012-2h6l2 2h6a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6zM14.553 7.106A1 1 0 0014 8v4a1 1 0 00.553.894l2 1A1 1 0 0018 13V7a1 1 0 00-1.447-.894l-2 1z" />
+              </svg>
+            </button>
+            <button
+              className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-colors"
+              title="附件"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+            <button
+              className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-colors"
+              title="表情"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a1 1 0 10-1.415-1.414 3 3 0 01-4.242 0 1 1 0 00-1.415 1.414 5 5 0 007.072 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+            <button
+              className="p-2 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-colors"
+              title="可见性"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                <path
+                  fillRule="evenodd"
+                  d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </button>
+            {/* 字符计数 */}
+            <span
+              className={`text-sm font-medium ${
+                remainingChars < 20
+                  ? "text-red-500"
+                  : remainingChars < 0
+                    ? "text-red-600"
+                    : "text-gray-500"
+              }`}
+            >
+              {remainingChars}
+            </span>
+          </>
+        )}
       </div>
     </div>
   );
