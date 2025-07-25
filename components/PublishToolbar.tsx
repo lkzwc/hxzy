@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { messageApi, Image as AntImage, message } from "antd";
+import { Image as AntImage, message } from "antd";
 import { DeleteOutlined, EyeOutlined } from "@ant-design/icons";
 
 export interface ImageUploadProps {

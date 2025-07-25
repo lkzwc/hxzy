@@ -469,6 +469,20 @@ export default function Community() {
                                     <span className="text-gray-500 text-sm whitespace-nowrap">
                                       {dayjs(post.createdAt).fromNow()}
                                     </span>
+                                    {/* 位置信息 */}
+                                    {post.province && (
+                                      <>
+                                        <span className="text-gray-400 text-sm">·</span>
+                                        <div className="flex items-center gap-1 text-gray-500 text-sm">
+                                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                                          </svg>
+                                          <span className="truncate max-w-20">
+                                            {post.province}
+                                          </span>
+                                        </div>
+                                      </>
+                                    )}
                                   </div>
                                 </div>
                               </div>
@@ -592,6 +606,20 @@ export default function Community() {
                           <span className="text-xs text-gray-400 flex-shrink-0">
                             {dayjs(post.createdAt).fromNow()}
                           </span>
+                          {/* 位置信息 */}
+                          {post.province && (
+                            <>
+                              <span className="text-gray-400 text-xs">·</span>
+                              <div className="flex items-center gap-1 text-gray-400 text-xs">
+                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                                </svg>
+                                <span className="truncate max-w-16">
+                                  {post.province}
+                                </span>
+                              </div>
+                            </>
+                          )}
                         </div>
                       </div>
 

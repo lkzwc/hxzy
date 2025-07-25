@@ -23,8 +23,8 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 20) // 限制最大20条
     const skip = (page - 1) * limit
 
-    // 简单的内存缓存键
-    const cacheKey = `posts:${page}:${limit}:${search || ''}:${tag || ''}`
+    // 简单的内存缓存键（暂未使用）
+    // const cacheKey = `posts:${page}:${limit}:${search || ''}:${tag || ''}`
 
     // 构建查询条件
     const where: WhereInput = {
@@ -46,8 +46,9 @@ export async function GET(request: NextRequest) {
         tags: true,
         images: true,
         authorId: true,
+        province: true, // 数据库迁移完成，重新启用
         // 移除 _count 查询，改为单独查询或缓存
-      },
+      } as any,
       orderBy: [
         { createdAt: 'desc' },
         { id: 'desc' },
@@ -134,7 +135,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { title, content, tags, images } = await request.json()
+    const { title, content, tags, images, location } = await request.json()
 
     // 验证数据
     if (!content?.trim()) {
@@ -181,7 +182,9 @@ export async function POST(request: NextRequest) {
         images: images || [],
         authorId: user.id,
         published: true,
-      },
+        // 位置信息
+        province: location?.province || null,
+      } as any,
       include: {
         author: {
           select: {

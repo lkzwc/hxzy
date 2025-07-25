@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 import { Avatar, message, Form, Mentions } from "antd";
 import { POST_CONSTANTS } from "@/util/common";
 import PublishToolbar from "./PublishToolbar";
+import { getUserLocation, formatLocationText, type LocationInfo } from "@/lib/locationService";
 
 interface TwitterStylePostComposerProps {
   onSuccess?: () => void;
@@ -25,6 +26,7 @@ export default function TwitterStylePostComposer({
   const [form] = Form.useForm();
   const [images, setImages] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [location, setLocation] = useState<LocationInfo | null>(null);
 
   const { data: session } = useSession();
   const router = useRouter();
@@ -33,6 +35,22 @@ export default function TwitterStylePostComposer({
 
   const content = Form.useWatch("content", form) || "";
   const remainingChars = MAX_CHARS - content.length;
+
+  // 获取用户位置
+  useEffect(() => {
+    const getLocation = async () => {
+      try {
+        const userLocation = await getUserLocation();
+        if (userLocation) {
+          setLocation(userLocation);
+        }
+      } catch (error) {
+        console.warn('获取位置失败:', error);
+      }
+    };
+
+    getLocation();
+  }, []);
 
   // 预设标签选项 - 用于 Mentions 组件
   const tagOptions = [
@@ -93,6 +111,7 @@ export default function TwitterStylePostComposer({
         content: content.trim(),
         tags: finalTags,
         images,
+        location, // 包含位置信息
       };
 
       const response = await fetch("/api/posts", {
@@ -178,6 +197,16 @@ export default function TwitterStylePostComposer({
                   }}
                 />
               </Form.Item>
+
+              {/* 位置信息显示 */}
+              {location && (
+                <div className="flex items-center gap-1 text-xs text-gray-500 mb-2">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                  </svg>
+                  <span>{formatLocationText(location)}</span>
+                </div>
+              )}
 
               {/* 工具栏 */}
               <div className="flex items-end justify-between border-gray-100">

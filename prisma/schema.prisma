@@ -36,6 +36,8 @@ model Post {
   tags          String[]
   views         Int            @default(0)
   authorId      Int
+  // 位置信息
+  province      String?        // 省份
   comments      Comment[]
   notifications Notification[]
   author        User           @relation(fields: [authorId], references: [id])
