@@ -13,6 +13,17 @@ type WhereInput = {
   tags?: { has: string }
 }
 
+type PostSelect = {
+  id: number
+  content: string
+  createdAt: Date
+  views: number
+  tags: string[]
+  images: string[]
+  authorId: number
+  province: string | null
+}
+
 // 获取帖子列表
 export async function GET(request: NextRequest) {
   try {
@@ -22,9 +33,6 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1')
     const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 20) // 限制最大20条
     const skip = (page - 1) * limit
-
-    // 简单的内存缓存键（暂未使用）
-    // const cacheKey = `posts:${page}:${limit}:${search || ''}:${tag || ''}`
 
     // 构建查询条件
     const where: WhereInput = {
@@ -36,7 +44,7 @@ export async function GET(request: NextRequest) {
     }
 
     // 优化查询：只获取必要的数据，减少关联查询
-    const posts = await prisma.post.findMany({
+    const posts = (await prisma.post.findMany({
       where: where as any,
       select: {
         id: true,
@@ -46,24 +54,23 @@ export async function GET(request: NextRequest) {
         tags: true,
         images: true,
         authorId: true,
-        province: true, // 数据库迁移完成，重新启用
-        // 移除 _count 查询，改为单独查询或缓存
-      } as any,
+        province: true,
+      },
       orderBy: [
         { createdAt: 'desc' },
         { id: 'desc' },
       ],
       skip,
-      take: limit + 1, // 多取一条来判断是否有更多数据
-    })
+      take: limit + 1,
+    })) as PostSelect[]
 
     // 判断是否有更多数据
     const hasMore = posts.length > limit
     const actualPosts = hasMore ? posts.slice(0, limit) : posts
 
     // 批量获取关联数据，优化性能
-    const postIds = actualPosts.map(post => post.id)
-    const authorIds = [...new Set(actualPosts.map(post => post.authorId))]
+    const postIds = actualPosts.map((post) => post.id)
+    const authorIds = actualPosts.map((p) => p.authorId).filter((v, i, a) => a.indexOf(v) === i)
 
     const [authors, commentCounts, likeCounts] = await Promise.all([
       // 获取作者信息
@@ -176,15 +183,14 @@ export async function POST(request: NextRequest) {
     // 创建帖子
     const post = await prisma.post.create({
       data: {
-        title: title?.trim() || null, // 可选的标题
+        title: title?.trim() || null,
         content: content.trim(),
         tags: tags as string[],
         images: images || [],
         authorId: user.id,
         published: true,
-        // 位置信息
         province: location?.province || null,
-      } as any,
+      },
       include: {
         author: {
           select: {

@@ -41,6 +41,7 @@ const features = [
 import ClientHeroSection from '@/components/home/ClientHeroSection'
 import HomeButtons from '@/components/home/HomeButtons'
 import { LazyFeatureSection, LazyLuopanSection } from '@/components/home/LazyComponents'
+import OptimizedImage from '@/components/OptimizedImage'
 
 // 优化的骨架屏组件
 function HeroSkeleton() {
@@ -129,13 +130,15 @@ export default async function Home() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {features.map((feature) => (
+            {features.map((feature, index) => (
               <div key={feature.title} className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 group">
-                <div className="aspect-video mb-6 rounded-xl overflow-hidden bg-gradient-to-br from-primary-50 to-secondary-50">
-                  <img
+                <div className="aspect-video mb-6 rounded-xl overflow-hidden bg-gradient-to-br from-primary-50 to-secondary-50 relative">
+                  <OptimizedImage
                     src={feature.image}
                     alt={feature.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    fill
+                    className="group-hover:scale-105 transition-transform duration-300"
+                    priority={index === 0}
                   />
                 </div>
 

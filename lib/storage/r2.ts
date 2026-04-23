@@ -78,7 +78,7 @@ async function hmacSha256(key: CryptoKey | Uint8Array, message: string): Promise
   if (key instanceof Uint8Array) {
     cryptoKey = await crypto.subtle.importKey(
       'raw',
-      key,
+      key.buffer as ArrayBuffer,
       { name: 'HMAC', hash: 'SHA-256' },
       false,
       ['sign']

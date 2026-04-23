@@ -21,23 +21,10 @@ interface OptimizedImageProps {
   onError?: () => void;
 }
 
-// 生成模糊占位符
+// 生成模糊占位符 - 使用静态 base64 避免服务端渲染问题
 const generateBlurDataURL = (width: number = 10, height: number = 10): string => {
-  const canvas = document.createElement('canvas');
-  canvas.width = width;
-  canvas.height = height;
-  const ctx = canvas.getContext('2d');
-  
-  if (ctx) {
-    // 创建渐变背景
-    const gradient = ctx.createLinearGradient(0, 0, width, height);
-    gradient.addColorStop(0, '#f3f4f6');
-    gradient.addColorStop(1, '#e5e7eb');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, width, height);
-  }
-  
-  return canvas.toDataURL();
+  // 返回一个简单的灰色占位符 base64
+  return 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAFklEQVR42mNk+M9QzwAEjDAGNzAAAHkABp8Z2AQAAAAASUVORK5CYII=';
 };
 
 export default function OptimizedImage({
