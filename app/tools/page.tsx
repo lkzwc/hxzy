@@ -1,90 +1,47 @@
-'use client'
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { CompassOutlined, RobotOutlined, StarOutlined } from '@ant-design/icons';
-import LiuRen from '@/components/tools/LiuRen';
+import { Suspense } from 'react';
+import type { Metadata } from 'next';
 import TimeTable from '@/components/tools/TimeTable';
-import ZiWei from '@/components/tools/ZiWei';
-import AI from '@/components/tools/AI';
+import ToolsClient from './ToolsClient';
 
-// 工具列表
-const tools = [
-  {
-    id: 'ai',
-    name: 'AI 中医助手',
-    description: '智能问诊，辅助诊断',
-    icon: <RobotOutlined className="w-8 h-8 text-primary" />,
+export const metadata: Metadata = {
+  title: '中医工具 - 小六壬、紫微斗数、AI助手',
+  description: '华夏中医药用工具集，包含小六壬占卜、紫微斗数命盘、AI中医助手、十二时辰对照表等传统中医与玄学工具。',
+  keywords: ['小六壬', '紫微斗数', 'AI中医', '中医工具', '十二时辰', '占卜', '命盘', '辅助诊断'],
+  openGraph: {
+    title: '中医工具 - 小六壬、紫微斗数、AI中医助手 | 华夏中医',
+    description: '汇聚小六壬占卜、紫微斗数命盘、AI中医助手等传统中医药用工具，传承千年智慧。',
   },
-  {
-    id: 'diagnosis',
-    name: '辅助诊断',
-    description: '症状分析，证候辨识',
-    icon: <CompassOutlined className="w-8 h-8 text-primary" />,
-  },
-  {
-    id: 'liuren',
-    name: '小六壬',
-    description: '当断不断就来卜一卦',
-    icon: <StarOutlined className="w-8 h-8 text-primary" />,
-  },
-  {
-    id: 'ziwei',
-    name: '紫微斗数',
-    description: '当断不断就来卜一卦',
-    icon: <div style={{margin:'0px 7px'}}>🧭</div>,
-  }
-  
-];
+};
 
 export default function ToolsPage() {
-  const [activeTool, setActiveTool] = useState('liuren');
-
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-7xl mx-auto px-4 py-6 relative">
         {/* 主要内容区域 */}
         <div className="sm:ml-[30px] space-y-6">
-          {/* 十二时辰对照表 */}
+          {/* 十二时辰对照表 - SSR 友好 */}
           <TimeTable />
 
-          {/* 工具区域 */}
-          <div className="grid grid-cols-1 md:grid-cols-[280px,1fr] gap-6">
-            {/* 左侧工具导航 */}
-            <div className="bg-white rounded-lg shadow-md p-4">
-              <h2 className="text-lg font-bold text-primary mb-4 pb-2 border-b border-gray-200">
-                工具导航🌠
-              </h2>
-              <div className="flex flex-row md:flex-col gap-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0">
-                {tools.map((tool) => (
-                  <button
-                    key={tool.id}
-                    onClick={() => setActiveTool(tool.id)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-md transition-colors shrink-0 md:shrink md:w-full
-                      ${activeTool === tool.id 
-                        ? 'bg-primary/10 text-primary' 
-                        : 'hover:bg-gray-100 text-gray-600'}`}
-                  >
-                    <div className={`flex-shrink-0 ${activeTool === tool.id ? 'text-primary' : 'text-gray-400'}`}>
-                      {tool.icon}
-                    </div>
-                    <div className="text-left">
-                      <div className="font-medium whitespace-nowrap">{tool.name}</div>
-                      <div className="text-xs text-gray-500 hidden md:block">{tool.description}</div>
-                    </div>
-                  </button>
-                ))}
+          {/* 工具区域 - 客户端交互组件 */}
+          <Suspense fallback={
+            <div className="grid grid-cols-1 md:grid-cols-[280px,1fr] gap-6">
+              <div className="bg-white rounded-lg shadow-md p-4 animate-pulse">
+                <div className="h-6 bg-gray-200 rounded w-24 mb-4" />
+                <div className="space-y-3">
+                  {[1, 2, 3, 4].map(i => (
+                    <div key={i} className="h-12 bg-gray-100 rounded-md" />
+                  ))}
+                </div>
+              </div>
+              <div className="bg-white rounded-lg shadow-md p-8 animate-pulse">
+                <div className="h-8 bg-gray-200 rounded w-1/3 mb-4" />
+                <div className="h-4 bg-gray-100 rounded w-2/3 mb-2" />
+                <div className="h-4 bg-gray-100 rounded w-1/2" />
               </div>
             </div>
-
-            {/* 右侧工具内容 */}
-            <div className="">
-              <AnimatePresence mode="wait">
-                {activeTool === 'liuren' && <LiuRen />}
-                {activeTool === 'ai' && <AI />}
-                {activeTool === 'ziwei' && <ZiWei />}
-              </AnimatePresence>
-            </div>
-          </div>
+          }>
+            <ToolsClient />
+          </Suspense>
         </div>
       </div>
     </div>

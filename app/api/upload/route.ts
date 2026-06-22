@@ -32,14 +32,37 @@ function generateFileName(originalName: string): string {
   return `${Date.now()}-${uniqueId}-${cleanName}.${ext}`
 }
 
-// 验证文件
-function validateFile(file: File): { valid: boolean; error?: string } {
+// 图片文件 magic bytes 映射（用于服务端真实类型校验）
+const IMAGE_MAGIC_BYTES: Record<string, number[][]> = {
+  'image/jpeg': [[0xFF, 0xD8, 0xFF]],
+  'image/png': [[0x89, 0x50, 0x4E, 0x47]],
+  'image/gif': [[0x47, 0x49, 0x46, 0x38]],
+  'image/webp': [[0x52, 0x49, 0x46, 0x46]], // RIFF header (WebP 文件开头 12 字节内含 WEBP)
+}
+
+// 校验文件 magic bytes
+function validateMagicBytes(buffer: Buffer, mimeType: string): boolean {
+  const expectedPatterns = IMAGE_MAGIC_BYTES[mimeType]
+  if (!expectedPatterns) return false
+
+  return expectedPatterns.some(pattern =>
+    pattern.every((byte, index) => buffer[index] === byte)
+  )
+}
+
+// 验证文件（客户端 MIME + 服务端 magic bytes 双重校验）
+function validateFile(file: File, buffer?: Buffer): { valid: boolean; error?: string } {
   if (!ALLOWED_TYPES.includes(file.type)) {
     return { valid: false, error: '不支持的文件类型，请上传JPG、PNG、WebP或GIF格式的图片' }
   }
 
   if (file.size > MAX_FILE_SIZE) {
     return { valid: false, error: '文件大小不能超过5MB' }
+  }
+
+  // 服务端 magic bytes 校验（防止伪造 MIME type）
+  if (buffer && !validateMagicBytes(buffer, file.type)) {
+    return { valid: false, error: '文件内容与声明的类型不匹配，请上传真实的图片文件' }
   }
 
   return { valid: true }
@@ -125,8 +148,12 @@ export async function POST(request: Request) {
 
     for (const file of files) {
       try {
-        // 验证文件
-        const validation = validateFile(file)
+        // 读取文件 buffer 用于 magic bytes 校验
+        const bytes = await file.arrayBuffer()
+        const buffer = Buffer.from(bytes)
+
+        // 验证文件（客户端 MIME + 服务端 magic bytes 双重校验）
+        const validation = validateFile(file, buffer)
         if (!validation.valid) {
           errors.push(`${file.name}: ${validation.error}`)
           continue
@@ -135,8 +162,11 @@ export async function POST(request: Request) {
         // 根据配置选择存储方式
         let url: string
         if (STORAGE_TYPE === 'r2') {
-          url = await uploadToR2(file)
+          // R2 上传需要 File 对象，从 buffer 重建
+          const validatedFile = new File([buffer], file.name, { type: file.type })
+          url = await uploadToR2(validatedFile)
         } else {
+          // 本地存储直接使用 buffer
           url = await uploadToLocal(file)
         }
 

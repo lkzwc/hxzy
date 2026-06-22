@@ -103,6 +103,41 @@ export default function CommunityLayout({
   }) => (
     <DataContext.Provider value={{ tags, qrData }}>
       <div className=" bg-white h-max">
+        {/* 移动端热门话题 - 横向滚动条 (仅 lg 以下显示) */}
+        <div className="block lg:hidden max-w-7xl mx-auto px-4 sm:px-6 pt-4">
+          {tags.length > 0 && (
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-3">
+              <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar">
+                <span className="text-xs font-semibold text-gray-400 shrink-0 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 bg-primary rounded-full" />
+                  热门
+                </span>
+                {tags.slice(0, 12).map((category: Tag, index) => (
+                  <button
+                    key={index}
+                    className="shrink-0 px-3 py-1.5 rounded-full text-xs font-medium bg-gray-50 hover:bg-primary/10 hover:text-primary text-gray-600 transition-colors active:scale-95"
+                    onClick={() => {
+                      const params = new URLSearchParams(searchParams.toString());
+                      params.set("tag", category.text);
+                      router.push(`/community${params.toString() ? `?${params.toString()}` : ""}`);
+                      globalMutate(
+                        (key) => typeof key === "string" && key.startsWith("/api/posts"),
+                        undefined,
+                        { revalidate: true }
+                      );
+                      document.dispatchEvent(
+                        new CustomEvent("categoryChanged", { detail: category.text })
+                      );
+                    }}
+                  >
+                    #{category.text}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
         <div className="flex max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 gap-6 mt-4">
           {/* 左侧导航栏 - 固定位置 */}
           <div className="sticky ml-7 top-4 max-w-[180px] min-w-[160px] hidden md:block">

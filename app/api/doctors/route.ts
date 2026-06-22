@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/app/api/auth/[...nextauth]/auth'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(request: Request) {
@@ -47,7 +49,6 @@ export async function GET(request: Request) {
       {
         success: false,
         error: '获取医生列表失败',
-        details: error instanceof Error ? error.message : String(error || 'Unknown error')
       },
       { status: 500 }
     )
@@ -56,6 +57,15 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    // 鉴权：只有登录用户才能提交医生信息
+    const session = await getServerSession(authOptions)
+    if (!session?.user) {
+      return NextResponse.json(
+        { success: false, error: '请先登录后再提交' },
+        { status: 401 }
+      )
+    }
+
     const body = await request.json()
     
     // 验证必填字段
@@ -101,7 +111,6 @@ export async function POST(request: Request) {
       {
         success: false,
         error: '创建医生记录失败',
-        details: error instanceof Error ? error.message : String(error || 'Unknown error')
       },
       { status: 500 }
     )

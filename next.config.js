@@ -28,10 +28,11 @@ const nextConfig = {
         port: '3000',
         pathname: '/uploads/**',
       },
+      // R2 公共访问域名（替换为实际的 R2 公共 URL 域名）
       {
         protocol: 'https',
-        hostname: '**',
-        pathname: '/uploads/**',
+        hostname: '*.r2.dev',
+        pathname: '/**',
       },
       // CDN 域名
       {

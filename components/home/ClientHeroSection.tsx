@@ -1,137 +1,133 @@
-'use client'
+"use client";
 
-import { useState, useEffect, useRef } from 'react'
-import Image from 'next/image'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Image from 'next/image';
+import NextLink from 'next/link';
 
 interface Feature {
-  title: string
-  desc: string
-  image: string
-  stats: Array<{
-    label: string
-    value: string
-    unit: string
-  }>
+  title: string;
+  desc: string;
+  image: string;
+  stats: { label: string; value: string; unit: string }[];
+  features: string[];
 }
 
-interface Props {
-  features: Feature[]
-}
+export default function ClientHeroSection({ features }: { features: Feature[] }) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isLoaded, setIsLoaded] = useState(false);
 
-export default function ClientHeroSection({ features }: Props) {
-  const [activeFeature, setActiveFeature] = useState(0)
-  const [isLoaded, setIsLoaded] = useState(false)
-  const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const handlePrev = useCallback(() => {
+    setCurrentIndex((prev) => (prev === 0 ? features.length - 1 : prev - 1));
+  }, [features.length]);
 
-  // 优化轮播逻辑，减少初始加载时的性能消耗
-  useEffect(() => {
-    // 立即标记组件已加载
-    setIsLoaded(true)
-
-    // 延迟3秒后再开始轮播，减轻初始加载压力
-    const startTimer = setTimeout(() => {
-      timerRef.current = setInterval(() => {
-        setActiveFeature((prev) => (prev + 1) % features.length)
-      }, 8000) // 增加轮播间隔，减少重渲染频率
-    }, 3000)
-
-    return () => {
-      clearTimeout(startTimer)
-      if (timerRef.current) clearInterval(timerRef.current)
-    }
-  }, [])
+  const handleNext = useCallback(() => {
+    setCurrentIndex((prev) => (prev === features.length - 1 ? 0 : prev + 1));
+  }, [features.length]);
 
   return (
-    <div className="relative">
-      {/* 装饰元素 */}
-      <div className="absolute -right-8 -top-8 w-64 h-64 bg-primary-100/30 rounded-full blur-3xl" />
-      <div className="absolute -left-12 -bottom-12 w-48 h-48 bg-secondary-100/30 rounded-full blur-2xl" />
-
-      {/* 主要内容 */}
-      <div className="relative aspect-square">
-        <AnimatePresence mode="wait">
+    <div className="relative aspect-square rounded-2xl overflow-hidden shadow-lg">
+      {/* 轮播图片 */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentIndex}
+          initial={{ opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.95 }}
+          transition={{ duration: 0.5 }}
+          className="absolute inset-0"
+        >
           {features.map((feature, index) => (
-            index === activeFeature && (
-              <motion.div
-                  key={feature.title}
-                  initial={index === 0 ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.05 }}
-                  transition={{ duration: index === 0 ? 0 : 0.5 }}
-                  className="absolute inset-0"
+            <div
+              key={feature.title}
+              className="absolute inset-0"
+              style={{ display: index === currentIndex ? 'block' : 'none' }}
+            >
+              <div className="relative w-full h-full">
+                {/* 图片遮罩渐变 */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10" />
+
+                <Image
+                  src={feature.image}
+                  alt={feature.title}
+                  fill
+                  priority={index === 0}
+                  loading={index !== 0 ? "lazy" : undefined}
+                  className="object-cover transition-transform duration-500 hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  quality={80}
+                  placeholder="blur"
+                  blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlTz5Yb6bk+h0R//2Q=="
+                  onLoad={() => index === 0 && setIsLoaded(true)}
+                />
+
+                {/* 内容覆盖层 */}
+                <motion.div
+                  className="absolute inset-0 z-20 p-8 flex flex-col justify-end"
+                  initial={index === 0 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index === 0 ? 0 : 0.2, duration: index === 0 ? 0 : 0.5 }}
                 >
-                <div className="relative h-full rounded-3xl overflow-hidden shadow-2xl border border-white/20">
-                  {/* 图片遮罩渐变 */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent z-10" />
-                  
-                  <Image
-                    src={feature.image}
-                    alt={feature.title}
-                    fill
-                    priority={index === 0}
-                    loading={index === 0 ? "eager" : "lazy"}
-                    className="object-cover transition-transform duration-500 hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    quality={80}
-                    placeholder="blur"
-                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
-                    onLoad={() => index === 0 && setIsLoaded(true)}
-                  />
-
-                  {/* 内容覆盖层 */}
-                  <motion.div 
-                    className="absolute inset-0 z-20 p-8 flex flex-col justify-end"
-                    initial={index === 0 ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index === 0 ? 0 : 0.2, duration: index === 0 ? 0 : 0.5 }}
-                  >
-                    <h3 className="text-2xl font-bold text-white mb-3">
-                      {feature.title}
-                    </h3>
-                    <p className="text-white/90 mb-6 line-clamp-2">
-                      {feature.desc}
-                    </p>
-                    <div className="grid grid-cols-3 gap-4">
-                      {feature.stats.map((stat, idx) => (
-                        <motion.div
-                          key={stat.label}
-                          initial={index === 0 ? { opacity: 1, y: 0 } : { opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: index === 0 ? 0 : 0.4 + idx * 0.1, duration: index === 0 ? 0 : 0.3 }}
-                          className="bg-white/10 backdrop-blur-sm rounded-lg p-3 text-center"
-                        >
-                          <div className="text-xl font-bold text-white">
-                            {stat.value}
-                            <span className="text-sm ml-1">{stat.unit}</span>
-                          </div>
-                          <div className="text-xs text-white/80">{stat.label}</div>
-                        </motion.div>
-                      ))}
-                    </div>
-                  </motion.div>
-                </div>
-              </motion.div>
-            )
+                  <h3 className="text-2xl font-bold text-white mb-3">
+                    {feature.title}
+                  </h3>
+                  <p className="text-white/80 text-sm mb-4 max-w-md">
+                    {feature.desc}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {feature.features.map((item, idx) => (
+                      <span
+                        key={idx}
+                        className="px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-xs text-white"
+                      >
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                </motion.div>
+              </div>
+            </div>
           ))}
-        </AnimatePresence>
+        </motion.div>
+      </AnimatePresence>
 
-        {/* 导航点 */}
-        <div className="absolute -bottom-12 left-1/2 -translate-x-1/2 flex space-x-2">
-          {features.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => setActiveFeature(index)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                index === activeFeature 
-                  ? 'bg-primary-600 w-6' 
-                  : 'bg-gray-300 hover:bg-gray-400'
-              }`}
-              aria-label={`切换到第 ${index + 1} 张图片`}
-            />
-          ))}
-        </div>
+      {/* 导航按钮 */}
+      <div className="absolute bottom-4 right-4 z-30 flex gap-2">
+        <button
+          onClick={handlePrev}
+          className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+          aria-label="上一张"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <button
+          onClick={handleNext}
+          className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/30 transition-colors"
+          aria-label="下一张"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+
+      {/* 指示器 */}
+      <div className="absolute bottom-4 left-4 z-30 flex gap-1.5">
+        {features.map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setCurrentIndex(index)}
+            className={`w-2 h-2 rounded-full transition-all duration-300 ${
+              index === currentIndex
+                ? 'bg-white w-6'
+                : 'bg-white/50 hover:bg-white/70'
+            }`}
+            aria-label={`第 ${index + 1} 张`}
+          />
+        ))}
       </div>
     </div>
-  )
+  );
 }

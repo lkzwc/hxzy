@@ -89,37 +89,5 @@ export async function GET(
   }
 }
 
-// 添加评论
-export async function POST(
-  request: Request,
-  { params }: any
-) {
-  try {
-    const { content, authorId } = await request.json()
-
-    const comment = await prisma.comment.create({
-      data: {
-        content,
-        postId: parseInt(params.id),
-        authorId: parseInt(authorId)
-      },
-      include: {
-        author: {
-          select: {
-            id: true,
-            name: true,
-            image: true,
-          }
-        }
-      }
-    })
-
-    return NextResponse.json(comment)
-  } catch (error) {
-    console.error('Error creating comment:', error)
-    return NextResponse.json(
-      { error: '添加评论失败' },
-      { status: 500 }
-    )
-  }
-} 
+// 注意：评论功能已迁移至 /api/posts/[id]/comments/route.ts（含鉴权）
+// 此路由仅保留 GET 用于获取帖子详情

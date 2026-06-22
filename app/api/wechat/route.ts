@@ -3,20 +3,16 @@ import { parseStringPromise } from "xml2js";
 import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { createLoginToken } from "@/lib/loginState";
+import {
+  setLoginState,
+  getLoginState,
+  updateLoginState,
+} from "@/lib/wechatLoginState";
 
 const authorityURL = `https://open.weixin.qq.com/connect/oauth2/authorize?appid=${process.env.WECHAT_APP_ID}&redirect_uri=${process.env.WECHAT_TREDIRECT_URL}&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect`;
 
-// 统一的登录状态管理
-const loginStateMap = new Map<
-  string,
-  {
-    type: "qr" | "code";
-    loginToken?: string;
-    timestamp: number;
-    status: "pending" | "authorized" | "expired";
-    openid?: string;
-  }
->();
+// Access Token 缓存
+let cachedAccessToken: { token: string; expiresAt: number } | null = null;
 
 function generateReplyMessage(
   toUser: string,
@@ -65,7 +61,6 @@ function verifySignature(
 }
 
 async function handleWeChatMessage(xmlData: string) {
-  console.log("收到推送消息",xmlData)
   try {
     // 1. 解析XML数据
     const result = await parseStringPromise(xmlData);
@@ -82,7 +77,7 @@ async function handleWeChatMessage(xmlData: string) {
 
       // 检查是否是6位数字验证码
       if (/^\d{6}$/.test(content)) {
-        const loginData = loginStateMap.get(content);
+        const loginData = getLoginState(content);
 
         if (
           loginData &&
@@ -92,12 +87,8 @@ async function handleWeChatMessage(xmlData: string) {
           // 验证码有效期检查（5分钟）
           if (Date.now() - loginData.timestamp < 5 * 60 * 1000) {
             // 更新登录状态
-            loginData.status = "authorized";
-            loginData.openid = fromUserName;
-            loginStateMap.set(content, loginData);
-
-            console.log("验证码登录成功:", {
-              code: content,
+            updateLoginState(content, {
+              status: "authorized",
               openid: fromUserName,
             });
 
@@ -110,8 +101,7 @@ async function handleWeChatMessage(xmlData: string) {
             );
           } else {
             // 验证码已过期
-            loginData.status = "expired";
-            loginStateMap.set(content, loginData);
+            updateLoginState(content, { status: "expired" });
             return new Response(
               generateReplyMessage(
                 fromUserName,
@@ -154,7 +144,7 @@ async function handleWeChatMessage(xmlData: string) {
 
       try {
         // 获取存储的登录状态
-        const loginData = loginStateMap.get(sceneStr);
+        const loginData = getLoginState(sceneStr);
         if (!loginData || loginData.type !== "qr") {
           throw new Error("QR login state not found");
         }
@@ -164,9 +154,10 @@ async function handleWeChatMessage(xmlData: string) {
           case "SUBSCRIBE": // 未关注用户扫码关注
             if (fromUserName) {
               // 更新登录状态为已授权
-              loginData.status = "authorized";
-              loginData.openid = fromUserName;
-              loginStateMap.set(sceneStr, loginData);
+              updateLoginState(sceneStr, {
+                status: "authorized",
+                openid: fromUserName,
+              });
             }
 
             const replyMessage =
@@ -200,11 +191,25 @@ async function handleWeChatMessage(xmlData: string) {
 }
 
 async function getAccessToken() {
+  // 使用缓存，避免频繁请求 token（微信有频率限制）
+  if (cachedAccessToken && Date.now() < cachedAccessToken.expiresAt) {
+    return cachedAccessToken.token;
+  }
+
   const appId = process.env.WECHAT_APP_ID;
   const appSecret = process.env.WECHAT_APP_SECRET;
   const url = `https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=${appId}&secret=${appSecret}`;
   const response = await fetch(url);
   const data = await response.json();
+
+  if (data.access_token) {
+    // 缓存 token，提前 5 分钟过期以确保安全
+    cachedAccessToken = {
+      token: data.access_token,
+      expiresAt: Date.now() + (data.expires_in - 300) * 1000,
+    };
+  }
+
   return data.access_token;
 }
 
@@ -217,15 +222,13 @@ async function createCodeLogin() {
     // 创建登录令牌
     const loginToken = createLoginToken(code);
 
-    // 存储验证码和登录信息
-    loginStateMap.set(code, {
+    // 存储验证码和登录信息到共享模块
+    setLoginState(code, {
       type: "code",
       loginToken,
       timestamp: Date.now(),
       status: "pending",
     });
-
-    console.log("生成验证码登录:", { code, loginToken });
 
     return NextResponse.json({
       code,
@@ -272,17 +275,11 @@ async function createLoginQrCode(request: NextRequest) {
 
     // 创建登录令牌并存储映射关系【绑定场景值 和 token】
     const loginToken = createLoginToken(sceneStr);
-    loginStateMap.set(sceneStr, {
+    setLoginState(sceneStr, {
       type: "qr",
       loginToken,
       timestamp: Date.now(),
       status: "pending",
-    });
-
-    console.log("创建登录二维码:", {
-      sceneStr,
-      loginToken,
-      expire_seconds,
     });
 
     return NextResponse.json({
@@ -309,19 +306,9 @@ export async function GET(request: NextRequest) {
     const nonce = searchParams.get("nonce");
     const echostr = searchParams.get("echostr");
 
-    console.log("Received verification request:", {
-      signature,
-      timestamp,
-      nonce,
-      echostr,
-    });
-
     if (!signature || !timestamp || !nonce || !echostr) {
-      console.error("Missing required parameters");
       return new NextResponse("missing params", { status: 400 });
     }
-
-    console.log("timestampxx", timestamp, nonce, echostr, signature);
 
     const isValid = verifySignature(timestamp, nonce, signature);
 
@@ -345,17 +332,16 @@ export async function POST(request: NextRequest) {
     if (contentType.includes("xml")) {
       // 处理微信服务器的XML推送
       const xmlData = await request.text();
-      console.log("服务器推送message:", xmlData);
       return handleWeChatMessage(xmlData);
     } else {
       // 处理前端请求
       const body = await request.json().catch(() => ({}));
 
       if (body.type === "code") {
-        // 生成验证码登录
+        // 生成验证码登录【公众号登陆】
         return createCodeLogin();
       } else {
-        // 默认生成二维码登录
+        // 默认生成二维码登录 【认证的服务号登陆】
         return createLoginQrCode(request);
       }
     }
@@ -372,9 +358,7 @@ export async function PUT(request: NextRequest) {
 
     // 如果是验证码登录
     if (code) {
-      console.log("检查验证码登录状态:", { code });
-
-      const loginData = loginStateMap.get(code);
+      const loginData = getLoginState(code);
       if (!loginData || loginData.type !== "code") {
         return NextResponse.json(
           {
@@ -387,8 +371,7 @@ export async function PUT(request: NextRequest) {
 
       // 检查是否过期
       if (Date.now() - loginData.timestamp > 5 * 60 * 1000) {
-        loginData.status = "expired";
-        loginStateMap.set(code, loginData);
+        updateLoginState(code, { status: "expired" });
         return NextResponse.json(
           {
             status: "expired",
@@ -404,17 +387,13 @@ export async function PUT(request: NextRequest) {
         openid: loginData.openid,
       };
 
-      console.log("验证码登录状态检查结果:", result);
       return NextResponse.json(result);
     }
 
     // 原有的二维码登录逻辑
-    console.log("检查二维码登录状态:", { sceneStr });
-
     if (sceneStr) {
-      const loginData = loginStateMap.get(sceneStr);
+      const loginData = getLoginState(sceneStr);
       if (!loginData || loginData.type !== "qr") {
-        console.log("未找到对应的登录状态:", sceneStr);
         return NextResponse.json(
           {
             status: "pending",
@@ -426,8 +405,7 @@ export async function PUT(request: NextRequest) {
 
       // 检查是否过期
       if (Date.now() - loginData.timestamp > 5 * 60 * 1000) {
-        loginData.status = "expired";
-        loginStateMap.set(sceneStr, loginData);
+        updateLoginState(sceneStr, { status: "expired" });
         return NextResponse.json(
           {
             status: "expired",
@@ -443,7 +421,6 @@ export async function PUT(request: NextRequest) {
         openid: loginData.openid,
       };
 
-      console.log("二维码登录状态检查结果:", result);
       return NextResponse.json(result);
     }
   } catch (error) {

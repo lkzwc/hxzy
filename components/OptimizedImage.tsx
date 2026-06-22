@@ -16,7 +16,6 @@ interface OptimizedImageProps {
   sizes?: string;
   fill?: boolean;
   objectFit?: 'contain' | 'cover' | 'fill' | 'none' | 'scale-down';
-  loading?: 'lazy' | 'eager';
   onLoad?: () => void;
   onError?: () => void;
 }
@@ -40,7 +39,6 @@ export default function OptimizedImage({
   sizes,
   fill = false,
   objectFit = 'cover',
-  loading = 'lazy',
   onLoad,
   onError,
 }: OptimizedImageProps) {
@@ -109,34 +107,29 @@ export default function OptimizedImage({
   return (
     <div ref={imgRef} className="relative">
       {(isInView || priority) && (
-        <>
-          <Image
-            src={src}
-            alt={alt}
-            width={fill ? undefined : width}
-            height={fill ? undefined : height}
-            fill={fill}
-            priority={priority}
-            quality={quality}
-            placeholder={placeholder}
-            blurDataURL={blurDataURL || generateBlurDataURL(width, height)}
-            sizes={responsiveSizes}
-            className={`transition-opacity duration-300 ${
-              isLoading ? 'opacity-0' : 'opacity-100'
-            } ${fill ? `object-${objectFit}` : ''} ${className}`}
-            style={fill ? undefined : { objectFit }}
-            loading={loading}
-            onLoad={handleLoad}
-            onError={handleError}
-          />
-
-          {/* 加载状态 */}
-          {isLoading && (
-            <div className={`absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center ${className}`}>
-              <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
-            </div>
-          )}
-        </>
+        <Image
+          src={src}
+          alt={alt}
+          width={fill ? undefined : width}
+          height={fill ? undefined : height}
+          fill={fill}
+          priority={priority}
+          quality={quality}
+          placeholder={placeholder}
+          blurDataURL={blurDataURL || generateBlurDataURL(width, height)}
+          sizes={responsiveSizes}
+          className={`transition-opacity duration-300 ${
+            isLoading ? 'opacity-0' : 'opacity-100'
+          } ${fill ? `object-${objectFit}` : ''} ${className}`}
+          style={fill ? undefined : { objectFit }}
+          onLoad={handleLoad}
+          onError={handleError}
+        />
+      )}
+      {(isInView || priority) && isLoading && (
+        <div className={`absolute inset-0 bg-gray-200 animate-pulse flex items-center justify-center ${className}`}>
+          <div className="w-6 h-6 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+        </div>
       )}
 
       {/* 懒加载占位符 */}

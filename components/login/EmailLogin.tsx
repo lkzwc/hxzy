@@ -11,7 +11,7 @@ interface EmailLoginProps {
 export default function EmailLogin({ onSuccess }: EmailLoginProps) {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
-  const [codes, setCodes] = useState<any>();
+  const [codeSent, setCodeSent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -32,12 +32,12 @@ export default function EmailLogin({ onSuccess }: EmailLoginProps) {
         body: JSON.stringify({ email }),
       });
 
+      const data = await response.json();
       if (response.ok) {
-        const data = await response.json();
-        setCodes(data);
+        setCodeSent(true);
         messageApi.success("验证码已发送到您的邮箱");
       } else {
-        messageApi.error("发送验证码失败，请重试");
+        messageApi.error(data.error || "发送验证码失败，请重试");
       }
     } catch (error) {
       messageApi.error("发送验证码失败，请重试");
@@ -54,27 +54,38 @@ export default function EmailLogin({ onSuccess }: EmailLoginProps) {
       return;
     }
 
-    if (codes?.time < Date.now() - 1000 * 60 * 5) {
-      messageApi.warning("验证码已过期，请重新获取");
+    if (code.length !== 6) {
+      messageApi.warning("请输入6位验证码");
       return;
     }
 
-    if (Math.floor(101010 + codes.codeS / 1000000).toString() === code) {
-      setIsLoading(true);
-      try {
-        await signIn("credentials", {
-          email: email,
-          callbackUrl: "/community",
-        });
-        messageApi.success("登录成功");
-        onSuccess?.();
-      } catch (error) {
-        messageApi.error("登录失败，请重试");
-      } finally {
+    setIsLoading(true);
+    try {
+      // 先向服务端验证验证码是否正确
+      const verifyResponse = await fetch("/api/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code }),
+      });
+
+      if (!verifyResponse.ok) {
+        const verifyData = await verifyResponse.json();
+        messageApi.error(verifyData.error || "验证码错误，请重新输入");
         setIsLoading(false);
+        return;
       }
-    } else {
-      messageApi.error("验证码错误，请重新输入");
+
+      // 验证通过，执行登录
+      await signIn("credentials", {
+        email: email,
+        callbackUrl: "/community",
+      });
+      messageApi.success("登录成功");
+      onSuccess?.();
+    } catch (error) {
+      messageApi.error("登录失败，请重试");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -163,7 +174,7 @@ export default function EmailLogin({ onSuccess }: EmailLoginProps) {
 
 
         {/* 状态指示器 */}
-        {codes && (
+        {codeSent && (
           <div className="text-center">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-secondary-100 text-secondary-800 rounded-full text-xs font-medium">
               <span className="w-2 h-2 bg-secondary-500 rounded-full animate-pulse"></span>
